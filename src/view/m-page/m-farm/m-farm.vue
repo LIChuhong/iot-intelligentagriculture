@@ -1,8 +1,8 @@
 <template>
 	<div ref="maps1" style="height:100%;overflow:auto;position: relative;">
-		<Card  ref="map1" style="overflow: auto;height: 100%;background: #dcdee2;">
+		<Card ref="map1" style="overflow: auto;height: 100%;background: #dcdee2;">
 			<div v-wheel :style="mapStyle" @touchstart="touchstartView" id="mapBgDiv1" ref="mapBgDiv1" class="mapClass">
-				 <img id="mapBgImg1" ref="mapBgImg1" :src="mapBgImgUrl" style="width:100%;z-index: 1;" draggable="false" />
+				<img id="mapBgImg1" ref="mapBgImg1" :src="mapBgImgUrl" style="width:100%;z-index: 1;" draggable="false" />
 				<div v-for="item in rtuImgList" :key="item.rtuNumber" class="drag1" :style="{top:item.heightScale+'%',left:item.widthScale+'%'}">
 					<Poptip :title="item.rtuNumber" :transfer="true">
 						<img :src="item.rtuTypeImgUrl" class="rtu1" :alt="item.rtuNumber" draggable="false" />
@@ -74,7 +74,7 @@
 				value: false,
 				mapBgImgUrl: '',
 				rtuImgList: [],
-				
+
 				mapId: null,
 				checkId: null,
 				showSpin: false
@@ -86,22 +86,34 @@
 					transform: `translate(0%, 70%) scale(${this.zoom/100}, ${
 		        this.zoom/100
 		      })`,
-					
+
 				}
 			}
 		},
 		directives: {
-			wheel(el, bindings){
+			wheel(el, bindings) {
 				// inserted: function(el) {
-					el.style.marginLeft =(el.getBoundingClientRect().width-el.offsetWidth)/2 + 'px'
-					el.style.marginTop =(el.getBoundingClientRect().height-el.offsetHeight)/2 + 'px'
-					el.onmousedown = function(e) {
-						document.onmousemove = function(e) {
-						}
-						document.onmouseup = function() {
-							document.onmousemove = document.onmouseup = null;
-						}
+				el.style.marginLeft = (el.getBoundingClientRect().width - el.offsetWidth) / 2 + 'px'
+				el.style.marginTop = (el.getBoundingClientRect().height - el.offsetHeight) / 2 + 'px'
+				el.onmousedown = function(e) {
+					document.onmousemove = function(e) {}
+					document.onmouseup = function() {
+						document.onmousemove = document.onmouseup = null;
 					}
+				}
+
+				
+				el.ontouchstart = function(e) {
+					
+					document.ontouchmove = function(e) {
+						
+					}
+					document.ontouchend = function() {
+						document.ontouchmove = document.ontouchend = null;
+
+					}
+				}
+
 
 			}
 		},
@@ -193,7 +205,7 @@
 			zoomIn() {
 
 			},
-		
+
 			touchstartView(event) {
 				this.canMove = true
 				this.initPageX = event.pageX
@@ -253,7 +265,6 @@
 </script>
 
 <style lang="less">
-	
 	.trans(@duration) {
 		transition:~"all @{duration} ease-in";
 	}
@@ -295,16 +306,15 @@
 	.drag1 {
 		position: absolute;
 		width: 5%;
-		z-index: 200
-		// overflow: auto
+		z-index: 200 // overflow: auto
 	}
 
 	.mapClass {
-		position:relative;
+		position: relative;
 		width: 100%;
 		height: 100%;
 		overflow: auto;
-		
+
 	}
 </style>
 

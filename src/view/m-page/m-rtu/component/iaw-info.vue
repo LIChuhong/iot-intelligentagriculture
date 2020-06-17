@@ -1,16 +1,24 @@
 <template>
 	<div>
-		<div style="height: 6.25rem;text-align: center;">
-			<img :src="iaRtu.rtuTypeImgUrl" style="height:100%;" />
-		</div>
-		<div class="iawStyle">
-			<p>信号强度:</p>
-			<p>抽水泵状态:</p>
-			<p>增压泵状态:</p>
-			<p>搅拌电机状态:</p>
-			<p>电磁阀1状态:</p>
-			<p>电磁阀2状态:</p>
-		</div>
+		<!-- 浇灌器 -->
+		<Row>
+		    <Col span="8">
+		        <div><span>信号强度:</span></div>
+				<div style="margin: 0.625rem 0;"><span>控制状态:</span></div>
+				<div><span>剩余时间:</span></div>
+		    </Col>
+		    <Col span="8" style="text-align: center">
+		       <img :src="iaRtu.rtuTypeImgUrl" width="100%"/>
+		    </Col>
+			<Col span="8" style="text-align:right">
+			    <Button type="success" ghost>浇水记录</Button>
+				<Button style="margin: 0.625rem 0;" type="info">设置浇水</Button>
+			</Col>
+		</Row>
+		<Spin fix v-show="showSpin">
+			<Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
+			<div>加载中...</div>
+		</Spin>
 	</div>
 </template>
 
@@ -24,6 +32,8 @@
 		data() {
 			return {
 				iaRtu: {},
+				parameterDataList:[],
+				showSpin: false
 			}
 		},
 		methods: {
@@ -35,26 +45,61 @@
 							console.log(data)
 							this.iaRtu = data.iaRtu
 						} else {
-							this.$Message.error(data.errorMessage)
+							this.$Message.error(this.rtuNumber+data.errorMessage)
 						}
 					}).catch(error => {
 						alert(error)
 					})
 				}
 
+			},
+			getRuDataInfo(){
+				if (this.rtuNumber != null && this.rtuNumber != '') {
+					this.showSpin = true
+					getRtuData(this.rtuNumber).then(res => {
+						const data = res.data
+						this.showSpin = false
+						if (data.success == 1) {
+							console.log(data)
+							// this.iaRtu = data.iaRtu
+							if(data.parameterDataList != null && data.parameterDataList){
+								this.parameterDataList = data.parameterDataList.map(item=>{
+									// if()
+									return item
+								})
+								
+							}
+							
+						} else {
+							this.$Message.error(this.rtuNumber+data.errorMessage)
+						}
+					}).catch(error => {
+						this.showSpin = false
+						alert(error)
+					})
+				}
+				
 			}
+			
 		},
 		computed() {
 
 		},
 		created() {
 			this.getRtuInfo()
+			this.getRuDataInfo()
 		},
 	}
 </script>
 
 <style>
-	.iawStyle p{
-		margin: 0.3125rem 0;
-	}
+	.demo-spin-icon-load{
+        animation: ani-demo-spin 1s linear infinite;
+    }
+    @keyframes ani-demo-spin {
+        from { transform: rotate(0deg);}
+        50%  { transform: rotate(180deg);}
+        to   { transform: rotate(360deg);}
+    }
+	
 </style>

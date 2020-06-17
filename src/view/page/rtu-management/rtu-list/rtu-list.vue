@@ -18,8 +18,8 @@
 			<template slot-scope="{ row, index }" slot="action">
 
 				<Button icon="ios-create-outline" size="small" style="margin-right: 10px" @click="show_rtu_info(row,index)">编辑</Button>
-				<Button icon="ios-search-outline" type="warning" size="small" :loading="row.buttonLoading" style="margin-right: 10px" @click="detectionRtu(row,index)">
-					<span v-if="!row.buttonLoading">检测在线</span>
+				<Button icon="ios-search-outline" type="warning" size="small" :loading="row.checkLoading" style="margin-right: 10px" @click="detectionRtu(row,index)">
+					<span v-if="!row.checkLoading">检测在线</span>
 					<span v-else>检测中....</span>
 				</Button>
 				<i-switch :loading="row.switchLoading" v-model="row.isEnable" @on-change="isEnableRtuMethods(row)" />

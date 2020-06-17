@@ -153,20 +153,20 @@
 						menuText: '设备',
 						name: 'm_rtu',
 						to: '/m_rtu',
-						iconType: 'logo-github'
+						iconType: ' iconfont icon-rtu'
 					},
 					{
 						menuText: '农场',
 						name: 'm_farm',
 						to: '/m_farm',
-						iconType: 'logo-github'
+						iconType: ' iconfont icon-ic_zhnc'
 					},
 				
 					{
 						menuText: '我',
 						name: 'me',
 						to: '/me',
-						iconType: 'logo-github'
+						iconType: ' iconfont icon-yh'
 					}
 				],
 			}

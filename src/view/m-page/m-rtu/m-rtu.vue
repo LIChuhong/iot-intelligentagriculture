@@ -30,7 +30,7 @@
 		</div>
 		<!-- </div> -->
 
-		<Modal v-model="showRtuInfo" :title="rtuModalTitle" footer-hide fullscreen>
+		<Modal v-model="showRtuInfo" :title="rtuModalTitle" footer-hide fullscreen @on-cancel="cancel">
 			<!-- <rtu-form :rtu-number="rtuNumber" v-if="showRtuInfo">修改</rtu-form> -->
 			<iar-info v-if="rtuTypeTag == 'IA_R'" :rtu-number = "rtuNumber"></iar-info>
 			<iasf-info v-if="rtuTypeTag == 'IA_SF'" :rtu-number = "rtuNumber"></iasf-info>
@@ -180,6 +180,9 @@
 				this.prevId = [0]
 				this.getRtuList()
 			},
+			cancel(){
+				this.rtuTypeTag = ''
+			}
 		},
 		created() {
 			// this.$route.meta.keepAlive = true
