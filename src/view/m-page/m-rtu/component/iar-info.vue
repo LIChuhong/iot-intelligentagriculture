@@ -12,7 +12,7 @@
 				</Col>
 			</Row>
 		</div>
-		<Spin fix v-show="showSpin">
+		<Spin fix v-show="showSpin" style="background: rgba(255,255,255,0.3);">
 			<Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
 			<div>加载中...</div>
 		</Spin>

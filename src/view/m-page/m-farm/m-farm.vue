@@ -1,26 +1,22 @@
 <template>
-	<div ref="maps1" style="height:100%;overflow:auto;position: relative;">
+	<div ref="maps1" style="height:100%;overflow:hidden;position: relative;">
 		<Card ref="map1" style="overflow: auto;height: 100%;background: #dcdee2;">
 			<div v-wheel :style="mapStyle" @touchstart="touchstartView" id="mapBgDiv1" ref="mapBgDiv1" class="mapClass">
-				<img id="mapBgImg1" ref="mapBgImg1" :src="mapBgImgUrl" style="width:100%;z-index: 1;" draggable="false" />
+				<img id="mapBgImg1" ref="mapBgImg1" :src="mapBgImgUrl" style="width:100%;z-index: 1;height: 100%;" draggable="false" />
 				<div v-for="item in rtuImgList" :key="item.rtuNumber" class="drag1" :style="{top:item.heightScale+'%',left:item.widthScale+'%'}">
-					<Poptip :title="item.rtuNumber" :transfer="true">
+					<Poptip :title="item.rtuNumber" :transfer="true" @on-popper-show="getRtuDataInfo(item)">
+						<div slot="content">
+							<div style="font-size: 0.75rem;" v-for="(item , index) in parameterDataList" :key="index"><span>{{item.parameterName}}:{{item.value}}{{item.unit}}</span></div>
+						</div>
 						<img :src="item.rtuTypeImgUrl" class="rtu1" :alt="item.rtuNumber" draggable="false" />
 					</Poptip>
 				</div>
 			</div>
-
-			<Spin fix v-show="showSpin" style="width: 100%;height: 100%;">
-				<Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
-				<div>加载中...</div>
-			</Spin>
-
-
 		</Card>
 		<div style="position: absolute;right:5%;text-align: center;top:1.25rem;z-index: 100;">
-			<Tooltip :content="value ? '退出全屏' : '全屏'" placement="bottom">
+			<!-- <Tooltip :content="value ? '退出全屏' : '全屏'" placement="bottom">
 				<Icon @click.native="handleFullscreen" :type="value ? 'md-contract' : 'md-expand'" :size="23"></Icon>
-			</Tooltip>
+			</Tooltip> -->
 			<div style="margin: 1.25rem;">
 				<button class="zoom-button" @click="getRtusMapList">
 					<Icon type="md-more" :size="20" color="#fff" />
@@ -41,6 +37,10 @@
 		<Modal title="农场列表" v-model="showMapList" footer-hide>
 			<map-list v-if="showMapList" @get-map-info="getMapInfo"></map-list>
 		</Modal>
+		<Spin fix v-show="showSpin" style="background: rgba(255,255,255,0.3);">
+			<Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
+			<div>加载中...</div>
+		</Spin>
 	</div>
 </template>
 
@@ -57,6 +57,9 @@
 		getMapList,
 		getMap
 	} from '@/api/farm.js'
+	import {
+		getRtuData
+	} from '@/api/rtu.js'
 	import ZoomController from '@/view/page/farm-management/component/zoom-controller.vue'
 	export default {
 		name: 'farm_list',
@@ -67,6 +70,7 @@
 		},
 		data() {
 			return {
+				parameterDataList: [],
 				editor: false,
 				zoom: 100,
 				showMapList: false,
@@ -102,11 +106,11 @@
 					}
 				}
 
-				
+
 				el.ontouchstart = function(e) {
-					
+
 					document.ontouchmove = function(e) {
-						
+
 					}
 					document.ontouchend = function() {
 						document.ontouchmove = document.ontouchend = null;
@@ -118,6 +122,32 @@
 			}
 		},
 		methods: {
+			getRtuDataInfo(item) {
+				this.showSpin = true
+				this.parameterDataList = []
+				getRtuData(item.rtuNumber).then(res => {
+					const data = res.data
+					this.showSpin = false
+					if (data.success == 1) {
+						// console.log(data)
+						// this.iaRtu = data.iaRtu
+						const rtuData = data.rtuData
+						if (rtuData.parameterDataList != null && rtuData.parameterDataList) {
+							this.parameterDataList = rtuData.parameterDataList.map(item => {
+								// if()
+								return item
+							})
+
+						}
+
+					} else {
+						this.$Message.error(item.rtuNumber + data.errorMessage)
+					}
+				}).catch(error => {
+					this.showSpin = false
+					alert(error)
+				})
+			},
 			goBack(val) {
 				this.editor = false
 			},
@@ -265,79 +295,62 @@
 </script>
 
 <style lang="less">
-	.trans(@duration) {
-		transition:~"all @{duration} ease-in";
-	}
-
-	.zoom-button {
-		width: 30px;
-		height: 30px;
-		line-height: 10px;
-		border-radius: 50%;
-		background: rgb(124, 180, 41);
-		box-shadow: 0px 2px 8px 0px rgba(218, 220, 223, 0.7);
-		border: none;
-		cursor: pointer;
-		outline: none;
-
-		&:active {
-			box-shadow: 0px 0px 2px 2px rgba(218, 220, 223, 0.2) inset;
+	@media screen and (min-width:300px) and (max-width:780px) {
+		.trans(@duration) {
+			transition:~"all @{duration} ease-in";
 		}
 
-		.trans(0.1s);
+		.zoom-button {
+			width: 30px;
+			height: 30px;
+			line-height: 10px;
+			border-radius: 50%;
+			background: rgb(124, 180, 41);
+			box-shadow: 0px 2px 8px 0px rgba(218, 220, 223, 0.7);
+			border: none;
+			cursor: pointer;
+			outline: none;
 
-		&:hover {
-			background: #1890ff;
+			&:active {
+				box-shadow: 0px 0px 2px 2px rgba(218, 220, 223, 0.2) inset;
+			}
+
 			.trans(0.1s);
+
+			&:hover {
+				background: #1890ff;
+				.trans(0.1s);
+			}
 		}
-	}
 
 
-	.demo-spin-icon-load {
-		animation: ani-demo-spin 1s linear infinite;
-	}
+		.demo-spin-icon-load {
+			animation: ani-demo-spin 1s linear infinite;
+		}
 
-	.rtu1 {
-		width: 100%;
-		height: 100%;
-		z-index: 2;
-	}
+		.rtu1 {
+			width: 100%;
+			height: 100%;
+			z-index: 2;
+		}
 
-	.drag1 {
-		position: absolute;
-		width: 5%;
-		z-index: 200 // overflow: auto
-	}
+		.drag1 {
+			position: absolute;
+			width: 5%;
 
-	.mapClass {
-		position: relative;
-		width: 100%;
-		height: 100%;
-		overflow: auto;
+		}
 
+		.mapClass {
+			position: relative;
+			width: 100%;
+			height: 100%;
+			overflow: auto;
+
+		}
+		.ivu-card-body{
+			padding: 0;
+			margin: 0
+			
+		}
 	}
 </style>
-
-
-<!-- <template>
-	<farm-list></farm-list>
-</template>
-
-<script>
-	import FarmList from '@/view/page/farm-management/farm-list/farm-list.vue'
-	export default {
-		name: 'farm_list',
-		components: {
-			FarmList
-		},
-		data() {
-			return {
-				
-			}
-		},
-		computed: {
-			
-		},
-	}
-</script>
- -->

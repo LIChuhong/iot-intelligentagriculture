@@ -9,7 +9,7 @@
 			</template>
 			<template slot-scope="{ row, index }" slot="action">
 				<Button type="primary" size="small" icon="ios-create-outline" @click="editorUser(row)" style="margin-right: 8px;">编辑</Button>
-				<Button type="success" icon="md-key" size="small" @click="resetPassword(row)">修改密码</Button>
+				<Button type="success" icon="ios-key" size="small" @click="resetPassword(row)">修改密码</Button>
 			</template>
 		</Table>
 		<div style="overflow: hidden;padding:0.625rem 0.625rem;">
@@ -21,7 +21,7 @@
 			<user-form v-if="showUserEditor" :user-id="userId">修改</user-form>
 		</Modal>
 		<Modal title='修改密码' v-model="showPwd" footer-hide>
-			<reset-pwd v-if="showPwd" :vmUserId="vmUserId"></reset-pwd>
+			<reset-pwd v-if="showPwd" :user-id="userId"></reset-pwd>
 		</Modal>
 	</div>
 </template>
@@ -37,10 +37,12 @@
 		getUserList
 	} from '@/api/user'
 	import UserForm from '../components/user-form.vue'
+	import ResetPwd from '../components/reset-pwd.vue'
 	export default{
 		name:'user_list',
 		components:{
-			UserForm
+			UserForm,
+			ResetPwd
 		},
 		data(){
 			return{
@@ -60,9 +62,14 @@
 				searchKey:'',
 				maxId:0,
 				pageSize:10,
+				showPwd:false,
 			}
 		},
 		methods:{
+			resetPassword(row){
+				this.userId = row.id
+				this.showPwd = true
+			},
 			editorUser(row) {
 				this.userId = row.id
 				this.showUserEditor = true

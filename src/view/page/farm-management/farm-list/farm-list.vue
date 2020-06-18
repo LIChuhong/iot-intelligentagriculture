@@ -5,18 +5,14 @@
 				<div :style="mapStyle" @mousedown="mousedownView" @touchstart="touchstartView" id="mapBgDiv1" ref="mapBgDiv1" class="mapClass">
 					<img id="mapBgImg1" ref="mapBgImg1" :src="mapBgImgUrl" style="width:100%;z-index: 1;height: 100%;" draggable="false" />
 					<div v-for="item in rtuImgList" :key="item.rtuNumber" class="drag1" :style="{top:item.heightScale+'%',left:item.widthScale+'%'}">
-						<Poptip :title="item.rtuNumber" :transfer="true">
+						<Poptip :title="item.rtuNumber" @on-popper-show="getRtuDataInfo(item)">
+							 <div slot="content">
+								 <div style="font-size: 0.75rem;" v-for="(item , index) in parameterDataList" :key="index"><span>{{item.parameterName}}:{{item.value}}{{item.unit}}</span></div>
+							</div>
 							<img :src="item.rtuTypeImgUrl" class="rtu1" :alt="item.rtuNumber" draggable="false" />
 						</Poptip>
 					</div>
 				</div>
-				
-				<Spin fix v-show="showSpin" style="width: 100%;height: 100%;">
-					<Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
-					<div>加载中...</div>
-				</Spin>
-
-
 			</Card>
 			<div style="position: absolute;right:5%;text-align: center;top:1.25rem;z-index: 100;">
 				<Tooltip :content="value ? '退出全屏' : '全屏'" placement="bottom">
@@ -42,6 +38,11 @@
 			<Modal title="农场列表" v-model="showMapList" footer-hide>
 				<map-list v-if="showMapList" @get-map-info="getMapInfo"></map-list>
 			</Modal>
+			<Spin fix v-show="showSpin" style="background: rgba(255,255,255,0.3);">
+				<Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
+				<div>加载中...</div>
+			</Spin>
+			
 		</div>
 		<farm-form v-if="editor" :mapId="mapId" @go-back="goBack" style="z-index: 100;"></farm-form>
 		
@@ -61,6 +62,9 @@
 		getMapList,
 		getMap
 	} from '@/api/farm.js'
+	import {
+		getRtuData
+	} from '@/api/rtu.js'
 	import ZoomController from '../component/zoom-controller.vue'
 	export default {
 		name: 'farm_list',
@@ -87,7 +91,8 @@
 				canMove: false,
 				mapId: null,
 				checkId: null,
-				showSpin:false
+				showSpin:false,
+				parameterDataList:[]
 			}
 		},
 		computed: {
@@ -102,6 +107,32 @@
 			}
 		},
 		methods: {
+			getRtuDataInfo(item){
+				this.showSpin = true
+				this.parameterDataList=[]
+				getRtuData(item.rtuNumber).then(res => {
+					const data = res.data
+					this.showSpin = false
+					if (data.success == 1) {
+						// console.log(data)
+						// this.iaRtu = data.iaRtu
+						const rtuData = data.rtuData
+						if(rtuData.parameterDataList != null && rtuData.parameterDataList){
+							this.parameterDataList = rtuData.parameterDataList.map(item=>{
+								// if()
+								return item
+							})
+							
+						}
+						
+					} else {
+						this.$Message.error(item.rtuNumber+data.errorMessage)
+					}
+				}).catch(error => {
+					this.showSpin = false
+					alert(error)
+				})
+			},
 			goBack(val) {
 				this.editor = false
 			},

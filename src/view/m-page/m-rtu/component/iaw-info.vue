@@ -3,19 +3,20 @@
 		<!-- 浇灌器 -->
 		<Row>
 		    <Col span="8">
-		        <div><span>信号强度:</span></div>
-				<div style="margin: 0.625rem 0;"><span>控制状态:</span></div>
-				<div><span>剩余时间:</span></div>
+		        <div style="margin-bottom:0.625rem" v-for="(item , index) in parameterDataList" :key="index"><span>{{item.parameterName}}:{{item.value}}{{item.unit}}</span></div>
+				<!-- <div style="margin: 0.625rem 0;"><span>控制状态:</span></div>
+				<div><span>剩余时间:</span></div> -->
 		    </Col>
 		    <Col span="8" style="text-align: center">
 		       <img :src="iaRtu.rtuTypeImgUrl" width="100%"/>
 		    </Col>
-			<Col span="8" style="text-align:right">
-			    <Button type="success" ghost>浇水记录</Button>
+			<Col span="8" style="text-align: right;">
+			    <Button type="success" ghost >浇水记录</Button>
 				<Button style="margin: 0.625rem 0;" type="info">设置浇水</Button>
+				
 			</Col>
 		</Row>
-		<Spin fix v-show="showSpin">
+		<Spin fix v-show="showSpin"  style="background: rgba(255,255,255,0.3);">
 			<Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
 			<div>加载中...</div>
 		</Spin>
@@ -60,10 +61,11 @@
 						const data = res.data
 						this.showSpin = false
 						if (data.success == 1) {
-							console.log(data)
+							// console.log(data)
 							// this.iaRtu = data.iaRtu
-							if(data.parameterDataList != null && data.parameterDataList){
-								this.parameterDataList = data.parameterDataList.map(item=>{
+							const rtuData = data.rtuData
+							if(rtuData.parameterDataList != null && rtuData.parameterDataList){
+								this.parameterDataList = rtuData.parameterDataList.map(item=>{
 									// if()
 									return item
 								})

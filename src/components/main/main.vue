@@ -212,7 +212,7 @@
 				return this.$store.state.app.hasReadErrorPage
 			},
 			unreadCount() {
-				return this.$store.state.user.unreadCount
+				return this.$store.state.user.userInfo.news
 			}
 			
 		},
