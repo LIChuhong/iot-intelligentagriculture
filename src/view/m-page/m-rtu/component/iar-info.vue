@@ -5,7 +5,7 @@
 			<img :src="iaRtu.rtuTypeImgUrl" style="height:100%;" />
 		</div>
 		<div class="iarStyle">
-			<p>信号强度:</p>
+			<!-- <p>信号强度:</p> -->
 			<Row>
 				<Col span="12" v-for="(item,index) in parameterDataList" :key="index">
 				<p><span><Icon :type="item.icon" /></span>{{item.parameterName}}:{{item.value}}{{item.unit}}</p>
@@ -39,7 +39,7 @@
 					getRtu(this.rtuNumber).then(res => {
 						const data = res.data
 						if (data.success == 1) {
-							console.log(data)
+							// console.log(data)
 							this.iaRtu = data.iaRtu
 						} else {
 							this.$Message.error(this.rtuNumber+data.errorMessage)
@@ -57,7 +57,7 @@
 						const data = res.data
 						this.showSpin = false
 						if (data.success == 1) {
-							console.log(data)
+							// console.log(data)
 							const rtuData = data.rtuData
 							if(rtuData.parameterDataList != null && rtuData.parameterDataList){
 								this.parameterDataList = rtuData.parameterDataList.map(item=>{

@@ -61,7 +61,7 @@
 						const data = res.data
 						this.showSpin = false
 						if (data.success == 1) {
-							console.log(data)
+							// console.log(data)
 							// this.iaRtu = data.iaRtu
 							const rtuData = data.rtuData
 							if (rtuData.parameterDataList != null && rtuData.parameterDataList) {
@@ -104,9 +104,7 @@
 
 			}
 		},
-		computed() {
-
-		},
+		
 		created() {
 			this.getRtuInfo()
 			this.getRuDataInfo()

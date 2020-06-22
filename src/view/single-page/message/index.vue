@@ -1,4 +1,8 @@
 <template>
+	<div></div>
+</template>
+<script></script>
+<!-- <template>
   <Card shadow>
     <div>
       <div class="message-page-con message-category-con">
@@ -192,3 +196,4 @@ export default {
   }
 }
 </style>
+ -->

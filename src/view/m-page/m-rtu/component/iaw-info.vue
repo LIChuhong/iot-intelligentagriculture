@@ -43,7 +43,7 @@
 					getRtu(this.rtuNumber).then(res => {
 						const data = res.data
 						if (data.success == 1) {
-							console.log(data)
+							// console.log(data)
 							this.iaRtu = data.iaRtu
 						} else {
 							this.$Message.error(this.rtuNumber+data.errorMessage)

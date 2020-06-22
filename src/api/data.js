@@ -1,51 +1,37 @@
 import axios from '@/libs/api.request'
 
-export const getTableData = () => {
+//消息列表
+export const getMessageList = (pageNo,pageSize) => {
   return axios.request({
-    url: 'get_table_data',
+    url: '/v1/getMessageList',
+		params:{
+			'pageNo':pageNo,
+			'pageSize':pageSize
+		},
     method: 'get'
   })
 }
 
-export const getDragList = () => {
+//阅读消息
+export const enableMessage = (id) => {
+	const data = new URLSearchParams()
+	data.append('id', id)
   return axios.request({
-    url: 'get_drag_list',
-    method: 'get'
+  	url: '/v1/enableMessage',
+		data,
+  	method: 'post'
   })
 }
 
-export const errorReq = () => {
+
+//删除消息
+export const delMessage = (id) => {
+	const data = new URLSearchParams()
+	data.append('id', id)
   return axios.request({
-    url: 'error_url',
-    method: 'post'
+  	url: '/v1/delMessage',
+		data,
+  	method: 'post'
   })
 }
 
-export const saveErrorLogger = info => {
-  return axios.request({
-    url: 'save_error_logger',
-    data: info,
-    method: 'post'
-  })
-}
-
-export const uploadImg = formData => {
-  return axios.request({
-    url: 'image/upload',
-    data: formData
-  })
-}
-
-export const getOrgData = () => {
-  return axios.request({
-    url: 'get_org_data',
-    method: 'get'
-  })
-}
-
-export const getTreeSelectData = () => {
-  return axios.request({
-    url: 'get_tree_select_data',
-    method: 'get'
-  })
-}
