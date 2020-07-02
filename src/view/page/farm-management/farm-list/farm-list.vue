@@ -168,6 +168,7 @@
 				// alert(row)
 			},
 			showMap(id) {
+				this.resetParameters()
 				getMap(id).then(res => {
 					const data = res.data
 					this.showSpin = true
@@ -191,7 +192,13 @@
 				this.showMapList = true
 
 			},
+			resetParameters(){
+				this.orgTreeOffsetLeft = 0
+				this.orgTreeOffsetLeft = 0
+				this.zoom = 100
+			},
 			getCurRtusMap() {
+				this.resetParameters()
 				if (this.checkId != null) {
 					this.showMap(this.checkId)
 				} else {
@@ -200,6 +207,7 @@
 
 			},
 			getTopMapInfo() {
+				this.resetParameters()
 				this.showSpin = true
 				getTopMap(this.orgId).then(res => {
 					this.showSpin = false
@@ -336,17 +344,21 @@
 		width: 100%;
 		height: 100%;
 		z-index: 2;
+		
 	}
 
 	.drag1 {
 		position: absolute;
-		width: 5%;
+		 width:5%;
+		 // height: 3.125rem
+		//  min-width: 1.25rem;
+		// max-width: 4.375rem;
 	}
 
 	.mapClass {
 		position: relative;
-		width: 100%;
+		 width: 100%;
 		height: 100%;
-		overflow: auto;
+		 overflow: auto;
 	}
 </style>

@@ -1,5 +1,5 @@
 <template>
-	<div ref="maps1" style="height:100%;overflow:hidden;position: relative;">
+	<div ref="maps1" class="map1Style" style="height:100%;overflow:hidden;position: relative;">
 		<Card ref="map1" style="overflow: auto;height: 100%;background: #dcdee2;">
 			<div v-wheel :style="mapStyle" @touchstart="touchstartView" id="mapBgDiv1" ref="mapBgDiv1" class="mapClass">
 				<img id="mapBgImg1" ref="mapBgImg1" :src="mapBgImgUrl" style="width:100%;z-index: 1;height: 100%;" draggable="false" />
@@ -32,7 +32,7 @@
 
 		<div class="zoom-box" style="position: absolute;bottom: 3.125rem;right:5%;">
 
-			<zoom-controller v-model="zoom" :min="20" :max="300"></zoom-controller>
+			<zoom-controller v-model="zoom" :min="100" :max="300"></zoom-controller>
 		</div>
 		<Modal title="农场列表" v-model="showMapList" footer-hide>
 			<map-list v-if="showMapList" @get-map-info="getMapInfo"></map-list>
@@ -177,6 +177,7 @@
 				// alert(row)
 			},
 			showMap(id) {
+				this.resetParameters()
 				getMap(id).then(res => {
 					const data = res.data
 					this.showSpin = true
@@ -200,7 +201,13 @@
 				this.showMapList = true
 
 			},
+			resetParameters(){
+				// this.orgTreeOffsetLeft = 0
+				// this.orgTreeOffsetLeft = 0
+				this.zoom = 100
+			},
 			getCurRtusMap() {
+				this.resetParameters()
 				if (this.checkId != null) {
 					this.showMap(this.checkId)
 				} else {
@@ -209,6 +216,7 @@
 
 			},
 			getTopMapInfo() {
+				this.resetParameters()
 				this.showSpin = true
 				getTopMap(this.orgId).then(res => {
 					this.showSpin = false
@@ -295,7 +303,7 @@
 </script>
 
 <style lang="less">
-	@media screen and (min-width:300px) and (max-width:780px) {
+	@media screen and (min-width:300px) and (max-width:900px) {
 		.trans(@duration) {
 			transition:~"all @{duration} ease-in";
 		}
@@ -347,7 +355,7 @@
 			overflow: auto;
 
 		}
-		.ivu-card-body{
+		.map1Style .ivu-card-body{
 			padding: 0;
 			margin: 0
 			
