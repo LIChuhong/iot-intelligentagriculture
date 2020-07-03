@@ -21,11 +21,11 @@
 					</div>
 					<div style="overflow: hidden;margin: 0.3125rem 0;">
 						<p style="width:4.375rem;float: left;">工作时长：</p>
-						<TimePicker v-model="item.workTime" format="HH时mm分ss秒" placeholder="选择工作时长" style="width:60%"></TimePicker>
+						<TimePicker v-model="item.workTime" format="HH:mm:ss" placeholder="选择工作时长" style="width:60%"></TimePicker>
 					</div>
 					<div style="overflow: hidden;">
 						<p style="width:4.375rem;float: left;">下组延迟：</p>
-						<TimePicker v-model="item.delayTime" format="HH时mm分ss秒" placeholder="选择执行下组策略的延迟时间" style="width: 60%"></TimePicker>
+						<TimePicker v-model="item.delayTime" format="HH:mm:ss" placeholder="选择执行下组策略的延迟时间" style="width: 60%"></TimePicker>
 					</div>
 					<div style="overflow: hidden; margin: 0.3125rem 0 0;">
 						<p style="width:4.375rem;float: left;">操控设备：</p>

@@ -228,17 +228,17 @@ export const formatSeconds = (value) => {
                 minuteTime = parseInt(minuteTime % 60);
             }
         }
-        var result = "" + parseInt(secondTime) + "秒";
+        var result = "" + parseInt(secondTime);
 
         if(minuteTime > 0) {
-            result = "" + parseInt(minuteTime) + "分" + result;
+            result = "" + parseInt(minuteTime) + ":" + result;
         }else{
-			result = "" + '00' + "分" + result;
+			result = "" + '00' + ":" + result;
 		}
         if(hourTime > 0) {
-            result = "" + parseInt(hourTime) + "小时" + result;
+            result = "" + parseInt(hourTime) + ":" + result;
         }else{
-			 result = "" + '00' + "小时" + result;
+			 result = "" + '00' + ":" + result;
 		}
         return result;
     }

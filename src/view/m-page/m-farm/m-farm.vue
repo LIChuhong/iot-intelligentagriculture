@@ -1,18 +1,18 @@
 <template>
 	<div ref="maps1" class="map1Style" style="height:100%;overflow:hidden;position: relative;">
-		<Card ref="map1" style="overflow: auto;height: 100%;background: #dcdee2;">
-			<div v-wheel :style="mapStyle" @touchstart="touchstartView" id="mapBgDiv1" ref="mapBgDiv1" class="mapClass">
-				<img id="mapBgImg1" ref="mapBgImg1" :src="mapBgImgUrl" style="width:100%;z-index: 1;height: 100%;" draggable="false" />
-				<div v-for="item in rtuImgList" :key="item.rtuNumber" class="drag1" :style="{top:item.heightScale+'%',left:item.widthScale+'%'}">
-					<Poptip :title="item.rtuNumber" :transfer="true" @on-popper-show="getRtuDataInfo(item)">
-						<div slot="content">
-							<div style="font-size: 0.75rem;" v-for="(item , index) in parameterDataList" :key="index"><span>{{item.parameterName}}:{{item.value}}{{item.unit}}</span></div>
-						</div>
-						<img :src="item.rtuTypeImgUrl" class="rtu1" :alt="item.rtuNumber" draggable="false" />
-					</Poptip>
-				</div>
+		<!-- <Card ref="map1" style="overflow:hidden;height: 100%;background: #dcdee2;"> -->
+		<div :style="mapStyle" @touchstart="touchstartView" id="mapBgDiv1" ref="mapBgDiv1">
+			<img id="mapBgImg1" ref="mapBgImg1" :src="mapBgImgUrl" style="width:100%;z-index: 1;height: 100%;" draggable="false" />
+			<div v-for="item in rtuImgList" :key="item.rtuNumber" class="drag1" :style="{top:item.heightScale+'%',left:item.widthScale+'%'}">
+				<Poptip :title="item.rtuNumber" :transfer="true" @on-popper-show="getRtuDataInfo(item)">
+					<div slot="content">
+						<div style="font-size: 0.75rem;" v-for="(item , index) in parameterDataList" :key="index"><span>{{item.parameterName}}:{{item.value}}{{item.unit}}</span></div>
+					</div>
+					<img :src="item.rtuTypeImgUrl" class="rtu1" :alt="item.rtuNumber" draggable="false" />
+				</Poptip>
 			</div>
-		</Card>
+		</div>
+		<!-- </Card> -->
 		<div style="position: absolute;right:5%;text-align: center;top:1.25rem;z-index: 100;">
 			<!-- <Tooltip :content="value ? '退出全屏' : '全屏'" placement="bottom">
 				<Icon @click.native="handleFullscreen" :type="value ? 'md-contract' : 'md-expand'" :size="23"></Icon>
@@ -81,47 +81,84 @@
 
 				mapId: null,
 				checkId: null,
-				showSpin: false
+				showSpin: false,
+				orgTreeOffsetLeft: 0,
+				orgTreeOffsetTop: 0,
+				initPageX: 0,
+				initPageY: 0,
+				oldMarginLeft: 0,
+				oldMarginTop: 0,
+				canMove: false,
 			}
 		},
 		computed: {
 			mapStyle() {
+				// console.log(this.orgTreeOffsetLeft)
+				// console.log(this.orgTreeOffsetTop)
 				return {
-					transform: `translate(0%, 70%) scale(${this.zoom/100}, ${
+					transform: `translate(-50%, -50%) scale(${this.zoom/100}, ${
 		        this.zoom/100
 		      })`,
+					marginLeft: `${this.orgTreeOffsetLeft}px`,
+					marginTop: `${this.orgTreeOffsetTop}px`,
 
 				}
 			}
 		},
-		directives: {
-			wheel(el, bindings) {
-				// inserted: function(el) {
-				el.style.marginLeft = (el.getBoundingClientRect().width - el.offsetWidth) / 2 + 'px'
-				el.style.marginTop = (el.getBoundingClientRect().height - el.offsetHeight) / 2 + 'px'
-				el.onmousedown = function(e) {
-					document.onmousemove = function(e) {}
-					document.onmouseup = function() {
-						document.onmousemove = document.onmouseup = null;
-					}
-				}
-
-
-				el.ontouchstart = function(e) {
-
-					document.ontouchmove = function(e) {
-
-					}
-					document.ontouchend = function() {
-						document.ontouchmove = document.ontouchend = null;
-
-					}
-				}
-
-
-			}
-		},
+		directives: {},
 		methods: {
+			touchstartView(event) {
+				let that = this
+				let x1 = 0
+				// alert(x1)
+				if (event.touches.length <= 1) {
+					this.canMove = true
+					this.initPageX = event.touches[0].pageX
+					this.initPageY = event.touches[0].pageY
+					this.oldMarginLeft = this.orgTreeOffsetLeft
+					this.oldMarginTop = this.orgTreeOffsetTop
+
+
+				} else if (event.touches.length >= 2) {
+					// alert(event.changedTouches[0].pageX)
+					// alert(event.changedTouches[1].pageX)
+					x1 = that.getDistance(event.touches[0], event.touches[1])
+					// alert(x1)
+
+				}
+
+				document.ontouchmove = function(event) {
+					if (event.touches.length == 1) {
+						if (!that.canMove) return
+
+						that.orgTreeOffsetLeft = that.oldMarginLeft + event.touches[0].pageX - that.initPageX
+						that.orgTreeOffsetTop = that.oldMarginTop + event.touches[0].pageY - that.initPageY
+						// console.log(that.initPageX)
+					} else if (event.touches.length >= 2) {
+
+						var x2 = that.getDistance(event.touches[0], event.touches[1])
+						if (x2 > x1) {
+							if (that.zoom < 300) {
+								that.zoom += 2
+							}
+						}
+						if (x2 < x1) {
+							if (that.zoom > 100) {
+								that.zoom -= 2
+							}
+						}
+					}
+				};
+				document.ontouchend = function() {
+					that.canMove = false
+				}
+			},
+			getDistance(p1, p2) {
+				var x = p2.pageX - p1.pageX,
+					y = p2.pageY - p1.pageY;
+				return Math.sqrt((x * x) + (y * y));
+			},
+
 			getRtuDataInfo(item) {
 				this.showSpin = true
 				this.parameterDataList = []
@@ -201,9 +238,9 @@
 				this.showMapList = true
 
 			},
-			resetParameters(){
-				// this.orgTreeOffsetLeft = 0
-				// this.orgTreeOffsetLeft = 0
+			resetParameters() {
+				this.orgTreeOffsetLeft = 0
+				this.orgTreeOffsetLeft = 0
 				this.zoom = 100
 			},
 			getCurRtusMap() {
@@ -237,22 +274,7 @@
 					alert(error)
 				})
 			},
-			zoomOut() {
 
-			},
-			zoomIn() {
-
-			},
-
-			touchstartView(event) {
-				this.canMove = true
-				this.initPageX = event.pageX
-				this.initPageY = event.pageY
-				this.oldMarginLeft = this.orgTreeOffsetLeft
-				this.oldMarginTop = this.orgTreeOffsetTop
-				on(document, 'touchmove', this.touchmoveView)
-				on(document, 'touchend', this.touchendView)
-			},
 			touchmoveView() {
 				if (!this.canMove) return
 				const {
@@ -348,17 +370,27 @@
 
 		}
 
-		.mapClass {
-			position: relative;
+		// 		.mapClass {
+		// 			position: relative;
+		// 			width: 100%;
+		// 			height: 100%;
+		// 			overflow: auto;
+		// 
+		// 		}
+		#mapBgDiv1 {
+			position: absolute;
+			top: 50%;
+			left: 50%;
 			width: 100%;
-			height: 100%;
-			overflow: auto;
+			// height: 100%
+
 
 		}
-		.map1Style .ivu-card-body{
-			padding: 0;
-			margin: 0
-			
-		}
+
+		// .map1Style .ivu-card-body{
+		// 	padding: 0;
+		// 	margin: 0
+		// 	
+		// }
 	}
 </style>

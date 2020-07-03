@@ -1,19 +1,20 @@
 <template>
-	<div style="height: 100%;">
-		<div v-show="!editor" ref="maps1" style="height:100%;overflow:auto;position: relative;">
-			<Card ref="map1" style="overflow:auto;height:100%;background: #dcdee2;position: relative;">
-				<div :style="mapStyle" @mousedown="mousedownView" @touchstart="touchstartView" id="mapBgDiv1" ref="mapBgDiv1" class="mapClass">
-					<img id="mapBgImg1" ref="mapBgImg1" :src="mapBgImgUrl" style="width:100%;z-index: 1;height: 100%;" draggable="false" />
-					<div v-for="item in rtuImgList" :key="item.rtuNumber" class="drag1" :style="{top:item.heightScale+'%',left:item.widthScale+'%'}">
-						<Poptip :title="item.rtuNumber" @on-popper-show="getRtuDataInfo(item)">
-							 <div slot="content">
-								 <div style="font-size: 0.75rem;" v-for="(item , index) in parameterDataList" :key="index"><span>{{item.parameterName}}:{{item.value}}{{item.unit}}</span></div>
-							</div>
-							<img :src="item.rtuTypeImgUrl" class="rtu1" :alt="item.rtuNumber" draggable="false" />
-						</Poptip>
-					</div>
+	<div style="height: 100%;overflow: hidden;">
+		<div v-show="!editor" ref="maps1" style="height:100%;position: relative;overflow: hidden;background: #dcdee2;">
+			<!-- <div ref="map1" > -->
+			<div :style="mapStyle" @mousewheel="mouseWheel" @mousedown="mousedownView" @touchstart="touchstartView" id="mapBgDiv1"
+			 ref="mapBgDiv1">
+				<img id="mapBgImg1" ref="mapBgImg1" :src="mapBgImgUrl" style="height: 100%;" draggable="false" />
+				<div v-for="item in rtuImgList" :key="item.rtuNumber" class="drag1" :style="{top:item.heightScale+'%',left:item.widthScale+'%'}">
+					<Poptip :title="item.rtuNumber" @on-popper-show="getRtuDataInfo(item)">
+						<div slot="content">
+							<div style="font-size: 0.75rem;" v-for="(item , index) in parameterDataList" :key="index"><span>{{item.parameterName}}:{{item.value}}{{item.unit}}</span></div>
+						</div>
+						<img :src="item.rtuTypeImgUrl" class="rtu1" :alt="item.rtuNumber" draggable="false" />
+					</Poptip>
 				</div>
-			</Card>
+			</div>
+			<!-- </div> -->
 			<div style="position: absolute;right:5%;text-align: center;top:1.25rem;z-index: 100;">
 				<Tooltip :content="value ? '退出全屏' : '全屏'" placement="bottom">
 					<Icon @click.native="handleFullscreen" :type="value ? 'md-contract' : 'md-expand'" :size="23"></Icon>
@@ -28,11 +29,11 @@
 						<Icon type="md-refresh" :size="20" color="#fff" />
 					</button>
 				</div>
-			
+
 			</div>
 
 			<div class="zoom-box" style="position: absolute;bottom: 3.125rem;right:5%;">
-			
+
 				<zoom-controller v-model="zoom" :min="20" :max="300"></zoom-controller>
 			</div>
 			<Modal title="农场列表" v-model="showMapList" footer-hide>
@@ -42,10 +43,10 @@
 				<Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
 				<div>加载中...</div>
 			</Spin>
-			
+
 		</div>
 		<farm-form v-if="editor" :mapId="mapId" @go-back="goBack" style="z-index: 100;"></farm-form>
-		
+
 	</div>
 </template>
 
@@ -91,25 +92,26 @@
 				canMove: false,
 				mapId: null,
 				checkId: null,
-				showSpin:false,
-				parameterDataList:[]
+				showSpin: false,
+				parameterDataList: []
 			}
 		},
 		computed: {
 			mapStyle() {
 				return {
-					transform: `translate(0%, 0%) scale(${this.zoom/100}, ${
+					transform: `translate(-50%, -50%) scale(${this.zoom/100}, ${
 		        this.zoom/100
 		      })`,
 					marginLeft: `${this.orgTreeOffsetLeft}px`,
-					marginTop: `${this.orgTreeOffsetTop}px`
+					marginTop: `${this.orgTreeOffsetTop}px`,
 				}
 			}
 		},
+
 		methods: {
-			getRtuDataInfo(item){
+			getRtuDataInfo(item) {
 				this.showSpin = true
-				this.parameterDataList=[]
+				this.parameterDataList = []
 				getRtuData(item.rtuNumber).then(res => {
 					const data = res.data
 					this.showSpin = false
@@ -117,16 +119,16 @@
 						// console.log(data)
 						// this.iaRtu = data.iaRtu
 						const rtuData = data.rtuData
-						if(rtuData.parameterDataList != null && rtuData.parameterDataList){
-							this.parameterDataList = rtuData.parameterDataList.map(item=>{
+						if (rtuData.parameterDataList != null && rtuData.parameterDataList) {
+							this.parameterDataList = rtuData.parameterDataList.map(item => {
 								// if()
 								return item
 							})
-							
+
 						}
-						
+
 					} else {
-						this.$Message.error(item.rtuNumber+data.errorMessage)
+						this.$Message.error(item.rtuNumber + data.errorMessage)
 					}
 				}).catch(error => {
 					this.showSpin = false
@@ -140,7 +142,15 @@
 
 			},
 
-			mouseWheel() {
+			mouseWheel(event) {
+				// console.log(event)
+				if (event.deltaY < 0) {
+					if (this.zoom > 100)
+						this.zoom -= 20
+				} else {
+					if (this.zoom < 300)
+						this.zoom += 20
+				}
 
 			},
 			editorMapInfo(row) {
@@ -158,11 +168,11 @@
 					this.mapId = row.id
 					this.editor = true
 				}
-				if(val == 'del') {
-					if(this.checkId == row.id){
+				if (val == 'del') {
+					if (this.checkId == row.id) {
 						this.checkId = null
 					}
-					
+
 				}
 
 				// alert(row)
@@ -192,13 +202,16 @@
 				this.showMapList = true
 
 			},
-			resetParameters(){
+			resetParameters() {
 				this.orgTreeOffsetLeft = 0
 				this.orgTreeOffsetLeft = 0
 				this.zoom = 100
 			},
 			getCurRtusMap() {
 				this.resetParameters()
+				this.$nextTick(function() {
+					this.$refs.mapBgDiv1.style.height = this.$refs.maps1.clientHeight + 'px'
+				})
 				if (this.checkId != null) {
 					this.showMap(this.checkId)
 				} else {
@@ -213,9 +226,12 @@
 					this.showSpin = false
 					const data = res.data
 					if (data.success == 1) {
-						if(data.map != null && data.iaRtuList != null){
+						if (data.map != null && data.iaRtuList != null) {
 							const map = data.map
 							const iaRtuList = data.iaRtuList
+							this.$nextTick(function() {
+								this.$refs.mapBgDiv1.style.height = this.$refs.maps1.clientHeight + 'px'
+							})
 							this.rtuImgList = iaRtuList
 							// console.log(this.rtuImgList)
 							this.mapBgImgUrl = map.bgImgUrl
@@ -235,33 +251,35 @@
 
 			},
 			mousedownView(event) {
+
 				this.canMove = true
 				this.initPageX = event.pageX
 				this.initPageY = event.pageY
 				this.oldMarginLeft = this.orgTreeOffsetLeft
 				this.oldMarginTop = this.orgTreeOffsetTop
-				on(document, 'mousemove', this.mousemoveView)
-				on(document, 'mouseup', this.mouseupView)
+				let that = this
+				// on(document, 'mousemove', this.mousemoveView)
+				// on(document, 'mouseup', this.mouseupView)
+				document.onmousemove = function(event) {
+					if (!that.canMove) return
+					const {
+						pageX,
+						pageY
+					} = event
+					that.orgTreeOffsetLeft = that.oldMarginLeft + pageX - that.initPageX
+					that.orgTreeOffsetTop = that.oldMarginTop + pageY - that.initPageY
+				};
+				document.onmouseup = function() {
+					that.canMove = false
+				}
 			},
-			mousemoveView(event) {
-				// console.log(this.orgTreeOffsetLeft)
-				// console.log(this.orgTreeOffsetTop)
-				if (!this.canMove) return
-				const {
-					pageX,
-					pageY
-				} = event
-				this.orgTreeOffsetLeft = this.oldMarginLeft + pageX - this.initPageX
-				this.orgTreeOffsetTop = this.oldMarginTop + pageY - this.initPageY
-			},
-			mouseupView() {
-				this.canMove = false
-				off(document, 'mousemove', this.mousemoveView)
-				off(document, 'mouseup', this.mouseupView)
-			},
+			
 			handleFullscreen() {
 				// let main = main.body
 				let main = this.$refs.maps1
+				// this.$nextTick(function() {
+				// this.$refs.mapBgDiv1.style.height = this.$refs.maps1.clientHeight + 'px'
+				// })
 				if (this.value) {
 					this.value = false
 					if (document.exitFullscreen) {
@@ -273,9 +291,12 @@
 					} else if (document.msExitFullscreen) {
 						document.msExitFullscreen()
 					}
+					// this.$refs.mapBgDiv1.style.height = this.$refs.maps1.clientHeight + 'px'
+
 
 				} else {
 					this.value = true
+					// this.$refs.mapBgDiv1.style.height = this.$refs.maps1.clientHeight + 'px'
 					if (main.requestFullscreen) {
 						main.requestFullscreen()
 					} else if (main.mozRequestFullScreen) {
@@ -285,12 +306,28 @@
 					} else if (main.msRequestFullscreen) {
 						main.msRequestFullscreen()
 					}
+
 				}
+
+				// this.$nextTick(function() {
+				// 	this.$refs.mapBgDiv1.style.height = this.$refs.maps1.clientHeight + 'px'
+				// })
 			},
 		},
 		created() {
+			// this.getTopMapInfo()
+		},
+		mounted() {
 			this.getTopMapInfo()
-		}
+			// this.getCurRtusMap()
+			// alert(this.$refs.maps1.clientHeight)
+
+			// this.$refs.mapBgDiv1.style.height = this.$refs.maps1.clientHeight + 'px'
+			// alert(this.$refs.mapBgDiv1.style.height)
+			// console.log(this.$refs.map1.$el.clientHeight)
+		},
+
+
 	}
 </script>
 
@@ -344,21 +381,20 @@
 		width: 100%;
 		height: 100%;
 		z-index: 2;
-		
+
 	}
 
 	.drag1 {
 		position: absolute;
-		 width:5%;
-		 // height: 3.125rem
+		width: 5%;
+		// height: 3.125rem
 		//  min-width: 1.25rem;
 		// max-width: 4.375rem;
 	}
 
-	.mapClass {
-		position: relative;
-		 width: 100%;
-		height: 100%;
-		 overflow: auto;
+	#mapBgDiv1 {
+		position: absolute;
+		top: 50%;
+		left: 50%
 	}
 </style>
