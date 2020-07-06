@@ -309,7 +309,7 @@
 		/* width: 100px; */
 		/* display: inline-block; */
 		position: absolute;
-		width: 5%;
+		width: 2%;
 		/* height: 4%; */
 		/* background: #DB7093; */
 		/* overflow: hidden; */

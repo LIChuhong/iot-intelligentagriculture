@@ -2,8 +2,7 @@
 	<div style="height: 100%;overflow: hidden;">
 		<div v-show="!editor" ref="maps1" style="height:100%;position: relative;overflow: hidden;background: #dcdee2;">
 			<!-- <div ref="map1" > -->
-			<div :style="mapStyle" @mousewheel="mouseWheel" @mousedown="mousedownView" @touchstart="touchstartView" id="mapBgDiv1"
-			 ref="mapBgDiv1">
+			<div :style="mapStyle" @mousewheel="mouseWheel" @mousedown="mousedownView" @touchstart="touchstartView" id="mapBgDiv1" ref="mapBgDiv1">
 				<img id="mapBgImg1" ref="mapBgImg1" :src="mapBgImgUrl" style="height: 100%;" draggable="false" />
 				<div v-for="item in rtuImgList" :key="item.rtuNumber" class="drag1" :style="{top:item.heightScale+'%',left:item.widthScale+'%'}">
 					<Poptip :title="item.rtuNumber" @on-popper-show="getRtuDataInfo(item)">
@@ -12,8 +11,11 @@
 						</div>
 						<img :src="item.rtuTypeImgUrl" class="rtu1" :alt="item.rtuNumber" draggable="false" />
 					</Poptip>
+
 				</div>
+
 			</div>
+
 			<!-- </div> -->
 			<div style="position: absolute;right:5%;text-align: center;top:1.25rem;z-index: 100;">
 				<Tooltip :content="value ? '退出全屏' : '全屏'" placement="bottom">
@@ -93,19 +95,39 @@
 				mapId: null,
 				checkId: null,
 				showSpin: false,
-				parameterDataList: []
+				parameterDataList: [],
+				mapHeight: 0,
+				mapWidth: 0
+
+			}
+		},
+		watch: {
+			zoom(newVal, oldVal) {
+				console.log(newVal)
+				console.log(oldVal)
+				if (newVal < oldVal) {
+					this.mapHeight = this.mapHeight * (oldVal - 20) / oldVal
+				}
+				if (newVal > oldVal) {
+					this.mapHeight = this.mapHeight * (oldVal + 20) / oldVal
+				}
+
 			}
 		},
 		computed: {
 			mapStyle() {
 				return {
-					transform: `translate(-50%, -50%) scale(${this.zoom/100}, ${
-		        this.zoom/100
-		      })`,
+					// transform: `translate(-50%, -50%) scale(${this.zoom/100}, ${
+					//      this.zoom/100
+					//    })`,
+					transform: `translate(-50%, -50%)`,
+					height: `${this.mapHeight}px`,
+					// width: `${this.mapWidth}px`,
 					marginLeft: `${this.orgTreeOffsetLeft}px`,
 					marginTop: `${this.orgTreeOffsetTop}px`,
 				}
-			}
+			},
+
 		},
 
 		methods: {
@@ -145,11 +167,18 @@
 			mouseWheel(event) {
 				// console.log(event)
 				if (event.deltaY < 0) {
-					if (this.zoom > 100)
+					if (this.zoom > 100) {
+						this.mapHeight = this.mapHeight * (this.zoom - 20) / this.zoom
+						this.mapWidth = this.mapWidth * (this.zoom - 20) / this.zoom
 						this.zoom -= 20
+					}
+
 				} else {
-					if (this.zoom < 300)
+					if (this.zoom < 300) {
+						this.mapHeight = this.mapHeight * (this.zoom + 20) / this.zoom
+						this.mapWidth = this.mapWidth * (this.zoom + 20) / this.zoom
 						this.zoom += 20
+					}
 				}
 
 			},
@@ -211,6 +240,7 @@
 				this.resetParameters()
 				this.$nextTick(function() {
 					this.$refs.mapBgDiv1.style.height = this.$refs.maps1.clientHeight + 'px'
+
 				})
 				if (this.checkId != null) {
 					this.showMap(this.checkId)
@@ -231,6 +261,8 @@
 							const iaRtuList = data.iaRtuList
 							this.$nextTick(function() {
 								this.$refs.mapBgDiv1.style.height = this.$refs.maps1.clientHeight + 'px'
+								this.mapHeight = this.$refs.maps1.clientHeight
+								// this.mapWidth = 
 							})
 							this.rtuImgList = iaRtuList
 							// console.log(this.rtuImgList)
@@ -273,13 +305,10 @@
 					that.canMove = false
 				}
 			},
-			
+
 			handleFullscreen() {
 				// let main = main.body
 				let main = this.$refs.maps1
-				// this.$nextTick(function() {
-				// this.$refs.mapBgDiv1.style.height = this.$refs.maps1.clientHeight + 'px'
-				// })
 				if (this.value) {
 					this.value = false
 					if (document.exitFullscreen) {
@@ -309,22 +338,11 @@
 
 				}
 
-				// this.$nextTick(function() {
-				// 	this.$refs.mapBgDiv1.style.height = this.$refs.maps1.clientHeight + 'px'
-				// })
 			},
 		},
-		created() {
-			// this.getTopMapInfo()
-		},
+		created() {},
 		mounted() {
 			this.getTopMapInfo()
-			// this.getCurRtusMap()
-			// alert(this.$refs.maps1.clientHeight)
-
-			// this.$refs.mapBgDiv1.style.height = this.$refs.maps1.clientHeight + 'px'
-			// alert(this.$refs.mapBgDiv1.style.height)
-			// console.log(this.$refs.map1.$el.clientHeight)
 		},
 
 
@@ -332,19 +350,10 @@
 </script>
 
 <style lang="less">
-	// 	.zoom-btn {
-	// 		/* margin: 1.25rem 0.625rem; */
-	// 		background-color: #fff;
-	// 		border-radius: 50%;
-	// 		cursor: pointer;
-	// 		margin-top: 20px;
-	// 	}
-	// 
-	// 	.zoom-btn .icon {
-	// 		color: rgb(124, 180, 41);
-	// 		font-size: 30px;
-	// 		/* width: 10%; */
-	// 	}
+	html,body{
+		padding: 0;
+		margin: 0
+	}
 	.trans(@duration) {
 		transition:~"all @{duration} ease-in";
 	}
@@ -375,26 +384,37 @@
 
 	.demo-spin-icon-load {
 		animation: ani-demo-spin 1s linear infinite;
+
+
 	}
 
 	.rtu1 {
 		width: 100%;
 		height: 100%;
 		z-index: 2;
+		// display: inline
+		-moz-transform: none;
+		-webkit-transform: none;
+		-o-transform: none;
+		-ms-transform: none;
+		transform: none;
 
 	}
 
 	.drag1 {
 		position: absolute;
-		width: 5%;
-		// height: 3.125rem
-		//  min-width: 1.25rem;
-		// max-width: 4.375rem;
+		width: 2%;
+		-moz-transform: none;
+		-webkit-transform: none;
+		-o-transform: none;
+		-ms-transform: none;
+		transform: none;
 	}
 
 	#mapBgDiv1 {
 		position: absolute;
 		top: 50%;
-		left: 50%
+		left: 50%;
+
 	}
 </style>
