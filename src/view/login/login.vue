@@ -74,12 +74,24 @@
 								//alert(e)
 							}
 						}
+						//getEnv获取环境
+						wx.miniProgram.getEnv(function(res) {
+							if (res.miniprogram) {
+								//如果当前是小程序环境
+								wx.miniProgram.postMessage({
+									data: {
+										userName: userName,
+										password: password
+									}
+								})
+							}
+						})
 						// console.log(1)
 						this.getUserInfo().then(res => {
 							// console.log(res)
 							if (res.success == 1) {
 								// alert(this.$store.state.app.iotInterFace)
-								if (this.$store.state.app.iotInterFace == 0 ) {
+								if (this.$store.state.app.iotInterFace == 0) {
 									// alert(1)
 									this.$router.push({
 										name: this.$config.homeName
