@@ -5,47 +5,73 @@
 			<h2>自然农场大数据平台</h2>
 		</div>
 		<div class="mapContent">
+			<!-- <map-line style="height: 100%;width: 100%;"></map-line> -->
 
 		</div>
 		<div class="publicStyle minh lDistance bTop">
 			<img src="../../../assets/images/map/soil1.png" />
 			<div class="titleImg">
-				<img src="../../../assets/images/map/soil.png" />
+				<img src="../../../assets/images/map/watch.png" />
 			</div>
 		</div>
 		<div class="publicStyle maxh lDistance bBottom">
 			<img src="../../../assets/images/map/soil1.png" />
 			<div class="titleImg">
-				<img src="../../../assets/images/map/soil.png" />
+				<img src="../../../assets/images/map/curve.png" />
 			</div>
-			<div class="titleImg" style="top:10%;height: 90%;overflow: hidden;background: #00BFFF;line-height: 1;">
-				<div style="height: 50%;background: #19BE6B;">
-					<div style="display: flex;justify-content:space-around;text-align: center;">
-						<div style="width: 20%;background: #00BFFF;">aha</div>
-						<div style="width: 20%;">aha</div>
-						<div style="width: 20%;">aha</div>
-					
-						
+			<div class="titleImg" style="top:10%;height: 90%;overflow: hidden;line-height: 1;font-size: 0.625rem;">
+				<div style="height: 50%;overflow: hidden;">
+					<div class="curve">
+						<div style="width: 20%;background: #00BFFF;">降雨量</div>
+						<div style="width: 20%;">空气湿度</div>
+						<div style="width: 20%;">空气温度</div>
+						<div style="width: 20%;">大气压</div>
+						<div style="width: 20%;">水分</div>
+					</div>
+					<!-- <div style="overflow: hidden;height: 100%;"> -->
+					<div style=" float: left;width: 50%;height: 100%;">
+						<map-bar class="curveEchart" :barColor="'#0075ff'"></map-bar>
+					</div>
+					<div style=" float: left;width: 50%;height: 100%;">
+						<map-line class="curveEchart" :legendName="'近一月降雨量'" :lineColor="'#00a7fe'"></map-line>
+					</div>
+					<!-- </div> -->
+				</div>
+				<div style="height: 50%;overflow: hidden;">
+					<div class="curve">
+						<!-- <div style="width: 20%;background: #00BFFF;">降雨量</div> -->
+						<div style="width: 20%;background: #00BFFF;">土壤湿度</div>
+						<div style="width: 20%;">土壤温度</div>
+						<div style="width: 20%;">盐度</div>
+						<!-- <div style="width: 20%;">水分</div> -->
+					</div>
+					<!-- <div style="overflow: hidden;height: 100%;"> -->
+					<div style=" float: left;width: 50%;height: 100%;">
+						<map-line class="curveEchart" :legendName="'近一年日平均曲线'" :lineColor="'#c624e6'"></map-line>
+					</div>
+					<div style=" float: left;width: 50%;height: 100%;">
+						<map-line class="curveEchart" :legendName="'近一月日平均曲线'" :lineColor="'#11cdab'"></map-line>
 					</div>
 				</div>
-			</div>
+				<!-- </div> -->
 
+			</div>
 		</div>
 
 		<div class="publicStyle maxh rDistance bTop">
 			<img src="../../../assets/images/map/soil1.png" />
 			<div class="titleImg">
-				<img src="../../../assets/images/map/soil.png" />
+				<img src="../../../assets/images/map/weather.png" />
 			</div>
 			<div class="titleImg" style="top:10%;height: 90%;overflow: hidden;">
-				<div v-for="item in 10" :key="item" style="width: 50%;padding:2% 5% 0;overflow: hidden;float: left;height: 20%;">
+				<div v-for="item in mlList" :key="item" style="width: 50%;padding:2% 5% 0;overflow: hidden;float: left;height: 20%;">
 
 					<div style="float:left;height: 100%;">
-						<Icon type=" iconfont icon-ic_kqwd" size="30" color="red" />
+						<Icon :type="item.icon" size="35" :color="item.iconColor" />
 					</div>
 					<div style="overflow: hidden;float: left;height: 100%;line-height: 1;">
-						<p style="font-size: 1rem;">36C</p>
-						<p style="font-size: 10px;">空气温度</p>
+						<p style="font-size: 1rem;">{{item.value}}</p>
+						<p style="font-size:0.75rem;color: #31abe3;margin-top: 0.125rem;">{{item.name}}</p>
 					</div>
 				</div>
 			</div>
@@ -56,15 +82,14 @@
 				<img src="../../../assets/images/map/soil.png" />
 			</div>
 			<div class="titleImg" style="top:10%;height: 90%;overflow: hidden;">
-				<div v-for="item in 3" :key="item" style="float: left;width: 33%;height: 100%;text-align: center;line-height: 1;">
-					<div style="margin-top: 40%;">
+				<div v-for="item in soilList" :key="item" style="float: left;width: 33%;height: 100%;text-align: center;line-height: 1;">
+					<div style="margin-top: 35%;">
 
-						<Icon type=" iconfont icon-ic_kqwd" size="30" color="red" />
-						<p style="font-size: 1rem;">36C</p>
-						<p style="font-size: 10px;">温度</p>
+						<Icon :type="item.icon" size="40" :color="item.iconColor" />
+						<p style="font-size: 1rem;">{{item.value}}</p>
+						<p style="font-size:0.75rem;color: #31abe3;margin-top: 0.125rem;">{{item.name}}</p>
 					</div>
 				</div>
-
 			</div>
 		</div>
 	</div>
@@ -73,13 +98,101 @@
 
 <script>
 	import mapBg from '@/assets/images/mapBg.png'
+	import MapBar from '../component/mapBar.vue'
+	import MapLine from '../component/mapLine.vue'
 	export default {
-
+		components: {
+			MapBar,
+			MapLine
+		},
 		data() {
 			return {
-				mapBg
+				mapBg,
+				// screenWidth:null
+				mlList: [], //气象列表
+				soilList:[],//土壤列表
 			}
+		},
+		mounted() {
+			this.soilList=[{
+				name: '温度',
+				icon: ' iconfont icon-ic_kqwd',
+				iconColor: '#0187fc',
+				value: '36℃'
+			},{
+				name: '水分',
+				icon: ' iconfont icon-ic_trsf',
+				iconColor: '#8f3ef7',
+				value: '23%'
+			},{
+				name: '养分',
+				icon: ' iconfont icon-ic_zyl',
+				iconColor: '#06cce4',
+				value: '1.8ms/cm'
+			}],
+			this.mlList = [{
+				name: '空气温度',
+				icon: ' iconfont icon-ic_kqwd',
+				iconColor: '#0187fc',
+				value: '36℃'
+			},
+			{
+				name: '当天降雨量',
+				icon: ' iconfont icon-ic_dtjyl',
+				iconColor: '#16c8c4',
+				value: '11mm'
+			},
+			{
+				name: '空气湿度',
+				icon: ' iconfont icon-ic_kqsd',
+				iconColor: '#16c8c4',
+				value: '63%'
+			},
+			{
+				name: '瞬时降雨量',
+				icon: ' iconfont icon-ic_ssyl',
+				iconColor: '#fc9143',
+				value: '0mm'
+			},
+			{
+				name: '大气压',
+				icon: ' iconfont icon-ic_dqy',
+				iconColor: '#fc9143',
+				value: '999百帕'
+			},
+			{
+				name: '昨天降雨量',
+				icon: ' iconfont icon-ic_zryl',
+				iconColor: '#ffce6b',
+				value: '23mm'
+			},
+			{
+				name: '风速',
+				icon: ' iconfont icon-ic_fs',
+				iconColor: '#ffce6b',
+				value: '3.1m/s'
+			},
+			{
+				name: '总降雨量',
+				icon: ' iconfont icon-ic_zyl',
+				iconColor: '#0187fc',
+				value: '236mm'
+			},
+			{
+				name: '风向',
+				icon: ' iconfont icon-ic_fx',
+				iconColor: '#67c300',
+				value: '西南风2级'
+			},
+			{
+				name: '土壤水分',
+				icon: ' iconfont icon-ic_trsf',
+				iconColor: '#4ad595',
+				value: '26%'
+			}
+			]
 		}
+
 	}
 </script>
 
@@ -100,6 +213,7 @@
 	.map .maxh {
 		height: 58%
 	}
+
 
 	.map .minh {
 		height: 30%
@@ -130,6 +244,19 @@
 	}
 
 	.publicStyle img {
+		width: 100%;
+		height: 100%
+	}
+
+	.curve {
+		display: flex;
+		justify-content: space-around;
+		text-align: center;
+		font-size: 0.625rem;
+		padding-top: 0.3125rem;
+	}
+
+	.curveEchart {
 		width: 100%;
 		height: 100%
 	}
