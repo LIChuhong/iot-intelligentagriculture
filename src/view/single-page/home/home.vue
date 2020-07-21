@@ -6,7 +6,27 @@
 		</div>
 		<div class="mapContent">
 			<!-- <map-line style="height: 100%;width: 100%;"></map-line> -->
-
+			<div style="position: absolute;z-index: 1;width: 45%;top:2%;left: 2%;height:auto;overflow: hidden;height: 25%;">
+				<img src="../../../assets/images/map/warningCurve.png" style="width: 100%;position: absolute;height: 100%;" />
+				<div style="position: absolute;top:0;padding: 0.625rem;">
+					<img src="../../../assets/images/map/wc.png" />
+					<span style="color: #00b8ff;padding-left:0.3125rem;font-size: 0.75rem;">报警信息</span>
+				</div>
+				<div style="position: absolute;top:40%;width: 100%;text-align: center;color: #98b8db;">
+					<p>暂无信息</p>
+				</div>
+			</div>
+			<div style="position: absolute;z-index: 1;width: 45%;top:2%;right: 2%;height:auto;overflow: hidden;height: 25%;">
+				<img src="../../../assets/images/map/warningCurve.png" style="width: 100%;position: absolute;height: 100%;" />
+				<div style="position: absolute;top:0;padding: 0.625rem;">
+					<img src="../../../assets/images/map/wc.png" height="100%" />
+					<span style="color: #00b8ff;padding-left:0.3125rem;font-size: 0.75rem;">当天空气、土壤温度变化曲线</span>
+				</div>
+				<div style="position: absolute;width: 100%;text-align: center;height: 100%;">
+					<map-temper style="width: 100%;height: 100%;"></map-temper>
+				</div>
+			</div>
+			<map-baidu style="width: 100%;height: 100%;"></map-baidu>
 		</div>
 		<div class="publicStyle minh lDistance bTop">
 			<img src="../../../assets/images/map/soil1.png" />
@@ -98,99 +118,103 @@
 
 <script>
 	import mapBg from '@/assets/images/mapBg.png'
-	import MapBar from '../component/mapBar.vue'
-	import MapLine from '../component/mapLine.vue'
+	import MapBar from '../component/map-bar.vue'
+	import MapLine from '../component/map-line.vue'
+	import MapBaidu from '../component/map-baidu.vue'
+	import MapTemper from '../component/map-temper.vue'
 	export default {
 		components: {
 			MapBar,
-			MapLine
+			MapLine,
+			MapBaidu,
+			MapTemper
 		},
 		data() {
 			return {
 				mapBg,
 				// screenWidth:null
 				mlList: [], //气象列表
-				soilList:[],//土壤列表
+				soilList: [], //土壤列表
 			}
 		},
 		mounted() {
-			this.soilList=[{
-				name: '温度',
-				icon: ' iconfont icon-ic_kqwd',
-				iconColor: '#0187fc',
-				value: '36℃'
-			},{
-				name: '水分',
-				icon: ' iconfont icon-ic_trsf',
-				iconColor: '#8f3ef7',
-				value: '23%'
-			},{
-				name: '养分',
-				icon: ' iconfont icon-ic_zyl',
-				iconColor: '#06cce4',
-				value: '1.8ms/cm'
-			}],
-			this.mlList = [{
-				name: '空气温度',
-				icon: ' iconfont icon-ic_kqwd',
-				iconColor: '#0187fc',
-				value: '36℃'
-			},
-			{
-				name: '当天降雨量',
-				icon: ' iconfont icon-ic_dtjyl',
-				iconColor: '#16c8c4',
-				value: '11mm'
-			},
-			{
-				name: '空气湿度',
-				icon: ' iconfont icon-ic_kqsd',
-				iconColor: '#16c8c4',
-				value: '63%'
-			},
-			{
-				name: '瞬时降雨量',
-				icon: ' iconfont icon-ic_ssyl',
-				iconColor: '#fc9143',
-				value: '0mm'
-			},
-			{
-				name: '大气压',
-				icon: ' iconfont icon-ic_dqy',
-				iconColor: '#fc9143',
-				value: '999百帕'
-			},
-			{
-				name: '昨天降雨量',
-				icon: ' iconfont icon-ic_zryl',
-				iconColor: '#ffce6b',
-				value: '23mm'
-			},
-			{
-				name: '风速',
-				icon: ' iconfont icon-ic_fs',
-				iconColor: '#ffce6b',
-				value: '3.1m/s'
-			},
-			{
-				name: '总降雨量',
-				icon: ' iconfont icon-ic_zyl',
-				iconColor: '#0187fc',
-				value: '236mm'
-			},
-			{
-				name: '风向',
-				icon: ' iconfont icon-ic_fx',
-				iconColor: '#67c300',
-				value: '西南风2级'
-			},
-			{
-				name: '土壤水分',
-				icon: ' iconfont icon-ic_trsf',
-				iconColor: '#4ad595',
-				value: '26%'
-			}
-			]
+			this.soilList = [{
+					name: '温度',
+					icon: ' iconfont icon-ic_kqwd',
+					iconColor: '#0187fc',
+					value: '36℃'
+				}, {
+					name: '水分',
+					icon: ' iconfont icon-ic_trsf',
+					iconColor: '#8f3ef7',
+					value: '23%'
+				}, {
+					name: '养分',
+					icon: ' iconfont icon-ic_yf',
+					iconColor: '#06cce4',
+					value: '1.8ms/cm'
+				}],
+				this.mlList = [{
+						name: '空气温度',
+						icon: ' iconfont icon-ic_kqwd',
+						iconColor: '#0187fc',
+						value: '36℃'
+					},
+					{
+						name: '当天降雨量',
+						icon: ' iconfont icon-ic_dtjyl',
+						iconColor: '#16c8c4',
+						value: '11mm'
+					},
+					{
+						name: '空气湿度',
+						icon: ' iconfont icon-ic_kqsd',
+						iconColor: '#16c8c4',
+						value: '63%'
+					},
+					{
+						name: '瞬时降雨量',
+						icon: ' iconfont icon-ic_ssyl',
+						iconColor: '#fc9143',
+						value: '0mm'
+					},
+					{
+						name: '大气压',
+						icon: ' iconfont icon-ic_dqy',
+						iconColor: '#fc9143',
+						value: '999百帕'
+					},
+					{
+						name: '昨天降雨量',
+						icon: ' iconfont icon-ic_zryl',
+						iconColor: '#ffce6b',
+						value: '23mm'
+					},
+					{
+						name: '风速',
+						icon: ' iconfont icon-ic_fs',
+						iconColor: '#ffce6b',
+						value: '3.1m/s'
+					},
+					{
+						name: '总降雨量',
+						icon: ' iconfont icon-ic_zyl',
+						iconColor: '#0187fc',
+						value: '236mm'
+					},
+					{
+						name: '风向',
+						icon: ' iconfont icon-ic_fx',
+						iconColor: '#67c300',
+						value: '西南风2级'
+					},
+					{
+						name: '土壤水分',
+						icon: ' iconfont icon-ic_trsf',
+						iconColor: '#4ad595',
+						value: '26%'
+					}
+				]
 		}
 
 	}
@@ -274,6 +298,7 @@
 		width: 40%;
 		left: 30%;
 		bottom: 3%;
+		// height: 100%
 		// background: #00BFFF;
 	}
 
