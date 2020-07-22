@@ -6,27 +6,27 @@
 		</div>
 		<div class="mapContent">
 			<!-- <map-line style="height: 100%;width: 100%;"></map-line> -->
-			<div style="position: absolute;z-index: 1;width: 45%;top:2%;left: 2%;height:auto;overflow: hidden;height: 25%;">
-				<img src="../../../assets/images/map/warningCurve.png" style="width: 100%;position: absolute;height: 100%;" />
-				<div style="position: absolute;top:0;padding: 0.625rem;">
+			<div class="compent" style="left: 2%">
+				<img src="../../../assets/images/map/warningCurve.png" class="img1" />
+				<div class="title">
 					<img src="../../../assets/images/map/wc.png" />
-					<span style="color: #00b8ff;padding-left:0.3125rem;font-size: 0.75rem;">报警信息</span>
+					<span>报警信息</span>
 				</div>
 				<div style="position: absolute;top:40%;width: 100%;text-align: center;color: #98b8db;">
 					<p>暂无信息</p>
 				</div>
 			</div>
-			<div style="position: absolute;z-index: 1;width: 45%;top:2%;right: 2%;height:auto;overflow: hidden;height: 25%;">
-				<img src="../../../assets/images/map/warningCurve.png" style="width: 100%;position: absolute;height: 100%;" />
-				<div style="position: absolute;top:0;padding: 0.625rem;">
+			<div class="compent" style="right: 2%;">
+				<img src="../../../assets/images/map/warningCurve.png" class="img1" />
+				<div class="title">
 					<img src="../../../assets/images/map/wc.png" height="100%" />
-					<span style="color: #00b8ff;padding-left:0.3125rem;font-size: 0.75rem;">当天空气、土壤温度变化曲线</span>
+					<span>当天空气、土壤温度变化曲线</span>
 				</div>
-				<div style="position: absolute;width: 100%;text-align: center;height: 100%;">
-					<map-temper style="width: 100%;height: 100%;"></map-temper>
+				<div style="position: absolute;width: 100%;height: 100%;">
+					<map-temper class="curveEchart"></map-temper>
 				</div>
 			</div>
-			<map-baidu style="width: 100%;height: 100%;"></map-baidu>
+			<map-baidu class="curveEchart"></map-baidu>
 		</div>
 		<div class="publicStyle minh lDistance bTop">
 			<img src="../../../assets/images/map/soil1.png" />
@@ -49,13 +49,12 @@
 						<div style="width: 20%;">水分</div>
 					</div>
 					<!-- <div style="overflow: hidden;height: 100%;"> -->
-					<div style=" float: left;width: 50%;height: 100%;">
+					<div class="curve1">
 						<map-bar class="curveEchart" :barColor="'#0075ff'"></map-bar>
 					</div>
-					<div style=" float: left;width: 50%;height: 100%;">
+					<div class="curve1">
 						<map-line class="curveEchart" :legendName="'近一月降雨量'" :lineColor="'#00a7fe'"></map-line>
 					</div>
-					<!-- </div> -->
 				</div>
 				<div style="height: 50%;overflow: hidden;">
 					<div class="curve">
@@ -66,10 +65,10 @@
 						<!-- <div style="width: 20%;">水分</div> -->
 					</div>
 					<!-- <div style="overflow: hidden;height: 100%;"> -->
-					<div style=" float: left;width: 50%;height: 100%;">
+					<div class="curve1">
 						<map-line class="curveEchart" :legendName="'近一年日平均曲线'" :lineColor="'#c624e6'"></map-line>
 					</div>
-					<div style=" float: left;width: 50%;height: 100%;">
+					<div class="curve1">
 						<map-line class="curveEchart" :legendName="'近一月日平均曲线'" :lineColor="'#11cdab'"></map-line>
 					</div>
 				</div>
@@ -279,6 +278,10 @@
 		font-size: 0.625rem;
 		padding-top: 0.3125rem;
 	}
+	
+	.curve1{
+		float: left;width: 50%;height: 100%;
+	}
 
 	.curveEchart {
 		width: 100%;
@@ -300,6 +303,35 @@
 		bottom: 3%;
 		// height: 100%
 		// background: #00BFFF;
+	}
+
+	.mapContent .compent {
+		position: absolute;
+		z-index: 1;
+		width: 45%;
+		top: 2%;
+		// right: 2%;
+		// height: auto;
+		overflow: hidden;
+		height: 25%;
+	}
+
+	.compent .img1 {
+		position: absolute;
+		width: 100%;
+		height: 100%
+	}
+
+	.compent .title {
+		position: absolute;
+		top: 0;
+		padding: 0.625rem;
+	}
+
+	.title span {
+		color: '#00b8ff';
+		padding-left: 0.3125rem;
+		font-size: 0.75rem;
 	}
 
 	.map .titleText {
