@@ -1,5 +1,5 @@
 const path = require('path')
-
+const compressionPlugin = require('compression-webpack-plugin')
 const resolve = dir => {
   return path.join(__dirname, dir)
 }
@@ -25,6 +25,21 @@ module.exports = {
   // https://www.foobar.com/my-app/
   // then change this to '/my-app/'
   baseUrl: BASE_URL,
+	configureWebpack: config => {
+	  // externals: {
+	  // 	"BMap": "BMap"
+	  // }
+	  if (BASE_URL) {
+	    return {
+	      plugins: [new compressionPlugin({
+	        test: /\.js$|\.html$|.\css/, // 匹配文件名
+	        threshold: 10240, // 对超过10k的数据压缩
+	        deleteOriginalAssets: false // 不删除源文件
+	      })
+	      ]
+	    }
+	  }
+	},
   // tweak internal webpack configuration.
   // see https://github.com/vuejs/vue-cli/blob/dev/docs/webpack.md
   // 如果你不需要使用eslint，把lintOnSave设为false即可

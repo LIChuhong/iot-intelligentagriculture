@@ -42,11 +42,11 @@
 			<div class="titleImg" style="top:10%;height: 90%;overflow: hidden;line-height: 1;font-size: 0.625rem;">
 				<div style="height: 50%;overflow: hidden;">
 					<div class="curve">
-						<div style="width: 20%;background: #00BFFF;">降雨量</div>
-						<div style="width: 20%;">空气湿度</div>
-						<div style="width: 20%;">空气温度</div>
-						<div style="width: 20%;">大气压</div>
-						<div style="width: 20%;">水分</div>
+						<div v-for="(item, index) in curveList"><button @click="curveBtn($event)" class="btnColor1">降雨量</button></div>
+						<div><button>空气湿度</button></div>
+						<div ><button>空气温度</button></div>
+						<div><button>大气压</button></div>
+						<div><button>水分</button></div>
 					</div>
 					<!-- <div style="overflow: hidden;height: 100%;"> -->
 					<div class="curve1">
@@ -58,13 +58,10 @@
 				</div>
 				<div style="height: 50%;overflow: hidden;">
 					<div class="curve">
-						<!-- <div style="width: 20%;background: #00BFFF;">降雨量</div> -->
-						<div style="width: 20%;background: #00BFFF;">土壤湿度</div>
-						<div style="width: 20%;">土壤温度</div>
-						<div style="width: 20%;">盐度</div>
-						<!-- <div style="width: 20%;">水分</div> -->
+						<div><button>土壤湿度</button></div>
+						<div><button>土壤温度</button></div>
+						<div><button>盐度</button></div>
 					</div>
-					<!-- <div style="overflow: hidden;height: 100%;"> -->
 					<div class="curve1">
 						<map-line class="curveEchart" :legendName="'近一年日平均曲线'" :lineColor="'#c624e6'"></map-line>
 					</div>
@@ -134,6 +131,14 @@
 				// screenWidth:null
 				mlList: [], //气象列表
 				soilList: [], //土壤列表
+				curveList:[]
+				
+			}
+		},
+		methods:{
+			curveBtn(e){
+				 e.target.style.background = "#000000"
+				
 			}
 		},
 		mounted() {
@@ -245,6 +250,7 @@
 	.map .bTop {
 		top: 8%
 	}
+	
 
 	.map .bBottom {
 		bottom: 3%
@@ -277,6 +283,20 @@
 		text-align: center;
 		font-size: 0.625rem;
 		padding-top: 0.3125rem;
+		color: #31abe3
+	}
+	.curve button{
+		color: #31abe3;
+		background: #0d319a;
+		border:0;
+		padding: 0 0.3125rem
+		
+		
+	}
+	.curve .btnColor1{
+		// background: #000000;
+		 background-image: linear-gradient(to right, #a541ff , #3fbbfe);
+		color:#ffffff
 	}
 	
 	.curve1{
