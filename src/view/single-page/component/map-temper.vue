@@ -104,10 +104,16 @@
 					trigger: 'axis',
 					axisPointer: {
 						type: 'cross',
-						animation: false,
 						label: {
-							backgroundColor: '#505765'
-						}
+							// backgroundColor: '#6a7985',
+							lineHeight: 0,
+							fontSize: 10
+					
+						},
+					},
+					textStyle: {
+						fontSize: 12,
+						lineHeight: 0,
 					}
 				},
 				xAxis: {

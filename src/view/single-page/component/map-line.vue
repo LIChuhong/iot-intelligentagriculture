@@ -42,12 +42,20 @@
 			var data = [220, 182, 191, 234, 290, 330, 310, 123, 442, 321, 90, 149];
 			const option = {
 				tooltip: {
+					confine: true,
 					trigger: 'axis',
 					axisPointer: {
 						type: 'cross',
 						label: {
-							backgroundColor: '#6a7985'
-						}
+							// backgroundColor: '#6a7985',
+							lineHeight: 0,
+							fontSize: 10
+					
+						},
+					},
+					textStyle: {
+						fontSize: 12,
+						lineHeight: 0,
 					}
 				},
 				legend: {

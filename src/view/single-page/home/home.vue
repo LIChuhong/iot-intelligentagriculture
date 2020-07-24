@@ -10,7 +10,7 @@
 				<img src="../../../assets/images/map/warningCurve.png" class="img1" />
 				<div class="title">
 					<img src="../../../assets/images/map/wc.png" />
-					<span>报警信息</span>
+					<span style="color: #00b8ff">报警信息</span>
 				</div>
 				<div style="position: absolute;top:40%;width: 100%;text-align: center;color: #98b8db;">
 					<p>暂无信息</p>
@@ -20,7 +20,7 @@
 				<img src="../../../assets/images/map/warningCurve.png" class="img1" />
 				<div class="title">
 					<img src="../../../assets/images/map/wc.png" height="100%" />
-					<span>当天空气、土壤温度变化曲线</span>
+					<span style="color: #00b8ff">当天空气、土壤温度变化曲线</span>
 				</div>
 				<div style="position: absolute;width: 100%;height: 100%;">
 					<map-temper class="curveEchart"></map-temper>
@@ -42,13 +42,8 @@
 			<div class="titleImg" style="top:10%;height: 90%;overflow: hidden;line-height: 1;font-size: 0.625rem;">
 				<div style="height: 50%;overflow: hidden;">
 					<div class="curve">
-						<div v-for="(item, index) in curveList"><button @click="curveBtn($event)" class="btnColor1">降雨量</button></div>
-						<div><button>空气湿度</button></div>
-						<div ><button>空气温度</button></div>
-						<div><button>大气压</button></div>
-						<div><button>水分</button></div>
+						<div v-for="(item, index) in curveList" :key="item"><button @click="curveBtn(index)" :class="{btnColor1:change1 == index}">{{item.value}}</button></div>
 					</div>
-					<!-- <div style="overflow: hidden;height: 100%;"> -->
 					<div class="curve1">
 						<map-bar class="curveEchart" :barColor="'#0075ff'"></map-bar>
 					</div>
@@ -58,9 +53,7 @@
 				</div>
 				<div style="height: 50%;overflow: hidden;">
 					<div class="curve">
-						<div><button>土壤湿度</button></div>
-						<div><button>土壤温度</button></div>
-						<div><button>盐度</button></div>
+						<div v-for="(item, index) in curveList1" :key="item"><button @click="curveBtn1(index)" :class="{btnColor1:change2 == index}">{{item.value}}</button></div>
 					</div>
 					<div class="curve1">
 						<map-line class="curveEchart" :legendName="'近一年日平均曲线'" :lineColor="'#c624e6'"></map-line>
@@ -131,13 +124,48 @@
 				// screenWidth:null
 				mlList: [], //气象列表
 				soilList: [], //土壤列表
-				curveList:[]
+				curveList:[
+					{
+					value:'降雨量',
+					},
+					{
+					value:'空气湿度',
+					},
+					{
+					value:'空气温度',
+					},
+					{
+					value:'大气压',
+					},
+					{
+					value:'水分',
+					},
+					
+					],
+					curveList1:[
+						{
+						value:'土壤湿度',
+						},
+						{
+						value:'土壤温度',
+						},
+						{
+						value:'盐度',
+						}],
+				change1:0,
+				change2:0
 				
 			}
 		},
 		methods:{
-			curveBtn(e){
-				 e.target.style.background = "#000000"
+			curveBtn(index){
+				 this.change1 = index;
+				 // e.target.style.background = "#000000"
+				
+			},
+			curveBtn1(index){
+				 this.change2 = index;
+				 // e.target.style.background = "#000000"
 				
 			}
 		},
@@ -346,10 +374,11 @@
 		position: absolute;
 		top: 0;
 		padding: 0.625rem;
+		color: '#00b8ff';
 	}
 
-	.title span {
-		color: '#00b8ff';
+	.map .title span{
+		// color: '#00b8ff';
 		padding-left: 0.3125rem;
 		font-size: 0.75rem;
 	}
