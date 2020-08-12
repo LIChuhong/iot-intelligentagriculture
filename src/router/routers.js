@@ -238,6 +238,39 @@ export default [{
 			},
 		]
 	},
+	
+	{
+		path: '/warn_management',
+		name: 'warn_management',
+		meta: {
+			icon: ' iconfont icon-setVting',
+			title: '告警管理'
+		},
+		//component: Main,
+		component: resolve => require(['@/components/main'], resolve),
+		children: [{
+				path: 'add_warn',
+				name: 'add_warn',
+				meta: {
+					icon: ' iconfont icon-add',
+					title: '添加告警'
+				},
+				component: resolve => require(['@/view/page/warn-management/add-warn/add-warn.vue'], resolve)
+				//component: () => import('@/view/intelligentgarden/setting/addMenu/addMenu.vue')
+			},
+			{
+				path: 'warn_list',
+				name: 'warn_list',
+				meta: {
+					icon: ' iconfont icon-menum',
+					title: '告警列表'
+				},
+				component: resolve => require(['@/view/page/warn-management/warn-list/warn-list.vue'], resolve)
+				//component: () => import('@/view/intelligentgarden/setting/menuManagement/menuManagement.vue')
+			},
+		]
+	},
+	
 	{
 		path: '/mobile_terminal',
 		name: 'mobile_terminal',
@@ -272,7 +305,7 @@ export default [{
 				name: 'me',
 				meta: {
 					icon: ' iconfont icon-add',
-					title: '农场'
+					title: '我'
 				},
 				component: resolve => require(['@/view/m-page/me/me.vue'], resolve)
 				//component: () => import('@/view/intelligentgarden/setting/addMenu/addMenu.vue')
