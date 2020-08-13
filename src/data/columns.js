@@ -99,7 +99,7 @@ export const rtuListColumns1 = [ //手机端设备列表
 
 
 	},
-	
+
 	{
 		title: '状态',
 		slot: 'rtuState',
@@ -207,7 +207,7 @@ export const userListColumns1 = [{ //用户列表
 		align: 'center',
 		//width: 150
 	},
-	
+
 	{
 		title: '操作',
 		slot: 'action',
@@ -221,7 +221,7 @@ export const mapListColumns = [{ //农场列表
 		title: 'ID',
 		key: 'id',
 		align: 'center',
-		 width: 70
+		width: 70
 	},
 	{
 		title: '地图名称',
@@ -258,6 +258,38 @@ export const strategyColumns = [{ //策略列表
 	{
 		title: '创建人',
 		key: 'userName',
+		align: 'center',
+		// width: 100
+	},
+	{
+		title: '操作',
+		slot: 'action',
+		align: 'center',
+		// width: 250
+
+	},
+]
+
+export const warnListColumns = [{ //告警列表
+		title: 'ID',
+		key: 'id',
+		align: 'center',
+		width: 70
+	},
+	{
+		title: '告警名称',
+		key: 'warnName',
+		align: 'center',
+	},
+	{
+		title: '告警上限',
+		key: 'warnMaxValue',
+		align: 'center',
+		// width: 100
+	},
+	{
+		title: '告警下限',
+		key: 'warnMinValue',
 		align: 'center',
 		// width: 100
 	},
