@@ -64,6 +64,8 @@ export default {
 	warn_management: '告警管理',
 	add_warn: '添加告警',
 	warn_list: '告警列表',
+	parameters_associate:'参数关联',
+	warn_rtu:'告警设备',
 	m_user_list:'用户列表',
 	m_farm:'农场',
 	m_rtu:'设备',

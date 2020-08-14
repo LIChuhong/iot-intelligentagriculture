@@ -268,6 +268,26 @@ export default [{
 				component: resolve => require(['@/view/page/warn-management/warn-list/warn-list.vue'], resolve)
 				//component: () => import('@/view/intelligentgarden/setting/menuManagement/menuManagement.vue')
 			},
+			{
+				path: 'parameters_associate',
+				name: 'parameters_associate',
+				meta: {
+					icon: ' iconfont icon-menum',
+					title: '参数关联'
+				},
+				component: resolve => require(['@/view/page/warn-management/parameters-associate/parameters-associate.vue'], resolve)
+				//component: () => import('@/view/intelligentgarden/setting/menuManagement/menuManagement.vue')
+			},
+			{
+				path: 'warn_rtu',
+				name: 'warn_rtu',
+				meta: {
+					icon: ' iconfont icon-menum',
+					title: '告警设备'
+				},
+				component: resolve => require(['@/view/page/warn-management/warn-rtu/warn-rtu.vue'], resolve)
+				//component: () => import('@/view/intelligentgarden/setting/menuManagement/menuManagement.vue')
+			},
 		]
 	},
 	
