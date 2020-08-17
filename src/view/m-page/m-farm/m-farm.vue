@@ -1,8 +1,8 @@
 <template>
-	<div ref="maps1" class="map1Style" style="height:100%;overflow:hidden;position: relative;">
+	<div ref="maps1" class="map1Style" style="overflow:hidden;height: 100%;">
 		<!-- <Card ref="map1" style="overflow:hidden;height: 100%;background: #dcdee2;"> -->
 		<div :style="mapStyle" @touchstart="touchstartView" id="mapBgDiv1" ref="mapBgDiv1">
-			<img id="mapBgImg1" ref="mapBgImg1" :src="mapBgImgUrl" style="width:100%" draggable="false" />
+			<img id="mapBgImg1" ref="mapBgImg1" :src="mapBgImgUrl" style="width:100%;" draggable="false" />
 			<div v-for="item in rtuImgList" :key="item.rtuNumber" class="drag1" :style="{top:item.heightScale+'%',left:item.widthScale+'%'}">
 				<Poptip :title="item.rtuNumber" :transfer="true" @on-popper-show="getRtuDataInfo(item)">
 					<div slot="content">
@@ -327,9 +327,9 @@
 <style lang="less">
 	@media screen and (min-width:300px) and (max-width:900px) {
 		.map1Style{
-			line-height: 0;
-			padding: 0;
-			margin: 0
+			line-height:0;
+			// padding: 0;
+			// margin: 0
 			
 			
 		}
@@ -366,12 +366,14 @@
 		}
 
 		.map1Style .rtu1 {
+			line-height:1.5;
 			width: 100%;
 			height: 100%;
 			z-index: 2;
 		}
 
 		.map1Style .drag1 {
+			line-height:0;
 			position: absolute;
 			width: 3%;
 
@@ -379,7 +381,7 @@
 
 		
 		.map1Style #mapBgDiv1 {
-			position:absolute;
+			position:relative;
 			top: 50%;
 			left: 50%;
 			width: 100%;

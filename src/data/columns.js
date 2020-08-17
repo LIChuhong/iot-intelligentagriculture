@@ -301,3 +301,31 @@ export const warnListColumns = [{ //告警列表
 
 	},
 ]
+
+
+export const warnRtuColumns = [{ //告警设备列表
+		title: 'ID',
+		key: 'id',
+		align: 'center',
+		width: 70
+	},
+	{
+		title: '设备编号',
+		key: 'rtuNumber',
+		align: 'center',
+	},
+	{
+		title: '设备名称',
+		key: 'rtuName',
+		align: 'center',
+		// width: 100
+	},
+	
+	{
+		title: '操作',
+		slot: 'action',
+		align: 'center',
+		// width: 250
+
+	},
+]

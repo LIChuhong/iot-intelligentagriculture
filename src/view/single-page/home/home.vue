@@ -1,5 +1,5 @@
 <template>
-	<div class="map">
+	<div class="map" ref="map">
 		<img :src="mapBg" width="100%" height="100%" />
 		<div class="titleText">
 			<h2>自然农场大数据平台</h2>
@@ -74,12 +74,11 @@
 			</div>
 			<div class="titleImg" style="top:10%;height: 90%;overflow: hidden;">
 				<div v-for="item in mlList" :key="item" style="width: 50%;padding:2% 5% 0;overflow: hidden;float: left;height: 20%;">
-
-					<div style="float:left;height: 100%;">
-						<Icon :type="item.icon" size="35" :color="item.iconColor" />
+					<div style="float:left;height: 100%;width: 30%;">
+						<Icon :type="item.icon" size="30" :color="item.iconColor" />
 					</div>
-					<div style="overflow: hidden;float: left;height: 100%;line-height: 1;">
-						<p style="font-size: 1rem;">{{item.value}}</p>
+					<div :title="item.name+':'+item.value" style="float: left;height: 100%;line-height: 1;width: 70%;">
+						<p style="font-size: 1rem;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">{{item.value}}</p>
 						<p style="font-size:0.75rem;color: #31abe3;margin-top: 0.125rem;">{{item.name}}</p>
 					</div>
 				</div>
@@ -101,8 +100,13 @@
 				</div>
 			</div>
 		</div>
+		<div style="position: absolute;right:1.875rem;top:0.625rem">
+			<Tooltip :content="value ? '退出全屏' : '全屏'" placement="bottom">
+				<Icon @click.native="handleFullscreen" :type="value ? 'md-contract' : 'md-expand'" :size="23" style="color: #FFFFFF;z-index: 200;"></Icon>
+			</Tooltip>
+		</div>
 	</div>
-	</div>
+	
 </template>
 
 <script>
@@ -122,51 +126,83 @@
 			return {
 				mapBg,
 				// screenWidth:null
+				value:false,
 				mlList: [], //气象列表
 				soilList: [], //土壤列表
-				curveList:[
-					{
-					value:'降雨量',
+				curveList: [{
+						value: '降雨量',
 					},
 					{
-					value:'空气湿度',
+						value: '空气湿度',
 					},
 					{
-					value:'空气温度',
+						value: '空气温度',
 					},
 					{
-					value:'大气压',
+						value: '大气压',
 					},
 					{
-					value:'水分',
+						value: '水分',
 					},
-					
-					],
-					curveList1:[
-						{
-						value:'土壤湿度',
-						},
-						{
-						value:'土壤温度',
-						},
-						{
-						value:'盐度',
-						}],
-				change1:0,
-				change2:0
-				
+
+				],
+				curveList1: [{
+						value: '土壤湿度',
+					},
+					{
+						value: '土壤温度',
+					},
+					{
+						value: '盐度',
+					}
+				],
+				change1: 0,
+				change2: 0
+
 			}
 		},
-		methods:{
-			curveBtn(index){
-				 this.change1 = index;
-				 // e.target.style.background = "#000000"
-				
+		methods: {
+			handleFullscreen() {
+				// let main = main.body
+				let main = this.$refs.map
+				if (this.value) {
+					this.value = false
+					if (document.exitFullscreen) {
+						document.exitFullscreen()
+					} else if (document.mozCancelFullScreen) {
+						document.mozCancelFullScreen()
+					} else if (document.webkitCancelFullScreen) {
+						document.webkitCancelFullScreen()
+					} else if (document.msExitFullscreen) {
+						document.msExitFullscreen()
+					}
+			
+				} else {
+					this.value = true
+					if (main.requestFullscreen) {
+						main.requestFullscreen()
+					} else if (main.mozRequestFullScreen) {
+						main.mozRequestFullScreen()
+					} else if (main.webkitRequestFullScreen) {
+						main.webkitRequestFullScreen()
+					} else if (main.msRequestFullscreen) {
+						main.msRequestFullscreen()
+					}
+				}
+				// console.log(main)
+				//this.launchFullScreen(main)
+			
 			},
-			curveBtn1(index){
-				 this.change2 = index;
-				 // e.target.style.background = "#000000"
-				
+			
+			curveBtn(index) {
+				this.change1 = index;
+				// e.target.style.background = "#000000"
+
+			},
+			curveBtn1(index) {
+				this.change2 = index;
+				// e.target.style.background = "#000000"
+
 			}
 		},
 		mounted() {
@@ -238,7 +274,7 @@
 						name: '风向',
 						icon: ' iconfont icon-ic_fx',
 						iconColor: '#67c300',
-						value: '西南风2级'
+						value: '西南风2级西南风2级'
 					},
 					{
 						name: '土壤水分',
@@ -278,7 +314,7 @@
 	.map .bTop {
 		top: 8%
 	}
-	
+
 
 	.map .bBottom {
 		bottom: 3%
@@ -313,22 +349,24 @@
 		padding-top: 0.3125rem;
 		color: #31abe3
 	}
-	.curve button{
+
+	.curve button {
 		color: #31abe3;
 		background: #0d319a;
-		border:0;
+		border: 0;
 		padding: 0 0.3125rem
-		
-		
 	}
-	.curve .btnColor1{
+
+	.curve .btnColor1 {
 		// background: #000000;
-		 background-image: linear-gradient(to right, #a541ff , #3fbbfe);
-		color:#ffffff
+		background-image: linear-gradient(to right, #a541ff, #3fbbfe);
+		color: #ffffff
 	}
-	
-	.curve1{
-		float: left;width: 50%;height: 100%;
+
+	.curve1 {
+		float: left;
+		width: 50%;
+		height: 100%;
 	}
 
 	.curveEchart {
@@ -377,7 +415,7 @@
 		color: '#00b8ff';
 	}
 
-	.map .title span{
+	.map .title span {
 		// color: '#00b8ff';
 		padding-left: 0.3125rem;
 		font-size: 0.75rem;

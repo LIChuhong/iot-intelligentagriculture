@@ -1,9 +1,9 @@
 <template>
 	<div ref="maps" style="height: 100%;overflow: auto;background: #f8f8f9">
 
-		<Card ref="map" style="width:80%;float: left;overflow:auto;background: #808695;height:100%;">
-			<div v-show="showMap" id="mapBgDiv" ref="mapBgDiv" style="position: relative;width: 100%;height: 100%;overflow:auto;">
-				<img id="mapBgImg" ref="mapBgImg" :src="mapBgImgUrl" style="width:100%;z-index: 1;height: 100%;" draggable="false" />
+		<div ref="map" style="width:80%;float: left;overflow:hidden;background: #808695;height:100%;">
+			<div v-show="showMap" id="mapBgDiv" ref="mapBgDiv" style="position: relative;height: 100%;overflow:hidden;background: #00BFFF;display:inline-block;">
+				<img id="mapBgImg" ref="mapBgImg" :src="mapBgImgUrl" style="z-index: 1;height: 100%;" draggable="false" />
 				<div v-for="item in rtuImgList" :key="item.rtuNumber" v-drag class="drag" :style="{top:item.heightScale+'%',left:item.widthScale+'%'}">
 					<Poptip :title="item.rtuNumber">
 						<img :src="item.rtuTypeImgUrl" class="rtu1" :alt="item.rtuNumber" draggable="false" />
@@ -11,7 +11,7 @@
 				</div>
 			</div>
 
-		</Card>
+		</div>
 		<div style="width:20%;float: right;background:#dcdee2;height: 100%;position:relative;">
 			<!-- <div style="position: absolute;height: 100%;"> -->
 			<div style="padding: 5px;text-align: center;">
