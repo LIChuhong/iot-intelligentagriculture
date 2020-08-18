@@ -43,3 +43,49 @@ export const getParameterWarnInfoList = (warnName, maxId, pageSize) => {
 		method: 'get'
 	})
 }
+
+
+//参数关联
+export const updateRtuParamWarnRelList = (rtuParameterWarnRelationList) => {
+	//console.log(vmOrg)
+	return axios.request({
+		url: '/v1/updateRtuParameterWarnRelationList',
+		data: rtuParameterWarnRelationList,
+		method: 'post'
+	})
+}
+
+//获取设备参数
+export const rtuTypeParameterList = (rtuNumber) => {
+	return axios.request({
+		url: '/v1/rtuTypeParameterList',
+		params: {
+			'rtuNumber': rtuNumber
+		},
+		method: 'get'
+	})
+}
+
+//获取设备告警详情
+export const getRtuParamWarnRelDetList = (rtuNumber) => {
+	return axios.request({
+		url: '/v1/getRtuParameterWarnRelationDetailsList',
+		params: {
+			'rtuNumber': rtuNumber
+		},
+		method: 'get'
+	})
+}
+
+//获取告警设备
+export const warnRtuList = (rtuName, maxId, pageSize) => {
+	return axios.request({
+		url: '/v1/warnRtuList',
+		params: {
+			'rtuName': rtuName,
+			'maxId': maxId,
+			'pageSize': pageSize
+		},
+		method: 'get'
+	})
+}

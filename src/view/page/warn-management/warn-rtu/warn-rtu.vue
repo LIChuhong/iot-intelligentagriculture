@@ -1,22 +1,24 @@
 <template>
 	<div class="warnRtuStyle">
-		<div style="overflow: hidden;padding-bottom: 8px;">
-			<Select v-model="keyField" class="selStyle">
-				<Option v-for="item in keyFieList" :key="item.id" :value="item.id">{{item.title}}</Option>
-			</Select>
-			<Input search enter-button placeholder="请输入关键字" @on-search="findWarnRtuList" class="inputStyle" />
+		<div style="padding-bottom: 20px;">
+			<Input search enter-button placeholder="请输入设备名称查找" style="width: 300px" @on-search="searchWarnRtu" />
 		</div>
 		<Table size="small" border :columns="warnRtuColumns" :data="warnRtuData" :loading="tableLoading">
 
 			<template slot-scope="{ row, index }" slot="action">
-				<Button type="text" size="small" @click="show_warn_info(row,index)">详情</Button>
+				<Button type="text" size="small" @click="showWarnRtu(row,index)">详情</Button>
+				
+				<Poptip placement="left" :transfer="true" confirm title="你确定删除该设备关联吗?" @on-ok="del(row,index)">
+				<Button icon="md-trash" type="error" size="small" ></Button>
+				</Poptip>
 			</template>
 		</Table>
 		<div style="overflow: hidden;padding:0.625rem 0.625rem;">
 			<Button type="primary" ghost style="float: right;" @click="nextPage">下一页</Button>
 			<Button type="primary" ghost style="float: right;margin-right: 0.625rem;" @click="prevPage">上一页</Button>
 		</div>
-		<Modal title="编辑信息" v-model="showWRdetails" footer-hide>
+		<Modal title="详情信息" v-model="showWRdetails" footer-hide width="90">
+			<warn-rtu-details v-if="showWRdetails" :rtuNumber = "rtuNumber"></warn-rtu-details>
 		</Modal>
 	</div>
 </template>
@@ -25,29 +27,86 @@
 	import {
 		warnRtuColumns
 	} from '@/data/columns.js'
+	import { warnRtuList } from '@/api/warn.js'
+	import WarnRtuDetails from '../component/warn-rtu-details.vue'
 	export default {
+		components:{
+			WarnRtuDetails
+		},
 		data() {
 			return {
 				tableLoading: false,
 				warnRtuColumns: warnRtuColumns,
-				keyField: 0,
 				showWRdetails: false,
-				keyFieList: [{
-						id: 0,
-						title: '名称'
-					},
-					{
-						id: 1,
-						title: '编号'
-					}
-				],
-				warnRtuData: [{}]
+				warnRtuData: [{}],
+				rtuName:'',
+				maxId:0,
+				pageSize:10,
+				prevId:[0],
+				rtuNumber:null,
 			}
 		},
 		methods: {
-			findWarnRtuList() {
-
-			}
+			// del(row,index)
+			showWarnRtu(row,index){
+				this.rtuNumber = row.rtuNumber
+				this.showWRdetails = true
+			},
+			getWarnRtuList() {
+				
+				this.tableLoading = true
+				warnRtuList(this.rtuName,this.maxId, this.pageSize).then(res => {
+					const data = res.data
+					this.tableLoading = false
+					if (data.success == 1) {
+						 console.log(data)
+						this.warnRtuData = data.rtuList.map(item => {
+							
+							if (this.maxId < item.id) {
+								this.maxId = item.id
+							}
+							// this.warnList.push(item)
+							return item
+						})
+						// this.warnList.push()
+					} else {
+						this.$Message.error(data.errorMessage)
+					}
+				}).catch(error => {
+					this.tableLoading = false
+					//this.mRtuListLoading = false
+					alert(error)
+				})
+			},
+			searchWarnRtu(val){
+				
+			},
+			nextPage() {
+				// console.log(this.prevId)
+				// console.log(this.maxId)
+				if (this.warnRtuData.length < this.pageSize) {
+					this.$Message.warning('这是最后一页');
+				} else {
+					this.prevId.push(this.maxId)
+					this.getWarnRtuList()
+				}
+			
+			},
+			
+			prevPage() {
+				if (this.prevId.length > 1) {
+					this.prevId.pop()
+					this.maxId = this.prevId[this.prevId.length - 1]
+					this.getWarnRtuList()
+				} else {
+					this.$Message.warning('这是第一页');
+				}
+			
+			},
+		},
+		created() {
+			// console.log(1)
+			this.getWarnRtuList()
 		}
 	}
 </script>
@@ -72,7 +131,7 @@
 			width: 60%;
 		}
 
-		.warnRtuStyle .ivu-modal-body {
+	 .ivu-modal-body {
 			padding: 0;
 		}
 

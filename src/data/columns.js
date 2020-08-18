@@ -298,6 +298,7 @@ export const warnListColumns = [{ //告警列表
 		slot: 'action',
 		align: 'center',
 		// width: 250
+		
 
 	},
 ]
@@ -326,6 +327,45 @@ export const warnRtuColumns = [{ //告警设备列表
 		slot: 'action',
 		align: 'center',
 		// width: 250
+
+	},
+]
+export const wRDetailsColumns = [{ //告警设备列表
+		title: 'ID',
+		key: 'parameterId',
+		align: 'center',
+		width: 70
+	},
+	{
+		title: '参数名称',
+		key: 'parameterName',
+		align: 'center',
+	},
+	{
+		title: '告警名称',
+		key: 'warnName',
+		align: 'center',
+		// width: 100
+	},
+	{
+		title: '上限',
+		key: 'warnMaxValue',
+		align: 'center',
+		// width: 100
+	},
+	{
+		title: '下限',
+		key: 'warnMinValue',
+		align: 'center',
+		// width: 100
+	},
+	
+	{
+		title: '操作',
+		slot: 'action',
+		align: 'center',
+		// width: 250
+		width: 70
 
 	},
 ]
