@@ -20,6 +20,17 @@ export const updateParameterWarnInfo = (parameterWarnInfo) => {
 	})
 }
 
+//删除告警关联
+export const delRtuParamWarn = (rtuNumber) => {
+	const data = new URLSearchParams()
+	data.append('rtuNumber', rtuNumber)
+	//console.log(vmOrg)
+	return axios.request({
+		url: '/v1/deleteRtuParameterWarnRelationList',
+		data,
+		method: 'post'
+	})
+}
 //获取合作信息
 // export const getOrg = (id) => {
 // 	return axios.request({

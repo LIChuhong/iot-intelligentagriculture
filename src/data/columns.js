@@ -303,7 +303,6 @@ export const warnListColumns = [{ //告警列表
 	},
 ]
 
-
 export const warnRtuColumns = [{ //告警设备列表
 		title: 'ID',
 		key: 'id',
@@ -330,6 +329,7 @@ export const warnRtuColumns = [{ //告警设备列表
 
 	},
 ]
+
 export const wRDetailsColumns = [{ //告警设备列表
 		title: 'ID',
 		key: 'parameterId',
@@ -369,3 +369,44 @@ export const wRDetailsColumns = [{ //告警设备列表
 
 	},
 ]
+
+export const plotColumns = [{ //地块列表
+		title: 'ID',
+		key: 'id',
+		align: 'center',
+		width: 70
+	},
+	{
+		title: '地块名称',
+		key: 'massifName',
+		align: 'center',
+	},
+	{
+		title: '作物名称',
+		key: 'cropName',
+		align: 'center',
+		// width: 100
+	},
+	{
+		title: '作物图片',
+		slot: 'cropImgUrl',
+		align: 'center',
+		// width: 100
+	},
+	// {
+	// 	title: '下限',
+	// 	key: 'warnMinValue',
+	// 	align: 'center',
+	// 	// width: 100
+	// },
+	// 
+	{
+		title: '操作',
+		slot: 'action',
+		align: 'center',
+		// width: 250
+		// width: 70
+
+	},
+]
+

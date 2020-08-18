@@ -27,7 +27,7 @@
 	import {
 		warnRtuColumns
 	} from '@/data/columns.js'
-	import { warnRtuList } from '@/api/warn.js'
+	import { warnRtuList,delRtuParamWarn } from '@/api/warn.js'
 	import WarnRtuDetails from '../component/warn-rtu-details.vue'
 	export default {
 		components:{
@@ -47,7 +47,22 @@
 			}
 		},
 		methods: {
-			// del(row,index)
+			del(row,index){
+				this.tableLoading = true
+				delRtuParamWarn(row.rtuNumber).then(res=>{
+					const data = res.data
+					this.tableLoading = false
+					if (data.success == 1) {
+						this.warnRtuData.splice(index, 1);
+						this.$Message.success('删除成功')
+					}else{
+						this.$Message.error('删除失败')
+					}
+				}).catch(error=>{
+					this.tableLoading = false
+					alert(error)
+				})
+			},
 			showWarnRtu(row,index){
 				this.rtuNumber = row.rtuNumber
 				this.showWRdetails = true
@@ -59,7 +74,7 @@
 					const data = res.data
 					this.tableLoading = false
 					if (data.success == 1) {
-						 console.log(data)
+						 // console.log(data)
 						this.warnRtuData = data.rtuList.map(item => {
 							
 							if (this.maxId < item.id) {

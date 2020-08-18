@@ -57,6 +57,7 @@
 		},
 		data() {
 			return {
+				showSpin:false,
 				paramAssForm: {
 					rtuNumber: '',
 					warnParamList: [{
@@ -137,14 +138,17 @@
 						rtuNumber:Number(this.paramAssForm.rtuNumber),
 						parameterWarnRelationList: list
 					}
+					this.showSpin = true
 					updateRtuParamWarnRelList(rtuParameterWarnRelationList).then(res=>{
 						const data = res.data
+						this.showSpin = false
 						if(data.success == 1){
 							this.$Message.success('添加成功')
 						}else{
 							this.$Message.error(data.errorMessage)
 						}
 					}).catch(error=>{
+						this.showSpin = false
 						alert(error)
 					})
 					// console.log(list)

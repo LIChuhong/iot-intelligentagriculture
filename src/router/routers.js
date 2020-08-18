@@ -292,6 +292,38 @@ export default [{
 	},
 	
 	{
+		path: '/plot_management',
+		name: 'plot_management',
+		meta: {
+			icon: ' iconfont icon-setVting',
+			title: '地块管理'
+		},
+		//component: Main,
+		component: resolve => require(['@/components/main'], resolve),
+		children: [{
+				path: 'add_plot',
+				name: 'add_plot',
+				meta: {
+					icon: ' iconfont icon-add',
+					title: '添加地块'
+				},
+				component: resolve => require(['@/view/page/plot-management/add-plot/add-plot.vue'], resolve)
+				//component: () => import('@/view/intelligentgarden/setting/addMenu/addMenu.vue')
+			},
+			{
+				path: 'plot_list',
+				name: 'plot_list',
+				meta: {
+					icon: ' iconfont icon-menum',
+					title: '地块列表'
+				},
+				component: resolve => require(['@/view/page/plot-management/plot-list/plot-list.vue'], resolve)
+				//component: () => import('@/view/intelligentgarden/setting/menuManagement/menuManagement.vue')
+			},
+		]
+	},
+	
+	{
 		path: '/mobile_terminal',
 		name: 'mobile_terminal',
 		meta: {
