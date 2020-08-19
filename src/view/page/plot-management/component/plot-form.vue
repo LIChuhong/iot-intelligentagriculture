@@ -152,6 +152,7 @@
 								rtuNumberList: rtuNumberList,
 								belongOrgId: iaMassif.belongOrgId
 							}
+							this.belongOrgName = iaMassif.orgName
 							this.list = rtuNumberList
 
 						} else {

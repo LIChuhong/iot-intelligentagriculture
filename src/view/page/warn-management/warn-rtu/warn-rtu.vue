@@ -6,6 +6,7 @@
 		<Table size="small" border :columns="warnRtuColumns" :data="warnRtuData" :loading="tableLoading">
 
 			<template slot-scope="{ row, index }" slot="action">
+				<Button icon="ios-create-outline" type="primary" size="small" @click="editor(row)"></Button>
 				<Button type="text" size="small" @click="showWarnRtu(row,index)">详情</Button>
 				
 				<Poptip placement="left" :transfer="true" confirm title="你确定删除该设备关联吗?" @on-ok="del(row,index)">
@@ -20,6 +21,9 @@
 		<Modal title="详情信息" v-model="showWRdetails" footer-hide width="90">
 			<warn-rtu-details v-if="showWRdetails" :rtuNumber = "rtuNumber"></warn-rtu-details>
 		</Modal>
+		<Modal title="编辑设备关联" v-model="showRtuWarn" footer-hide width="90">
+			<warn-rtu-details v-if="showRtuWarn" :rtuNumber = "rtuNumber"></warn-rtu-details>
+		</Modal>
 	</div>
 </template>
 
@@ -29,12 +33,15 @@
 	} from '@/data/columns.js'
 	import { warnRtuList,delRtuParamWarn } from '@/api/warn.js'
 	import WarnRtuDetails from '../component/warn-rtu-details.vue'
+	import ParamForm from '../component/param-form.vue'
 	export default {
 		components:{
-			WarnRtuDetails
+			WarnRtuDetails,
+			ParamForm
 		},
 		data() {
 			return {
+				showRtuWarn:false,
 				tableLoading: false,
 				warnRtuColumns: warnRtuColumns,
 				showWRdetails: false,
@@ -47,6 +54,9 @@
 			}
 		},
 		methods: {
+			editor(row){
+				
+			},
 			del(row,index){
 				this.tableLoading = true
 				delRtuParamWarn(row.rtuNumber).then(res=>{
