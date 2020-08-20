@@ -69,6 +69,7 @@ export default {
 	plot_management:'地块管理',
 	add_plot:'添加地块',
 	plot_list:'地块列表',
+	plot_planning:'地块规划',
 	m_user_list:'用户列表',
 	m_farm:'农场',
 	m_rtu:'设备',

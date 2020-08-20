@@ -320,6 +320,17 @@ export default [{
 				component: resolve => require(['@/view/page/plot-management/plot-list/plot-list.vue'], resolve)
 				//component: () => import('@/view/intelligentgarden/setting/menuManagement/menuManagement.vue')
 			},
+			
+			{
+				path: 'plot_planning',
+				name: 'plot_planning',
+				meta: {
+					icon: ' iconfont icon-menum',
+					title: '地块规划'
+				},
+				component: resolve => require(['@/view/page/plot-management/plot-planning/plot-planning.vue'], resolve)
+				//component: () => import('@/view/intelligentgarden/setting/menuManagement/menuManagement.vue')
+			},
 		]
 	},
 	

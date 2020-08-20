@@ -1,5 +1,5 @@
 <template>
-	<baidu-map class="bm-view" ak="8hDACtVNXlGIDb5V5cve9Vndc5KEsReB" map-type="BMAP_HYBRID_MAP" :center="center" :zoom="zoom"
+	<baidu-map class="bm-view" map-type="BMAP_SATELLITE_MAP" :center="center" :zoom="zoom"
 	 @ready="handler" scroll-wheel-zoom="true">
 		<!-- <bm-map-type :map-types="['BMAP_NORMAL_MAP', 'BMAP_HYBRID_MAP']" anchor="BMAP_ANCHOR_TOP_LEFT"></bm-map-type> -->
 		<!-- <bm-marker :position="center" :dragging="true" animation="BMAP_HYBRID_MAP" /> -->
@@ -10,12 +10,12 @@
 </template>
 
 <script>
-	import BaiduMap from 'vue-baidu-map/components/map/Map.vue'
-	import BmMarker from 'vue-baidu-map/components/overlays/Marker.vue'
-	import BmLabel from 'vue-baidu-map/components/overlays/Label.vue'
+	// import BaiduMap from 'vue-baidu-map/components/map/Map.vue'
+	// import BmMarker from 'vue-baidu-map/components/overlays/Marker.vue'
+	// import BmLabel from 'vue-baidu-map/components/overlays/Label.vue'
 	export default {
 		components: {
-			BaiduMap,BmMarker,BmLabel
+			// BaiduMap,BmMarker,BmLabel
 		},
 		data() {
 			return {
