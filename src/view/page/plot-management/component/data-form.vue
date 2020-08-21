@@ -10,8 +10,14 @@
 					<Option v-for="i in farmList" :value="i.id.toString()" :key="i.id">{{ i.mapName }}</Option>
 				</Select>
 			</FormItem>
+			
 			<FormItem label="农场地理坐标" prop="farmPathName">
-				<Input readonly v-model="farmPathName" search enter-button="选择" placeholder="请选择农场地理坐标" @on-search="getFarmPath"></Input>
+				<Input readonly v-model="dataForm.farmPathName" search enter-button="选择" placeholder="请选择农场地理坐标" @on-search="getFarmPath"></Input>
+			</FormItem>
+			<FormItem label="种植环境" prop="plantEnvId">
+				<RadioGroup v-model="dataForm.plantEnvId">
+					<Radio v-for="item in plantEnvList" :key="item.id" :label="item.id">{{item.label}}</Radio>
+				</RadioGroup>
 			</FormItem>
 			<FormItem v-for="(item, index) in dataForm.videoList" :key="index" :label="'视频'+(index+1)" :prop="'videoList.' + index">
 				<Row>
@@ -52,19 +58,22 @@
 			 @click="getPoint">
 				<bm-control>
 					<Input v-model="keyword" @on-search="findArea" placeholder="请输入查找地址" style="width:100%" icon="ios-search"></Input>
+					<bm-geolocation anchor="BMAP_ANCHOR_BOTTOM_RIGHT" :showAddressBar="true" :autoLocation="true"></bm-geolocation>
 				</bm-control>
 				<!-- <bm-view class="bm-map"></bm-view> -->
 				<bm-local-search :select-first-result="true" :page-capacity="5" :keyword="keyword" :auto-viewport="true" :zoom="15"
-				 :location="location" :panel="false"></bm-local-search>
+				 :location="location" :panel="false" @markersset="markersSet"></bm-local-search>
+				<bm-marker :position="markerPosition" animation="BMAP_ANIMATION_BOUNCE">
+				</bm-marker>
 			</baidu-map>
 			<template slot="footer">
 				<div style="overflow: hidden;text-align: left;">
-					<span>选择位置:{{dataForm.farmPathName}}</span>
-					<Button type="primary" @click="handleSubmit('dataForm')" style="float: right;">
+					<span>选择位置:{{markerName}}</span>
+					<Button @click="changeFarmPath" type="primary" style="float: right;">
 						确定
 					</Button>
 				</div>
-				
+
 			</template>
 		</Modal>
 		<Spin fix v-show="showSpin">
@@ -84,6 +93,9 @@
 		},
 		data() {
 			return {
+				
+				markerName: '',
+				markerPosition: '',
 				farmAddr: '',
 				customAataList: [],
 				location: '',
@@ -98,6 +110,7 @@
 				showSpin: false,
 				farmList: [],
 				dataForm: {
+					plantEnvId:0,
 					dataPictureName: '',
 					contactFarmId: '',
 					farmPathName: '',
@@ -123,19 +136,40 @@
 					farmPathName: [{
 						required: true,
 						message: '请选择农场地理坐标',
-						trigger: 'blur'
+						trigger: 'change'
 					}],
 
+				},
+				plantEnvList:[{
+					id:0,
+					label:'室外'
+				},
+				{
+					id:1,
+					label:'室内'
 				}
+				]
 
 			}
 		},
 		methods: {
+			changeFarmPath() {
+				// alert(1)
+
+				console.log(this.markerName)
+				this.dataForm.farmPathName = this.markerName
+				this.dataForm.farmPath = this.markerPosition
+				this.showMap = false
+			},
+			markersSet(e) {
+				this.markerPosition = e[0].point
+				this.markerName = e[0].address + '-' + e[0].title;
+			},
 			getPoint(e) {
 				let geocoder = new BMap.Geocoder();
 				geocoder.getLocation(e.point, rs => {
-					console.log(rs)
-					this.dataForm.farmPathName = rs.address;
+					this.markerName = rs.address + '-' + rs.surroundingPois[0].title;
+					this.markerPosition = e.point
 					//地址描述(string)=
 					// console.log(rs.address);    //这里打印可以看到里面的详细地址信息，可以根据需求选择想要的
 					// console.log(rs.addressComponents);//结构化的地址描述(object)
@@ -189,9 +223,20 @@
 				map
 			}) {
 				// console.log(BMap, map)
-				this.center.lng = 116.404
-				this.center.lat = 39.915
+				// this.center.lng = 116.404
+				// this.center.lat = 39.915
 				this.zoom = 15
+
+				let _this = this; // 设置一个临时变量指向vue实例，因为在百度地图回调里使用this，指向的不是vue实例；
+				var geolocation = new BMap.Geolocation();
+				geolocation.getCurrentPosition(function(r) {
+					_this.center = r.point // 设置center属性值
+					_this.markerPosition = r.point
+					
+					console.log('center:', _this.center) // 如果这里直接使用this是不行的
+				}, {
+					enableHighAccuracy: true
+				})
 			}
 
 

@@ -1,23 +1,21 @@
 <template>
 	<div style="width: 100%;height: 100%;">
 		<baidu-map class="bm-view" map-type="BMAP_SATELLITE_MAP" scroll-wheel-zoom="true" :center="center" :zoom="zoom"
-		 @ready="handler">
-			<bm-polygon v-for="(path , i) in polygonPath.paths" :key="i" :path="path" :stroke-color="polygonPath.colors[i].color" :fill-color="polygonPath.colors[i].color" :fill-opacity="0.5" :stroke-opacity="1" :stroke-weight="2" @click="changePlotList" :editing="true" @lineupdate="updatePolygonPath($event,i)">
+		 @ready="handler" :double-click-zoom="false" @rightclick="showInfoWindow">
+			<bm-polygon v-for="(path , i) in polygonPath.paths" :key="i" :path="path" :stroke-color="polygonPath.colors[i].color"
+			 :fill-color="polygonPath.colors[i].color" :fill-opacity="0.5" :stroke-opacity="1" :stroke-weight="2" @click="changePlotList"
+			 :editing="true" @lineupdate="updatePolygonPath($event,i)">
 			</bm-polygon>
-			<!-- </div> -->
 			<bm-marker v-for="(item , i) in polygonPath.markerPaths" :key="i" :position="item.position" animation="BMAP_ANIMATION_BOUNCE"
 			 :icon="{url: item.icon, size: {width:30, height: 30}}" :title="item.label" :dragging="true" @dragging="markDragging($event,i)">
-				<!-- <bm-label :content="item.label" :labelStyle="{color: 'red', fontSize : '12px'}" :offset="{width: -35, height: 30}"/> -->
 			</bm-marker>
-		
+
 			<bm-control>
-				<Button type="primary" @click="addPlot">添加地块</Button>
-				<!-- <button @click="toggle('polygonPath')">{{ polygonPath.editing ? '停止绘制' : '开始绘制' }}</button> -->
-				<!-- <Select v-model="model10" multiple style="width:260px">
-					<Option v-for="item in cityList" :value="item.value" :key="item.value">{{ item.label }}</Option>
-					
-				</Select> -->
+				<Button @click="addPlot">添加地块</Button>
 			</bm-control>
+			<bm-info-window :position="infoWindow.path" title="确定删除该多边形吗？" :show="infoWindow.show" @close="infoWindowClose">
+				<div style="text-align: right;"><Button @click="delPolyon" type="primary">确定</Button></div>
+			</bm-info-window>
 
 		</baidu-map>
 		<Modal title="选择地块" v-model="showPlotList" footer-hide>
@@ -35,8 +33,11 @@
 		data() {
 			return {
 				infoWindow: {
-					show: true,
-					contents: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+					path: {
+						lng: '',
+						lat: ''
+					},
+					show: false,
 				},
 				plotPath: null,
 				showPlotList: false,
@@ -98,23 +99,43 @@
 				polyline: {
 					editing: false,
 					paths: []
-				}
+				},
+				delIndex: null,
 
 			}
 		},
 
 		methods: {
-			infoWindowClose(e) {
+			delPolyon() {
+				this.polygonPath.paths.splice(this.delIndex, 1)
 				this.infoWindow.show = false
+
 			},
-			infoWindowOpen(e) {
-				this.infoWindow.show = true
+			ptInPolygon(point, paths) { //判断传入的points点是否在ply多边形里面，是返回true，否返回false
+				// var paths = this.polygonPath.paths
+
+				// console.log(paths)
+				 var resultNum = -1
+				for (var i = 0; i < paths.length; i++) {
+					var ply = new BMap.Polygon(paths[i])
+					var result = BMapLib.GeoUtils.isPointInPolygon(point, ply);
+					if (result) {
+						resultNum = i
+					}
+				}
+				return resultNum
 			},
-			clear() {
-				this.infoWindow.contents = ''
+			showInfoWindow(e) {
+				var resultNum = this.ptInPolygon(e.point, this.polygonPath.paths)
+				if (resultNum > -1) {
+					this.infoWindow.path = e.point
+					this.delIndex = resultNum
+					this.infoWindow.show = true
+				}
+				// console.log(a)
 			},
 			addPlot() {
-				console.log(this.polygonPath.colors)
+				// console.log(this.polygonPath.colors)
 				var color = 'rgb(' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ',' + Math.floor(
 					Math.random() * 255) + ')'
 				this.polygonPath.colors.push({
@@ -148,8 +169,8 @@
 				}
 				x = x / path.length;
 				y = y / path.length;
-				console.log(row)
-				console.log(this.polygonPath.markerPaths)
+				// console.log(row)
+				// console.log(this.polygonPath.markerPaths)
 				this.polygonPath.markerPaths.push({
 					position: {
 						lng: x,
@@ -175,9 +196,9 @@
 			},
 			markDragging(e, i) {
 
-				console.log(e.point)
+				// console.log(e.point)
 				this.polygonPath.markerPaths[i].position = e.point
-				console.log(this.polygonPath.markerPaths[i].position)
+				// console.log(this.polygonPath.markerPaths[i].position)
 			},
 			addPolygonPoint() {
 				this.polygonPath.push({
