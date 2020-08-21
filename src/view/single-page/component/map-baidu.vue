@@ -43,6 +43,6 @@
 <style>
 	.bm-view {
 		width: 100%;
-		height: 300px;
+		height: 100%;
 	}
 </style>

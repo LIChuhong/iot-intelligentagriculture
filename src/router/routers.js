@@ -296,7 +296,7 @@ export default [{
 		name: 'plot_management',
 		meta: {
 			icon: ' iconfont icon-setVting',
-			title: '地块管理'
+			title: '数据管理'
 		},
 		//component: Main,
 		component: resolve => require(['@/components/main'], resolve),
@@ -320,7 +320,26 @@ export default [{
 				component: resolve => require(['@/view/page/plot-management/plot-list/plot-list.vue'], resolve)
 				//component: () => import('@/view/intelligentgarden/setting/menuManagement/menuManagement.vue')
 			},
-			
+			{
+				path: 'add_data',
+				name: 'add_data',
+				meta: {
+					icon: ' iconfont icon-menum',
+					title: '添加数据'
+				},
+				component: resolve => require(['@/view/page/plot-management/add-data/add-data.vue'], resolve)
+				//component: () => import('@/view/intelligentgarden/setting/menuManagement/menuManagement.vue')
+			},
+			{
+				path: 'data_list',
+				name: 'data_list',
+				meta: {
+					icon: ' iconfont icon-menum',
+					title: '数据列表'
+				},
+				component: resolve => require(['@/view/page/plot-management/data-list/data-list.vue'], resolve)
+				//component: () => import('@/view/intelligentgarden/setting/menuManagement/menuManagement.vue')
+			},
 			{
 				path: 'plot_planning',
 				name: 'plot_planning',
