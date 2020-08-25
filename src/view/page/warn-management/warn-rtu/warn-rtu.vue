@@ -21,8 +21,8 @@
 		<Modal title="详情信息" v-model="showWRdetails" footer-hide width="90">
 			<warn-rtu-details v-if="showWRdetails" :rtuNumber = "rtuNumber"></warn-rtu-details>
 		</Modal>
-		<Modal title="编辑设备关联" v-model="showRtuWarn" footer-hide width="90">
-			<warn-rtu-details v-if="showRtuWarn" :rtuNumber = "rtuNumber"></warn-rtu-details>
+		<Modal title="编辑设备关联" v-model="showRtuWarn" footer-hide >
+			<param-form v-if="showRtuWarn" :rtuNumber = "rtuNumber">编辑</param-form>
 		</Modal>
 	</div>
 </template>
@@ -33,6 +33,7 @@
 	} from '@/data/columns.js'
 	import { warnRtuList,delRtuParamWarn } from '@/api/warn.js'
 	import WarnRtuDetails from '../component/warn-rtu-details.vue'
+	// import WarnFrom
 	import ParamForm from '../component/param-form.vue'
 	export default {
 		components:{
@@ -55,7 +56,8 @@
 		},
 		methods: {
 			editor(row){
-				
+				this.rtuNumber = row.rtuNumber
+				this.showRtuWarn = true
 			},
 			del(row,index){
 				this.tableLoading = true

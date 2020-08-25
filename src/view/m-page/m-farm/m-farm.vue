@@ -3,7 +3,7 @@
 		<!-- <Card ref="map1" style="overflow:hidden;height: 100%;background: #dcdee2;"> -->
 		<div :style="mapStyle" @touchstart="touchstartView" id="mapBgDiv1" ref="mapBgDiv1">
 			<img id="mapBgImg1" ref="mapBgImg1" :src="mapBgImgUrl" style="width:100%;" draggable="false" />
-			<div v-for="item in rtuImgList" :key="item.rtuNumber" class="drag1" :style="{top:item.heightScale+'%',left:item.widthScale+'%'}">
+			<div v-for="item in rtuImgList" :key="item.rtuNumber" class="drag1" :style="{top:item.heightScale+'%',left:item.widthScale+'%',cursor:'pointer'}" :title="item.rtuNumber">
 				<Poptip :title="item.rtuNumber" :transfer="true" @on-popper-show="getRtuDataInfo(item)">
 					<div slot="content">
 						<div style="font-size: 0.75rem;" v-for="(item , index) in parameterDataList" :key="index"><span>{{item.parameterName}}:{{item.value}}{{item.unit}}</span></div>

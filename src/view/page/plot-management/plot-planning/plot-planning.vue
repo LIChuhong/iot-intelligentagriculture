@@ -6,14 +6,18 @@
 			 :fill-color="polygonPath.colors[i].color" :fill-opacity="0.5" :stroke-opacity="1" :stroke-weight="2" @click="changePlotList"
 			 :editing="true" @lineupdate="updatePolygonPath($event,i)">
 			</bm-polygon>
-			<bm-marker v-for="(item , i) in polygonPath.markerPaths" :key="i" :position="item.position" animation="BMAP_ANIMATION_BOUNCE"
-			 :icon="{url: item.icon, size: {width:30, height: 30}}" :title="item.label" :dragging="true" @dragging="markDragging($event,i)">
+			<bm-marker v-for="(item , i) in polygonPath.markerPaths" :key="i" :position="item.position" animation="BMAP_ANIMATION_BOUNCE" :icon="{url: item.icon, size: {width:30, height: 30}}" :title="item.label" :dragging="true" @dragging="markDragging($event,i)" @click="showInfoWindow1">
+				<bm-info-window title="确定删除该地块标注吗？" :show="infoWindow.show1">
+					<div style="text-align: right;"><Button @click="delMaker(i)" type="primary">确定</Button></div>
+				</bm-info-window>
+				
 			</bm-marker>
 
 			<bm-control>
 				<Button @click="addPlot">添加地块</Button>
+				<Button type="primary" @click="addPlot">保存</Button>
 			</bm-control>
-			<bm-info-window :position="infoWindow.path" title="确定删除该多边形吗？" :show="infoWindow.show" @close="infoWindowClose">
+			<bm-info-window :position="infoWindow.path" title="确定删除该多边形吗？" :show="infoWindow.show" >
 				<div style="text-align: right;"><Button @click="delPolyon" type="primary">确定</Button></div>
 			</bm-info-window>
 
@@ -38,6 +42,7 @@
 						lat: ''
 					},
 					show: false,
+					show1:false,
 				},
 				plotPath: null,
 				showPlotList: false,
@@ -106,6 +111,14 @@
 		},
 
 		methods: {
+			showInfoWindow1(){
+				this.infoWindow.show1 = true
+			},
+			delMaker(i){
+				this.infoWindow.show1 = false
+				this.polygonPath.markerPaths.splice(i, 1)
+				
+			},
 			delPolyon() {
 				this.polygonPath.paths.splice(this.delIndex, 1)
 				this.infoWindow.show = false

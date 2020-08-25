@@ -72,14 +72,19 @@
 			<div class="titleImg">
 				<img src="../../../assets/images/map/weather.png" />
 			</div>
+			<div style="position: absolute;top: 0;right: 0;font-size: 0.75rem;">
+			<Select v-model="model1" style="width:100%;font-size: 0.75rem;background:#17233D;" size="small">
+			    <Option v-for="item in cityList" :value="item.value" :key="item.value">{{ item.label }}</Option>
+			</Select>
+			</div>
 			<div class="titleImg" style="top:10%;height: 90%;overflow: hidden;">
-				<div v-for="item in mlList" :key="item" style="width: 50%;padding:2% 5% 0;overflow: hidden;float: left;height: 20%;">
-					<div style="float:left;height: 100%;width: 30%;">
-						<Icon :type="item.icon" size="30" :color="item.iconColor" />
+				<div v-for="item in mlList" :key="item" style="width: 50%;padding:2% 0 0 5%;overflow: hidden;float: left;height: 20%;">
+					<div style="float:left;height: 100%;width: 20%;">
+						<Icon :type="item.icon" size="20" :color="item.iconColor" />
 					</div>
-					<div :title="item.name+':'+item.value" style="float: left;height: 100%;line-height: 1;width: 70%;">
-						<p style="font-size: 1rem;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">{{item.value}}</p>
-						<p style="font-size:0.75rem;color: #31abe3;margin-top: 0.125rem;">{{item.name}}</p>
+					<div :title="item.name+':'+item.value" style="float: left;height: 100%;line-height: 1;width: 80%;">
+						<p style="font-size: 0.75rem;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">{{item.value}}</p>
+						<p style="font-size:0.5rem;color: #31abe3;margin-top: 0.125rem;">{{item.name}}</p>
 					</div>
 				</div>
 			</div>
@@ -274,7 +279,7 @@
 						name: '风向',
 						icon: ' iconfont icon-ic_fx',
 						iconColor: '#67c300',
-						value: '西南风2级西南风2级'
+						value: '西南风2级'
 					},
 					{
 						name: '土壤水分',

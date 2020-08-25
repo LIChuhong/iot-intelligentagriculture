@@ -35,7 +35,7 @@
 			</FormItem>
 		</Form>
 		<Modal title="选择告警数值" v-model="showWarnParam" footer-hide>
-			<param-warn-list :listIndex="listIndex" v-show="showWarnParam" @change-warn-info="changeWarnInfo"></param-warn-list>
+			<param-warn-list :listIndex="listIndex" v-if="showWarnParam" @change-warn-info="changeWarnInfo"></param-warn-list>
 		</Modal>
 		<Spin fix v-show="showSpin">
 			<Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
@@ -49,12 +49,14 @@
 	import ParamWarnList from './param-warn-list.vue'
 	import {
 		rtuTypeParameterList,
-		updateRtuParamWarnRelList
+		updateRtuParamWarnRelList,
+		getRtuParamWarnRelDetList
 	} from '@/api/warn.js'
 	export default {
 		components: {
 			ParamWarnList
 		},
+		props:['rtuNumber'],
 		data() {
 			return {
 				showSpin:false,
@@ -74,6 +76,41 @@
 			}
 		},
 		methods: {
+			getRtuWarnInfo(){
+				if(this.rtuNumber != null && this.rtuNumber != ''){
+					this.showSpin = true
+					this.paramAssForm.rtuNumber = this.rtuNumber
+					this.changeWarnParam(true)
+					getRtuParamWarnRelDetList(this.rtuNumber).then(res=>{
+						const data = res.data
+						this.showSpin = false
+						if(data.success == 1){
+							
+							this.paramAssForm.warnParamList=[]
+							
+							var list = data.parameterWarnRelationDetailsList
+							for(var i = 0;i<list.length;i++){
+								var param = list[i]
+								this.paramAssForm.warnParamList.push({
+									warnParam:param.parameterId,
+									warnName:param.warnName,
+									warnId:param.parameterWarnId,
+									warnMaxValue:param.warnMaxValue,
+									warnMinValue:param.warnMinValue
+									
+								})
+							}
+							
+							// this.wRDetailsData = data.parameterWarnRelationDetailsList
+						}else{
+							this.$Message.error(data.errorMessage)
+						}
+					}).catch(error=>{
+						this.showSpin = false
+						alert(error)
+					})
+				}
+			},
 			changeWarnInfo(val, index) {
 				this.showWarnParam = false
 				this.paramAssForm.warnParamList[index].warnId = val.id
@@ -156,6 +193,9 @@
 					console.log(rtuParameterWarnRelationList)
 				})
 			}
+		},
+		created() {
+			this.getRtuWarnInfo()
 		}
 	}
 </script>

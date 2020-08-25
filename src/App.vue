@@ -53,6 +53,7 @@
 </script>
 
 <style lang="less">
+	.anchorBL{display:none;}
 	.size {
 		width: 100%;
 		height: 100%;
