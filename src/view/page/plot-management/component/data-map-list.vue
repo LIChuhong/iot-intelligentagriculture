@@ -9,7 +9,7 @@
 				<img :src="row.cropImgUrl" style="height: 3.125rem;width: 3.125rem;" />
 			</template>
 			<template slot-scope="{ row, index }" slot="action">
-				<Button type="primary" size="small" @click="getDataMapInfo(row)">编辑</Button>
+				<Button :disabled="row.farmType == 1" type="primary" ghost size="small" @click="checkPlot(row)">选择</Button>
 			</template>
 
 		</Table>
@@ -17,9 +17,6 @@
 			<Button type="primary" ghost style="float: right;" @click="nextPage">下一页</Button>
 			<Button type="primary" ghost style="float: right;margin-right: 0.625rem;" @click="prevPage">上一页</Button>
 		</div>
-		<Modal title="编辑数据画面" v-model="showDataMapInfo" footer-hide>
-			<data-form :data-map-id="dataMapId" v-if="showDataMapInfo">编辑</data-form>
-		</Modal>
 		
 	</div>
 </template>
@@ -32,15 +29,9 @@
 	import {
 		getIABigDataMapList
 	} from '@/api/plot.js'
-	import DataForm from '../component/data-form.vue'
 	export default {
-		components:{
-			DataForm
-		},
 		data() {
 			return {
-				dataMapId:null,
-				showDataMapInfo:false,
 				dataMapColumns: dataMapColumns,
 				dataMapData: [{}],
 				tableLoading: false,
@@ -51,12 +42,9 @@
 			}
 		},
 		methods: {
-			
-			getDataMapInfo(row){
-				this.dataMapId = row.id
-				this.showDataMapInfo = true
+			checkPlot(row){
 				// console.log(row)
-				// this.$emit('get-data-map-info',row)
+				this.$emit('get-data-map-info',row)
 			},
 			nextPage() {
 				if (this.dataMapData.length < this.pageSize) {

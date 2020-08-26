@@ -410,3 +410,43 @@ export const plotColumns = [{ //地块列表
 	},
 ]
 
+export const dataMapColumns = [{ //数据画面列表
+		title: 'ID',
+		key: 'id',
+		align: 'center',
+		width: 70
+	},
+	{
+		title: '数据画面名称',
+		key: 'bigDataMapName',
+		align: 'center',
+	},
+	{
+		title: '农场画面名称',
+		key: 'mapName',
+		align: 'center',
+		// width: 100
+	},
+	{
+		title: '定时刷新时间',
+		key: 'updateDataInv',
+		align: 'center',
+		// width: 100
+	},
+	{
+		title: '所属组织',
+		key: 'orgName',
+		align: 'center',
+		// width: 100
+	},
+	// 
+	{
+		title: '操作',
+		slot: 'action',
+		align: 'center',
+		// width: 250
+		// width: 70
+
+	},
+]
+

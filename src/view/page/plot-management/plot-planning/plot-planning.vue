@@ -6,82 +6,75 @@
 			 :fill-color="polygonPath.colors[i].color" :fill-opacity="0.5" :stroke-opacity="1" :stroke-weight="2" @click="changePlotList"
 			 :editing="true" @lineupdate="updatePolygonPath($event,i)">
 			</bm-polygon>
-			<bm-marker v-for="(item , i) in polygonPath.markerPaths" :key="i" :position="item.position" animation="BMAP_ANIMATION_BOUNCE" :icon="{url: item.icon, size: {width:30, height: 30}}" :title="item.label" :dragging="true" @dragging="markDragging($event,i)" @click="showInfoWindow1">
+			<bm-marker v-for="(item , i) in polygonPath.markerPaths" :key="i" :position="item.position" animation="BMAP_ANIMATION_BOUNCE"
+			 :icon="{url: item.icon, size: {width:30, height: 30}}" :title="item.label" :dragging="true" @dragging="markDragging($event,i)"
+			 @click="showInfoWindow1">
 				<bm-info-window title="确定删除该地块标注吗？" :show="infoWindow.show1">
 					<div style="text-align: right;"><Button @click="delMaker(i)" type="primary">确定</Button></div>
 				</bm-info-window>
-				
-			</bm-marker>
 
-			<bm-control>
-				<Button @click="addPlot">添加地块</Button>
-				<Button type="primary" @click="addPlot">保存</Button>
+			</bm-marker>
+			
+			<bm-marker :position="center"></bm-marker>
+
+			<bm-control anchor="BMAP_ANCHOR_TOP_RIGHT">
+				<div>
+					<Input readonly v-model="iaBigDataMap.bigDataMapName" search enter-button="选择" placeholder="请选择数据画面" @on-search="getDataMapList"></Input>
+				</div>
+				<div style="text-align: right;margin-top: 0.625rem;">
+					<Button style="margin-right: 0.625rem;" icon="ios-add" @click="addPlot">添加地块</Button>
+					<Button type="primary" @click="updateMassifsMap">保存</Button>
+				</div>
 			</bm-control>
-			<bm-info-window :position="infoWindow.path" title="确定删除该多边形吗？" :show="infoWindow.show" >
+			<bm-info-window :position="infoWindow.path" title="确定删除该多边形吗？" :show="infoWindow.show">
 				<div style="text-align: right;"><Button @click="delPolyon" type="primary">确定</Button></div>
 			</bm-info-window>
-
+			<!-- <bm-geolocation anchor="BMAP_ANCHOR_BOTTOM_RIGHT" :showAddressBar="true" :autoLocation="true"></bm-geolocation>
+			<bm-local-search :select-first-result="true" :page-capacity="5" :keyword="keyword" :auto-viewport="true" :zoom="15" :location="centerPostion" :panel="false"></bm-local-search> -->
 		</baidu-map>
 		<Modal title="选择地块" v-model="showPlotList" footer-hide>
-			<plan-plot-list v-show="showPlotList" @get-plot-info="getPlotInfo"></plan-plot-list>
+			<plan-plot-list v-if="showPlotList" @get-plot-info="getPlotInfo"></plan-plot-list>
 		</Modal>
+		<Modal title="选择数据画面" v-model="showDataMapList" footer-hide width="60">
+			<data-map-list v-if="showDataMapList" @get-data-map-info="getDataMapInfo"></data-map-list>
+		</Modal>
+		<Spin fix v-show="showSpin">
+			<Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
+			<div>加载中...</div>
+		</Spin>
 	</div>
 </template>
 
 <script>
 	import PlanPlotList from '../component/plan-plot-list.vue'
+	import DataMapList from '../component/data-map-list.vue'
+	import {
+		getIABigDataMap,updateIAMassifsMap
+	} from '@/api/plot.js'
 	export default {
 		components: {
-			PlanPlotList
+			PlanPlotList,
+			DataMapList
 		},
 		data() {
 			return {
+				iaBigDataMap:'',
+				map: '',
+				centerPostion: '',
+				keyword: '',
+				showSpin: false,
 				infoWindow: {
 					path: {
 						lng: '',
 						lat: ''
 					},
 					show: false,
-					show1:false,
+					show1: false,
 				},
 				plotPath: null,
 				showPlotList: false,
-				farm: {
-					plotList: [{}],
-					farm: '', //农场信息
-					center: { //农场位置
-						lng: 116.404,
-						lat: 39.915
-					},
-					cropMarkerPaths: [{ //地块列表
-						plotName: '', //地块信息
-						position: { //作物图标位置
-							lng: 116.404,
-							lat: 39.915
-						}
-
-					}],
-					polygonPath: [ //多边形位置
-						[{
-								lng: 116.412732,
-								lat: 39.911707,
-							},
-							{
-								lng: 116.412732,
-								lat: 39.911707,
-							},
-						],
-						[{
-								lng: 116.412732,
-								lat: 39.911707,
-							},
-							{
-								lng: 116.412732,
-								lat: 39.911707,
-							},
-						],
-					]
-				},
+				dataMapName: '',
+				showDataMapList: false,
 				plotList: [{
 					position: {
 						lng: 116.404,
@@ -101,23 +94,129 @@
 					lat: 0
 				},
 				zoom: 1,
-				polyline: {
-					editing: false,
-					paths: []
-				},
 				delIndex: null,
 
 			}
 		},
 
 		methods: {
-			showInfoWindow1(){
+			updateMassifsMap(){
+				if(this.iaBigDataMap != '' && this.iaBigDataMap != null && this.polygonPath.paths != []){
+					var iaMassifMapDataList = []
+					var markerPaths = this.polygonPath.markerPaths
+					for(var i = 0 ;i < markerPaths.length ;i++){
+						iaMassifMapDataList.push({
+							iaMassifId:markerPaths[i].iaMassifId,
+							cropImgPos:markerPaths[i].position
+						})
+					}
+					var iaMassifOutLineList = []
+					var paths = this.polygonPath.paths
+					for(var i = 0 ; i< paths.length ;i++){
+						iaMassifOutLineList.push({
+							postionList:paths[i]
+						})
+					}
+					
+					var iaMassifsMap = {
+						iaBigDataMapId :this.iaBigDataMap.id,
+						iaMassifMapDataList:iaMassifMapDataList,
+						iaMassifOutLineList:iaMassifOutLineList
+					}
+					console.log(iaMassifsMap)
+					this.showSpin = true
+					updateIAMassifsMap(iaMassifsMap).then(res=>{
+						const data = res.data
+						this.showSpin = false
+						if(data.success == 1){
+							this.$Message.success('保存成功')
+						}else{
+							this.$Message.error(data.errorMessage)
+						}
+					}).catch(error=>{
+						this.showSpin = false
+						alert(error)
+					})
+					 
+					
+					
+				}else{
+					this.$Message.warning('请先规划地块再进行保存')
+				}
+			},
+			getDataMapInfo(row) {
+				this.showDataMapList = false
+				this.polygonPath.markerPaths = []
+				this.polygonPath.paths = []
+				this.iaBigDataMap = ''
+				getIABigDataMap(row.id).then(res => {
+					const data = res.data
+					if (data.success == 1) {
+						console.log(data)
+						this.iaBigDataMap = data.iaBigDataMap
+						// this.iaBigDataMap.dataMapName = iaBigDataMap.bigDataMapName
+						var openFieldFarm = this.iaBigDataMap.openFieldFarm
+						// this.centerPostion = openFieldFarm.centerPostion
+						this.positioning(openFieldFarm.centerPostion)
+
+					} else {
+						this.$Message.error(data.errorMessage)
+					}
+				}).catch(error => {
+					alert(error)
+				})
+			},
+			positioning(centerPostion) {
+				// let point = new BMap.Point(centerPostion.lng, centerPostion.lat);
+				// this.map.centerAndZoom(point, 10)
+				var that = this;
+				var geco = new BMap.Geocoder();
+				geco.getLocation(centerPostion, function(res) {
+					// console.log(res) //内容见下图
+					// that.mk.setPosition(point) //重新设置标注的地理坐标
+					that.center = centerPostion //将地图的中心点更改为给定的点
+					// console.log(that.iaBigDataMap.openFieldFarm)
+					if(that.iaBigDataMap.openFieldFarm.iaMassifMapList != undefined){
+						var iaMassifMapList = that.iaBigDataMap.openFieldFarm.iaMassifMapList
+						for(var i = 0;i < iaMassifMapList.length ;i++){
+							that.polygonPath.markerPaths.push({
+								iaMassifId:iaMassifMapList[i].id,
+								position:iaMassifMapList[i].cropImgPos,
+								icon:iaMassifMapList[i].cropImgUrl,
+								label: iaMassifMapList[i].massifName + '-' + iaMassifMapList[i].cropName
+							})
+						}
+						
+					}
+					if(that.iaBigDataMap.openFieldFarm.iaMassifOutLineList != undefined){
+						var list = that.iaBigDataMap.openFieldFarm.iaMassifOutLineList
+						console.log(list)
+						for(var i = 0; i<list.length ; i++){
+							var color = 'rgb(' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ')'
+							that.polygonPath.colors.push({
+									color: color
+								}),
+							that.polygonPath.paths.push(
+								list[i].postionList
+							)
+						}
+						console.log(that.polygonPath.paths)
+					}
+					
+					// that.form.address = res.address; //记录该点的详细地址信息
+					// that.form.addrPoint = point; //记录当前坐标点
+				})
+			},
+			getDataMapList() {
+				this.showDataMapList = true
+			},
+			showInfoWindow1() {
 				this.infoWindow.show1 = true
 			},
-			delMaker(i){
+			delMaker(i) {
 				this.infoWindow.show1 = false
 				this.polygonPath.markerPaths.splice(i, 1)
-				
+
 			},
 			delPolyon() {
 				this.polygonPath.paths.splice(this.delIndex, 1)
@@ -128,7 +227,7 @@
 				// var paths = this.polygonPath.paths
 
 				// console.log(paths)
-				 var resultNum = -1
+				var resultNum = -1
 				for (var i = 0; i < paths.length; i++) {
 					var ply = new BMap.Polygon(paths[i])
 					var result = BMapLib.GeoUtils.isPointInPolygon(point, ply);
@@ -149,28 +248,22 @@
 			},
 			addPlot() {
 				// console.log(this.polygonPath.colors)
-				var color = 'rgb(' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ',' + Math.floor(
-					Math.random() * 255) + ')'
-				this.polygonPath.colors.push({
-						color: color
-					}),
-					this.polygonPath.paths.push([{
-							lng: 116.404,
-							lat: 39.915,
-							// color:color
-
-						},
-						{
-							lng: 116.404,
-							lat: 39.915,
-							// color:color
-						},
-						{
-							lng: 116.404,
-							lat: 39.915,
-							// color:color
-						},
-					])
+				if(this.iaBigDataMap != '' && this.iaBigDataMap!= null){
+					var color = 'rgb(' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ',' + Math.floor(
+						Math.random() * 255) + ')'
+					this.polygonPath.colors.push({
+							color: color
+						}),
+						this.polygonPath.paths.push([
+							this.center,
+							this.center,
+							// this.center
+							
+						])
+				}else{
+					this.$Message.warning('请先选择数据画面！')
+				}
+				
 			},
 			getPlotInfo(row) {
 				var x = 0,
@@ -185,6 +278,7 @@
 				// console.log(row)
 				// console.log(this.polygonPath.markerPaths)
 				this.polygonPath.markerPaths.push({
+					iaMassifId:row.id,
 					position: {
 						lng: x,
 						lat: y,
@@ -224,9 +318,10 @@
 				map
 			}) {
 				// console.log(BMap, map)
+				this.map = BMap
 				this.center.lng = 116.404
 				this.center.lat = 39.915
-				this.zoom = 18
+				this.zoom = 15
 			}
 		}
 	}

@@ -2,44 +2,54 @@
 	<div>
 		<Form :label-width="120" ref="dataForm" :model="dataForm" :rules="dataRule" label-position="right">
 
-			<FormItem label="数据画面名称" prop="dataPictureName">
-				<Input type="text" :maxlength="100" v-model="dataForm.dataPictureName" placeholder="请输入数据画面名称"></Input>
+			<FormItem label="数据画面名称" prop="bigDataMapName">
+				<Input type="text" :maxlength="100" v-model="dataForm.bigDataMapName" placeholder="请输入数据画面名称"></Input>
 			</FormItem>
-			<FormItem label="关联农场" prop="contactFarmId">
-				<Select v-model="dataForm.contactFarmId" @on-open-change="getFarmList" placeholder="请选择关联农场">
+			<FormItem label="关联农场" prop="mapId">
+				<Select v-model="dataForm.mapId" @on-open-change="getFarmList" placeholder="请选择关联农场">
 					<Option v-for="i in farmList" :value="i.id.toString()" :key="i.id">{{ i.mapName }}</Option>
 				</Select>
 			</FormItem>
-			
+
 			<FormItem label="农场地理坐标" prop="farmPathName">
 				<Input readonly v-model="dataForm.farmPathName" search enter-button="选择" placeholder="请选择农场地理坐标" @on-search="getFarmPath"></Input>
 			</FormItem>
-			<FormItem label="种植环境" prop="plantEnvId">
-				<RadioGroup v-model="dataForm.plantEnvId">
+
+
+			<FormItem label="所属组织" prop="belongOrgId">
+				<Input readonly v-model="belongOrgName" search enter-button="选择" placeholder="请选择所属组织" @on-search="showBelongOrgList"></Input>
+			</FormItem>
+			<FormItem label="种植环境" prop="farmType">
+				<RadioGroup v-model="dataForm.farmType">
 					<Radio v-for="item in plantEnvList" :key="item.id" :label="item.id">{{item.label}}</Radio>
 				</RadioGroup>
 			</FormItem>
-			<FormItem v-for="(item, index) in dataForm.videoList" :key="index" :label="'视频'+(index+1)" :prop="'videoList.' + index">
+			<FormItem label="页面刷新周期" prop="updateDataInv">
+				<Select v-model="dataForm.updateDataInv" placeholder="请选择刷新时间">
+					<Option v-for="i in timeList" :value="i.id" :key="i.id">{{ i.label }}</Option>
+				</Select>
+			</FormItem>
+			<FormItem v-for="(item, index) in dataForm.iaVideoList" :key="index" :label="'视频'+(index+1)" :prop="'iaVideoList.' + index">
 				<Row>
 					<Col span="22">
 					<div style="overflow: hidden;">
 						<p style="width:4.375rem;float: left;">设备名称：</p>
-						<Input style="width:70%;" v-model="item.videoName" placeholder="请输入设备名称" /></Input>
+						<Input style="width:70%;" v-model="item.deviceName" placeholder="请输入设备名称" /></Input>
 					</div>
 					<div style="overflow: hidden;margin: 0.3125rem 0;">
 						<p style="width:4.375rem;float: left;">高清地址：</p>
-						<Input style="width:70%;" v-model="item.hdAddress" placeholder="请输入高清地址" />
+						<Input style="width:70%;" v-model="item.highDefinitionUrl" placeholder="请输入高清地址" />
 					</div>
 					<div style="overflow: hidden;">
 						<p style="width:4.375rem;float: left;">流畅地址：</p>
-						<Input style="width:70%;" v-model="item.fluentAddress" placeholder="请输入流畅地址" />
+						<Input style="width:70%;" v-model="item.fluentUrl" placeholder="请输入流畅地址" />
 					</div>
 
 					</Col>
 					<Col span="2">
 					<Button size="small" v-show="index != 0" style="margin-top: 0.3125rem;" type="error" @click="handleRemove(index)"
 					 icon="ios-trash"></Button>
-					<Button size="small" v-show="index == dataForm.videoList.length-1" type="primary" ghost @click="handleAddDataList"
+					<Button size="small" v-show="index == dataForm.iaVideoList.length-1" type="primary" ghost @click="handleAddDataList"
 					 icon="ios-add"></Button>
 
 					</Col>
@@ -76,6 +86,14 @@
 
 			</template>
 		</Modal>
+		<Modal :title="'当前选择:'+ belongOrgTitle" v-model="showBelongOrg">
+			<div class="tree-style">
+				<org-tree v-if="showBelongOrg" @getBelongOrgInfo="showBelongOrgInfo" :orgTypeId="null"></org-tree>
+			</div>
+			<div slot="footer">
+				<Button type="primary" size="large" @click="belongOrgOk">确定</Button>
+			</div>
+		</Modal>
 		<Spin fix v-show="showSpin">
 			<Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
 			<div>加载中...</div>
@@ -87,13 +105,22 @@
 	import {
 		getMapList
 	} from '@/api/farm.js'
+	import {
+		addIABigDataMap,
+		getIABigDataMap
+	} from '@/api/plot.js'
+	import OrgTree from '@/view/components/org-tree.vue'
 	export default {
+		props: ['dataMapId'],
 		components: {
-
+			OrgTree
 		},
 		data() {
 			return {
-				
+				showBelongOrg: false,
+				belongOrgTitle: '',
+				belongOrgInfo: '', //所属组织信息
+				belongOrgName: '', //所属组织名称
 				markerName: '',
 				markerPosition: '',
 				farmAddr: '',
@@ -110,25 +137,27 @@
 				showSpin: false,
 				farmList: [],
 				dataForm: {
-					plantEnvId:0,
-					dataPictureName: '',
-					contactFarmId: '',
+					belongOrgId: null,
+					updateDataInv: 600,
+					farmType: 0,
+					bigDataMapName: '',
+					mapId: '',
 					farmPathName: '',
-					farmPath: '',
-					videoList: [{
-						videoName: '',
-						hdAddress: '',
-						fluentAddress: ''
+					centerPostion: '',
+					iaVideoList: [{
+						deviceName: '',
+						highDefinitionUrl: '',
+						fluentUrl: ''
 					}]
 				},
 				dataRule: {
-					dataPictureName: [{
+					bigDataMapName: [{
 						required: true,
 						message: '数据画面名称不能为空',
 						// validator: validateUserName,
 						trigger: 'blur'
 					}],
-					contactFarmId: [{
+					mapId: [{
 						required: true,
 						message: '请选择关联农场',
 						trigger: 'change'
@@ -138,27 +167,98 @@
 						message: '请选择农场地理坐标',
 						trigger: 'change'
 					}],
+					belongOrgId: [{
+						required: true,
+						type: 'number',
+						message: '请选择用户所属组织',
+						trigger: 'change'
+					}],
 
 				},
-				plantEnvList:[{
-					id:0,
-					label:'室外'
-				},
-				{
-					id:1,
-					label:'室内'
-				}
+				plantEnvList: [{
+						id: 0,
+						label: '室外'
+					},
+					{
+						id: 1,
+						label: '室内'
+					}
+				],
+				timeList: [{
+						id: 600,
+						label: '10分钟'
+					},
+					{
+						id: 900,
+						label: '15分钟'
+					},
+					{
+						id: 1200,
+						label: '20分钟'
+					},
+					{
+						id: 1500,
+						label: '25分钟'
+					},
+					{
+						id: 1800,
+						label: '30分钟'
+					}
 				]
 
 			}
 		},
 		methods: {
+			getDataMapInfo() {
+				if (this.dataMapId != '' && this.dataMapId != null) {
+					this.showSpin = true
+					this.getFarmList()
+					getIABigDataMap(this.dataMapId).then(res => {
+						const data = res.data
+						this.showSpin = false
+						if (data.success == 1) {
+							console.log(data)
+							var iaBigDataMap = data.iaBigDataMap
+							this.dataForm = {
+								bigDataMapName:iaBigDataMap.bigDataMapName,
+								mapId:iaBigDataMap.mapId.toString(),
+								belongOrgId:iaBigDataMap.belongOrgId,
+								iaVideoList:iaBigDataMap.iaVideoList,
+								updateDataInv:iaBigDataMap.updateDataInv,
+								farmType:iaBigDataMap.farmType,
+							}
+							this.belongOrgName = iaBigDataMap.orgName
+							
+						} else {
+							this.$Message.error(data.errorMessage)
+						}
+					}).catch(error => {
+						this.showSpin = false
+						alert(error)
+					})
+				}
+			},
+			showBelongOrgList() { //显示所属组织列表
+				this.belongOrgTitle = this.belongOrgName
+				this.showBelongOrg = true
+
+			},
+			showBelongOrgInfo(data) { //显示所选所属组织信息
+				this.belongOrgInfo = data
+				this.belongOrgTitle = data[0].orgName
+			},
+			belongOrgOk() { //确定所属组织
+				//const selectedNodes = this.$refs.belongOrgTree.getSelectedNodes();
+				this.dataForm.belongOrgId = this.belongOrgInfo[0].id
+				this.belongOrgName = this.belongOrgInfo[0].orgName
+				this.showBelongOrg = false
+			},
 			changeFarmPath() {
 				// alert(1)
 
 				console.log(this.markerName)
 				this.dataForm.farmPathName = this.markerName
-				this.dataForm.farmPath = this.markerPosition
+				this.dataForm.centerPostion = this.markerPosition
 				this.showMap = false
 			},
 			markersSet(e) {
@@ -202,19 +302,57 @@
 				})
 			},
 			handleRemove(index) {
-				this.dataForm.videoList.splice(index, 1)
+				this.dataForm.iaVideoList.splice(index, 1)
 			},
 			handleAddDataList() {
-				this.dataForm.videoList.push({
-					videoName: '',
-					hdAddress: '',
-					fluentAddress: ''
+				this.dataForm.iaVideoList.push({
+					deviceName: '',
+					highDefinitionUrl: '',
+					fluentUrl: ''
 				})
 			},
 
 			handleSubmit(name) {
 				this.$refs[name].validate((valid) => {
-					if (valid) {}
+					if (valid) {
+						// console.log(this.dataForm)
+						this.showSpin = true
+						var iaBigDataMap = {
+							bigDataMapName: this.dataForm.bigDataMapName,
+							farmType: this.dataForm.farmType,
+							mapId: parseInt(this.dataForm.mapId),
+							belongOrgId: parseInt(this.dataForm.belongOrgId),
+							updateDataInv: parseInt(this.dataForm.updateDataInv),
+							iaVideoList: this.dataForm.iaVideoList,
+
+						}
+						var centerPostion = {
+							lng: this.dataForm.centerPostion.lng,
+							lat: this.dataForm.centerPostion.lat
+						}
+						if (iaBigDataMap.farmType == 0) {
+							iaBigDataMap.openFieldFarm = {
+								centerPostion: centerPostion
+							}
+						} else {
+							iaBigDataMap.closeFieldFarm = {
+								centerPostion: centerPostion
+							}
+						}
+						console.log(iaBigDataMap)
+						addIABigDataMap(iaBigDataMap).then(res => {
+							const data = res.data
+							this.showSpin = false
+							if (data.success == 1) {
+								this.$Message.success('添加成功')
+							} else {
+								this.$Message.error(data.errorMessage)
+							}
+						}).catch(error => {
+							this.showSpin = false
+							alert(error)
+						})
+					}
 
 				})
 			},
@@ -232,7 +370,7 @@
 				geolocation.getCurrentPosition(function(r) {
 					_this.center = r.point // 设置center属性值
 					_this.markerPosition = r.point
-					
+
 					console.log('center:', _this.center) // 如果这里直接使用this是不行的
 				}, {
 					enableHighAccuracy: true
@@ -245,6 +383,7 @@
 		mounted() {},
 		created() {
 			// this.getRtuList()
+			this.getDataMapInfo()
 		}
 	}
 </script>
