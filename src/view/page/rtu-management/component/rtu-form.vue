@@ -9,7 +9,8 @@
 			</FormItem>
 			<FormItem label="设备类型" prop="rtuTypeId">
 				<!-- {{newDeviceData.rtuTypeId}} -->
-				<Select :disabled="disEditor" @on-open-change="openRtuTypeList" v-model="rtuForm.rtuTypeId" placeholder="请选择设备类型" @on-change="getRtuType">
+				<Select :disabled="disEditor" @on-open-change="openRtuTypeList" v-model="rtuForm.rtuTypeId" placeholder="请选择设备类型"
+				 @on-change="getRtuType">
 					<Option v-for="item in rtuTypeList" :key="item.id" :value="item.id">{{item.rtuTypeName}}</Option>
 				</Select>
 			</FormItem>
@@ -23,16 +24,18 @@
 			<FormItem label="生产批次" prop="makeBatch">
 				<Input :disabled="disEditor" type="number" v-model="rtuForm.makeBatch" placeholder="请输入设备生产批次"></Input>
 			</FormItem>
+			<FormItem v-show="showlora" label="网关编号" prop="gwRtuNumber">
+				<Input type="number" v-model="rtuForm.gwRtuNumber" placeholder="请输入设备网关编号"></Input>
+			</FormItem>
 
-			<FormItem label="lora地址" prop="loraAddress">
+			<FormItem v-show="showlora" label="lora地址" prop="loraAddress">
 				<Input type="number" v-model="rtuForm.loraAddress" placeholder="请输入设备lora地址"></Input>
 			</FormItem>
-			<FormItem label="lora信道" prop="loraChannel">
+			<FormItem v-show="showlora" label="lora信道" prop="loraChannel">
 				<Input type="number" v-model="rtuForm.loraChannel" placeholder="请输入设备lora信道"></Input>
 			</FormItem>
 			<FormItem label="所属组织" prop="belongOrgId">
-				<Input readonly v-model="belongOrgName" search enter-button="选择" placeholder="请选择所属组织"
-				 @on-search="showBelongOrgList"></Input>
+				<Input readonly v-model="belongOrgName" search enter-button="选择" placeholder="请选择所属组织" @on-search="showBelongOrgList"></Input>
 			</FormItem>
 			<!-- <FormItem label="设备描述" prop="rtuDesc">
 				<Input maxlength="500" v-model="rtuForm.rtuDesc" type="textarea" :rows="5" placeholder="请输入设备描述"></Input>
@@ -54,7 +57,7 @@
 				<Button type="primary" size="large" @click="belongOrgOk">确定</Button>
 			</div>
 		</Modal>
-		
+
 		<Spin fix v-show="showSpin" class="show-spin-style">
 			<Icon type="ios-loading" size="18" class="demo-spin-icon-load"></Icon>
 		</Spin>
@@ -83,12 +86,13 @@
 		},
 		data() {
 			return {
-				disEditor:false,
+				disEditor: false,
 				showBelongOrg: false,
 				belongOrgTitle: '',
 				belongOrgName: '', //所属组织名称
 				belongOrgInfo: '', //所属组织信息
 				showSpin: false,
+				showlora: false,
 				rtuForm: {
 					rtuNumber: '',
 					rtuName: '',
@@ -98,8 +102,9 @@
 					makeDate: new Date(),
 					makeBatch: '',
 					belongOrgId: '',
-					loraAddress: null,
-					loraChannel: null,
+					gwRtuNumber: '',
+					loraAddress: '',
+					loraChannel: '',
 					// rtuDesc: '',
 				},
 				rtuRule: {
@@ -143,18 +148,24 @@
 						message: '生产批次不能为空',
 						trigger: 'blur'
 					}],
-					// loraAddress: [{
-					//   required: true,
-					//   // type:'number',
-					//   message: 'lora地址不能为空',
-					//   trigger: 'blur'
-					// }],
-					// loraChannel: [{
-					//   required: true,
-					//   // type:'number',
-					//   message: 'lora信道不能为空',
-					//   trigger: 'blur'
-					// }],
+					gwRtuNumber: [{
+						required: true,
+						// type:'number',
+						message: '网关编号不能为空',
+						trigger: 'blur'
+					}],
+					loraAddress: [{
+						required: true,
+						// type:'number',
+						message: 'lora地址不能为空',
+						trigger: 'blur'
+					}],
+					loraChannel: [{
+						required: true,
+						// type:'number',
+						message: 'lora信道不能为空',
+						trigger: 'blur'
+					}],
 				},
 
 				deviceTypeList: [],
@@ -178,10 +189,18 @@
 				this.showBelongOrg = false
 			},
 			getRtuType(val) {
+				// console.log(this.rtuTypeList)
 				const rtuTypeList = this.rtuTypeList
 				for (var i in rtuTypeList) {
 					if (val == rtuTypeList[i].id) {
 						this.rtuForm.rtuTypeTag = rtuTypeList[i].rtuTypeTag
+						if (rtuTypeList[i].rtuCharacteristic == 2) {
+							this.showlora = true
+							this.rtuForm.gwRtuNumber = this.rtuForm.loraAddress = this.rtuForm.loraChannel = ''
+						} else {
+							this.showlora = false
+							this.rtuForm.gwRtuNumber = this.rtuForm.loraAddress = this.rtuForm.loraChannel = '0'
+						}
 						break;
 					}
 				}
@@ -205,15 +224,17 @@
 
 			handleSubmit(name) {
 				// alert(1)
+				// console.log(this.rtuForm)
 				this.$refs[name].validate((valid) => {
 					if (valid) {
-						if(this.rtuForm.loraAddress != null && this.rtuForm.loraAddress != ''){
-							this.rtuForm.loraAddress = parseInt(this.rtuForm.loraAddress)
+						var loraAddress = ''
+						var loraChannel = ''
+						var gwRtuNumber = ''
+						if (this.showlora) {
+							loraAddress = parseInt(this.rtuForm.loraAddress)
+							loraChannel = parseInt(this.rtuForm.loraChannel)
+							gwRtuNumber = parseInt(this.rtuForm.gwRtuNumber)
 						}
-						if(this.rtuForm.loraChannel != null && this.rtuForm.loraChannel != ''){
-							this.rtuForm.loraChannel = parseInt(this.rtuForm.loraChannel)
-						}
-
 						const rtuForm = {
 							'rtuNumber': parseInt(this.rtuForm.rtuNumber),
 							'rtuName': this.rtuForm.rtuName,
@@ -221,9 +242,11 @@
 								getNowFormatDate(this.rtuForm.makeDate, '') + '-' + this.rtuForm.makeBatch + '-' + this.rtuForm.rtuNumber,
 							'rtuTypeId': parseInt(this.rtuForm.rtuTypeId),
 							'belongOrgId': parseInt(this.rtuForm.belongOrgId),
-							'loraAddress': this.rtuForm.loraAddress,
-							'loraChannel': this.rtuForm.loraChannel,
+							'loraAddress': loraAddress,
+							'loraChannel': loraChannel,
+							'gwRtuNumber': gwRtuNumber
 						}
+						// this.$Message.error('添加成功')
 						// console.log(rtuForm)
 						this.showSpin = true
 						if (this.rtuNumber != null && this.rtuNumber != '') {
@@ -255,7 +278,10 @@
 								alert(error)
 							})
 						}
+
 					} else {
+
+						this.$Message.error('添加失败')
 
 					}
 				})
@@ -285,10 +311,22 @@
 									makeDate: rtuSerialNumber[3],
 									makeBatch: rtuSerialNumber[4],
 									belongOrgId: iaRtu.belongOrgId,
-									loraAddress: iaRtu.loraAddress,
-									loraChannel: iaRtu.loraChannel,
+									loraAddress: iaRtu.loraAddress.toString(),
+									loraChannel: iaRtu.loraChannel.toString(),
+									gwRtuNumber: iaRtu.gwRtuNumber.toString()
 								}
 								this.belongOrgName = iaRtu.orgName
+								const rtuTypeList = this.rtuTypeList
+								for (var i in rtuTypeList) {
+									if (iaRtu.rtuTypeId == rtuTypeList[i].id) {
+										if (rtuTypeList[i].rtuCharacteristic == 2) {
+											this.showlora = true
+										} else {
+											this.showlora = false
+										}
+										break;
+									}
+								}
 								// console.log(this.rtuForm)
 							}
 						} else {

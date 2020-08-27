@@ -4,14 +4,16 @@
 	 @ready="handler" scroll-wheel-zoom="true" >
 		<bm-polygon v-for="(path , i) in polygonPath.paths" :key="i" :path="path" :stroke-color="polygonPath.colors[i].color" :fill-color="polygonPath.colors[i].color" :fill-opacity="0.5" :stroke-opacity="1" :stroke-weight="2" >
 		</bm-polygon>
-		<bm-marker v-for="(item , i) in polygonPath.markerPaths" :key="i" :position="item.position" animation="BMAP_ANIMATION_BOUNCE" :icon="{url: item.icon, size: {width:30, height: 30}}" :title="item.label">
-		</bm-marker>
+		<!-- <bm-marker v-for="(item , i) in polygonPath.markerPaths" :key="i" :position="item.position" animation="BMAP_ANIMATION_BOUNCE" :icon="{url: item.icon, size: {width:30, height: 30}}" :title="item.label">
+		</bm-marker> -->
+		 <my-overlay v-for="(item , i) in polygonPath.markerPaths" :key="i" :position="item.position"  text="点击我" :title="item.label" :icon-img="item.icon">
+    </my-overlay>
 		<bm-control anchor="BMAP_ANCHOR_BOTTOM_RIGHT">
 			<Button size="small"  @click="getDataMapList">选择数据画面</Button>
 		</bm-control>
 		<bm-marker :position="center"></bm-marker>
 	</baidu-map>
-	<Modal title="选择数据画面" v-model="showDataMapList" footer-hide width="60">
+	<Modal title="选择数据画面" v-model="showDataMapList" footer-hide width="60" :transfer="false">
 		<data-map-list v-if="showDataMapList" @get-data-map-info="getDataMapInfo"></data-map-list>
 	</Modal>
 	</div>
@@ -22,9 +24,11 @@
 		getIABigDataMap
 	} from '@/api/plot.js'
 	import DataMapList from '@/view/page/plot-management/component/data-map-list.vue'
+	import MyOverlay from '@/view/components/my-overlay.vue'
 	export default {
 		components: {
-			DataMapList
+			DataMapList,
+			MyOverlay
 		},
 		data() {
 			return {
@@ -123,5 +127,6 @@
 	.bm-view {
 		width: 100%;
 		height: 100%;
+		
 	}
 </style>
