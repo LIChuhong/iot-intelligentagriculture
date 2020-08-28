@@ -4,13 +4,17 @@
     :class="{sample: true, active}"
     pane="labelPane"
     @draw="draw" :title="title">
-	<img :src="iconImg" width="100%" height="100%" />
+	<img :src="iconImg" width="100%" height="100%" @click="handlerClick"/>
   </bm-overlay>
 </template>
 
 <script>
 export default {
-  props: ['text', 'position', 'title','iconImg'],
+  props: ['position', 'title','iconImg','markerIndex'],
+	data(){
+		return{
+		}
+	},
   watch: {
     position: {
       handler () {
@@ -20,6 +24,9 @@ export default {
     }
   },
   methods: {
+		handlerClick(){
+			this.$emit('handler-click',this.position,this.markerIndex)
+		},
     draw ({el, BMap, map}) {
       const {lng, lat} = this.position
       const pixel = map.pointToOverlayPixel(new BMap.Point(lng, lat))

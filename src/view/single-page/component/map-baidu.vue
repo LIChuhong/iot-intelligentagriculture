@@ -2,11 +2,11 @@
 	<div>
 	<baidu-map class="bm-view" map-type="BMAP_SATELLITE_MAP" :center="center" :zoom="zoom"
 	 @ready="handler" scroll-wheel-zoom="true" >
-		<bm-polygon v-for="(path , i) in polygonPath.paths" :key="i" :path="path" :stroke-color="polygonPath.colors[i].color" :fill-color="polygonPath.colors[i].color" :fill-opacity="0.5" :stroke-opacity="1" :stroke-weight="2" >
+		<bm-polygon v-for="(path , i) in polygonPath.paths" :key="'p'+i" :path="path" :stroke-color="polygonPath.colors[i].color" :fill-color="polygonPath.colors[i].color" :fill-opacity="0.5" :stroke-opacity="1" :stroke-weight="2" >
 		</bm-polygon>
 		<!-- <bm-marker v-for="(item , i) in polygonPath.markerPaths" :key="i" :position="item.position" animation="BMAP_ANIMATION_BOUNCE" :icon="{url: item.icon, size: {width:30, height: 30}}" :title="item.label">
 		</bm-marker> -->
-		 <my-overlay v-for="(item , i) in polygonPath.markerPaths" :key="i" :position="item.position"  text="点击我" :title="item.label" :icon-img="item.icon">
+		 <my-overlay v-for="(item , i) in polygonPath.markerPaths" :key="'o'+i" :position="item.position" :title="item.label" :icon-img="item.icon">
     </my-overlay>
 		<bm-control anchor="BMAP_ANCHOR_BOTTOM_RIGHT">
 			<Button size="small"  @click="getDataMapList">选择数据画面</Button>

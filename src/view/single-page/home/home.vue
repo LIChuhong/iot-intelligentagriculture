@@ -42,7 +42,7 @@
 			<div class="titleImg" style="top:10%;height: 90%;overflow: hidden;line-height: 1;font-size: 0.625rem;">
 				<div style="height: 50%;overflow: hidden;">
 					<div class="curve">
-						<div v-for="(item, index) in curveList" :key="item"><button @click="curveBtn(index)" :class="{btnColor1:change1 == index}">{{item.value}}</button></div>
+						<div v-for="(item, index) in curveList" :key="'c'+index"><button @click="curveBtn(index)" :class="{btnColor1:change1 == index}">{{item.value}}</button></div>
 					</div>
 					<div class="curve1">
 						<map-bar class="curveEchart" :barColor="'#0075ff'"></map-bar>
@@ -53,7 +53,7 @@
 				</div>
 				<div style="height: 50%;overflow: hidden;">
 					<div class="curve">
-						<div v-for="(item, index) in curveList1" :key="item"><button @click="curveBtn1(index)" :class="{btnColor1:change2 == index}">{{item.value}}</button></div>
+						<div v-for="(item, index) in curveList1" :key="'c1'+index"><button @click="curveBtn1(index)" :class="{btnColor1:change2 == index}">{{item.value}}</button></div>
 					</div>
 					<div class="curve1">
 						<map-line class="curveEchart" :legendName="'近一年日平均曲线'" :lineColor="'#c624e6'"></map-line>
@@ -78,7 +78,7 @@
 			</Select>
 			</div>
 			<div class="titleImg" style="top:10%;height: 90%;overflow: hidden;">
-				<div v-for="item in mlList" :key="item" style="width: 50%;padding:2% 0 0 5%;overflow: hidden;float: left;height: 20%;">
+				<div v-for="(item,i) in mlList" :key="'m'+i" style="width: 50%;padding:2% 0 0 5%;overflow: hidden;float: left;height: 20%;">
 					<div style="float:left;height: 100%;width: 20%;">
 						<Icon :type="item.icon" size="20" :color="item.iconColor" />
 					</div>
@@ -95,7 +95,7 @@
 				<img src="../../../assets/images/map/soil.png" />
 			</div>
 			<div class="titleImg" style="top:10%;height: 90%;overflow: hidden;">
-				<div v-for="item in soilList" :key="item" style="float: left;width: 33%;height: 100%;text-align: center;line-height: 1;">
+				<div v-for="(item,i) in soilList" :key="'s'+i" style="float: left;width: 33%;height: 100%;text-align: center;line-height: 1;">
 					<div style="margin-top: 35%;">
 
 						<Icon :type="item.icon" size="40" :color="item.iconColor" />
