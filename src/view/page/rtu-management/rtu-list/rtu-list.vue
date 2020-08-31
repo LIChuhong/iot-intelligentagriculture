@@ -43,7 +43,7 @@
 <script>
 	import {
 		getRtuList,
-		isEnableRtu
+		isEnableRtu,getRtuData
 	} from '@/api/rtu'
 	import {
 		rtuListColumns
@@ -83,7 +83,21 @@
 		},
 		methods: {
 			detectionRtu(row,index){
+				row.checkLoading = true
+				getRtuData(row.rtuNumber).then(res => {
+					const data = res.data
+					row.checkLoading = false
+					if (data.success == 1) {
+						const rtuData = data.rtuData
+						this.$Message.success(row.rtuNumber+'设备在线')
 				
+					} else {
+						this.$Message.error(row.rtuNumber + data.errorMessage)
+					}
+				}).catch(error => {
+					row.checkLoading = false
+					alert(error)
+				})
 			},
 			isEnableRtuMethods(item) {
 				item.switchLoading = true
