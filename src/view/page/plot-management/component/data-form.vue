@@ -29,12 +29,26 @@
 					<Option v-for="i in timeList" :value="i.id" :key="i.id">{{ i.label }}</Option>
 				</Select>
 			</FormItem>
+			<FormItem label="萤石appKey" prop="appKey">
+				<Input type="text" :maxlength="100" v-model="dataForm.appKey" placeholder="请输入萤石appKey"></Input>
+			</FormItem>
+			<FormItem label="萤石appSecret" prop="appSecret">
+				<Input type="text" :maxlength="100" v-model="dataForm.appSecret" placeholder="请输入萤石appSecret"></Input>
+			</FormItem>
 			<FormItem v-for="(item, index) in dataForm.iaVideoList" :key="index" :label="'视频'+(index+1)" :prop="'iaVideoList.' + index">
 				<Row>
 					<Col span="22">
 					<div style="overflow: hidden;">
 						<p style="width:4.375rem;float: left;">设备名称：</p>
 						<Input style="width:70%;" v-model="item.deviceName" placeholder="请输入设备名称" /></Input>
+					</div>
+					<div style="overflow: hidden;">
+						<p style="width:4.375rem;float: left;text-align: right;">序列号：</p>
+						<Input style="width:70%;" v-model="item.deviceSerial" placeholder="请输入设备序列号" /></Input>
+					</div>
+					<div style="overflow: hidden;">
+						<p style="width:4.375rem;float: left;">设备通道：</p>
+						<Input type="number" style="width:70%;" v-model="item.channelNo" placeholder="请输入设备通道" /></Input>
 					</div>
 					<div style="overflow: hidden;margin: 0.3125rem 0;">
 						<p style="width:4.375rem;float: left;">高清地址：</p>
@@ -117,6 +131,7 @@
 		},
 		data() {
 			return {
+				
 				showBelongOrg: false,
 				belongOrgTitle: '',
 				belongOrgInfo: '', //所属组织信息
@@ -137,6 +152,8 @@
 				showSpin: false,
 				farmList: [],
 				dataForm: {
+					appSecret:'',
+					appKey:'',
 					belongOrgId: null,
 					updateDataInv: 600,
 					farmType: 0,
@@ -146,6 +163,8 @@
 					centerPostion: '',
 					iaVideoList: [{
 						deviceName: '',
+						deviceSerial:'',
+						channelNo:'',
 						highDefinitionUrl: '',
 						fluentUrl: ''
 					}]
@@ -308,7 +327,9 @@
 				this.dataForm.iaVideoList.push({
 					deviceName: '',
 					highDefinitionUrl: '',
-					fluentUrl: ''
+					fluentUrl: '',
+					deviceSerial:'',
+					channelNo:'',
 				})
 			},
 
@@ -323,6 +344,8 @@
 							mapId: parseInt(this.dataForm.mapId),
 							belongOrgId: parseInt(this.dataForm.belongOrgId),
 							updateDataInv: parseInt(this.dataForm.updateDataInv),
+							appSecret:this.dataForm.appSecret,
+							appKey:this.dataForm.appKey,
 							iaVideoList: this.dataForm.iaVideoList,
 
 						}
