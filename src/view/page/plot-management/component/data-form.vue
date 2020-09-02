@@ -121,7 +121,8 @@
 	} from '@/api/farm.js'
 	import {
 		addIABigDataMap,
-		getIABigDataMap
+		getIABigDataMap,
+		updateIABigDataMap
 	} from '@/api/plot.js'
 	import OrgTree from '@/view/components/org-tree.vue'
 	export default {
@@ -131,7 +132,7 @@
 		},
 		data() {
 			return {
-				
+
 				showBelongOrg: false,
 				belongOrgTitle: '',
 				belongOrgInfo: '', //所属组织信息
@@ -152,8 +153,8 @@
 				showSpin: false,
 				farmList: [],
 				dataForm: {
-					appSecret:'',
-					appKey:'',
+					appSecret: '',
+					appKey: '',
 					belongOrgId: null,
 					updateDataInv: 600,
 					farmType: 0,
@@ -163,8 +164,8 @@
 					centerPostion: '',
 					iaVideoList: [{
 						deviceName: '',
-						deviceSerial:'',
-						channelNo:'',
+						deviceSerial: '',
+						channelNo: '',
 						highDefinitionUrl: '',
 						fluentUrl: ''
 					}]
@@ -198,10 +199,10 @@
 						id: 0,
 						label: '室外'
 					},
-					{
-						id: 1,
-						label: '室内'
-					}
+					// {
+					// 	id: 1,
+					// 	label: '室内'
+					// }
 				],
 				timeList: [{
 						id: 600,
@@ -236,18 +237,29 @@
 						const data = res.data
 						this.showSpin = false
 						if (data.success == 1) {
-							console.log(data)
+							// console.log(data)
 							var iaBigDataMap = data.iaBigDataMap
 							this.dataForm = {
-								bigDataMapName:iaBigDataMap.bigDataMapName,
-								mapId:iaBigDataMap.mapId.toString(),
-								belongOrgId:iaBigDataMap.belongOrgId,
-								iaVideoList:iaBigDataMap.iaVideoList,
-								updateDataInv:iaBigDataMap.updateDataInv,
-								farmType:iaBigDataMap.farmType,
+								bigDataMapName: iaBigDataMap.bigDataMapName,
+								mapId: iaBigDataMap.mapId.toString(),
+								belongOrgId: iaBigDataMap.belongOrgId,
+								iaVideoList: iaBigDataMap.iaVideoList,
+								updateDataInv: iaBigDataMap.updateDataInv,
+								farmType: iaBigDataMap.farmType,
+								appKey: iaBigDataMap.videoKey.appKey,
+								appSecret: iaBigDataMap.videoKey.appSecret,
+								
 							}
-							this.belongOrgName = iaBigDataMap.orgName
+							if( iaBigDataMap.openFieldFarm != null &&  iaBigDataMap.openFieldFarm != ''){
+								var openFieldFarm = iaBigDataMap.openFieldFarm
+								this.dataForm.farmPathName = openFieldFarm.farmAddress
+								this.dataForm.centerPostion = openFieldFarm.centerPostion
+								console.log(this.dataForm)
 							
+							}
+							console.log(this.dataForm)
+							this.belongOrgName = iaBigDataMap.orgName
+
 						} else {
 							this.$Message.error(data.errorMessage)
 						}
@@ -275,7 +287,7 @@
 			changeFarmPath() {
 				// alert(1)
 
-				console.log(this.markerName)
+				// console.log(this.markerName)
 				this.dataForm.farmPathName = this.markerName
 				this.dataForm.centerPostion = this.markerPosition
 				this.showMap = false
@@ -287,6 +299,7 @@
 			getPoint(e) {
 				let geocoder = new BMap.Geocoder();
 				geocoder.getLocation(e.point, rs => {
+					 console.log(rs)
 					this.markerName = rs.address + '-' + rs.surroundingPois[0].title;
 					this.markerPosition = e.point
 					//地址描述(string)=
@@ -328,8 +341,8 @@
 					deviceName: '',
 					highDefinitionUrl: '',
 					fluentUrl: '',
-					deviceSerial:'',
-					channelNo:'',
+					deviceSerial: '',
+					channelNo: '',
 				})
 			},
 
@@ -344,9 +357,12 @@
 							mapId: parseInt(this.dataForm.mapId),
 							belongOrgId: parseInt(this.dataForm.belongOrgId),
 							updateDataInv: parseInt(this.dataForm.updateDataInv),
-							appSecret:this.dataForm.appSecret,
-							appKey:this.dataForm.appKey,
+							videoKey: {
+								appSecret: this.dataForm.appSecret,
+								appKey: this.dataForm.appKey,
+							},
 							iaVideoList: this.dataForm.iaVideoList,
+
 
 						}
 						var centerPostion = {
@@ -355,26 +371,45 @@
 						}
 						if (iaBigDataMap.farmType == 0) {
 							iaBigDataMap.openFieldFarm = {
-								centerPostion: centerPostion
+								centerPostion: centerPostion,
+								farmAddress:this.dataForm.farmPathName
 							}
 						} else {
 							iaBigDataMap.closeFieldFarm = {
 								centerPostion: centerPostion
 							}
 						}
+						this.showSpin = true
 						console.log(iaBigDataMap)
-						addIABigDataMap(iaBigDataMap).then(res => {
-							const data = res.data
-							this.showSpin = false
-							if (data.success == 1) {
-								this.$Message.success('添加成功')
-							} else {
-								this.$Message.error(data.errorMessage)
-							}
-						}).catch(error => {
-							this.showSpin = false
-							alert(error)
-						})
+						if(this.dataMapId != null && this.dataMapId != ''){
+							iaBigDataMap.id = this.dataMapId
+							updateIABigDataMap(iaBigDataMap).then(res => {
+								const data = res.data
+								this.showSpin = false
+								if (data.success == 1) {
+									this.$Message.success('编辑成功')
+								} else {
+									this.$Message.error(data.errorMessage)
+								}
+							}).catch(error => {
+								this.showSpin = false
+								alert(error)
+							})
+						}else{
+							addIABigDataMap(iaBigDataMap).then(res => {
+								const data = res.data
+								this.showSpin = false
+								if (data.success == 1) {
+									this.$Message.success('添加成功')
+								} else {
+									this.$Message.error(data.errorMessage)
+								}
+							}).catch(error => {
+								this.showSpin = false
+								alert(error)
+							})
+						}
+						
 					}
 
 				})

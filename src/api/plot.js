@@ -88,6 +88,14 @@ export const getIABigDataMap = (id) => {
 	})
 }
 
+//获取默认画面数据
+export const getDefaultIABigDataMap = () => {
+	return axios.request({
+		url: '/v1/getDefaultIABigDataMap',
+		method: 'get'
+	})
+}
+
 //地块规划
 export const updateIAMassifsMap = (iaMassifsMap) => {
 	//console.log(vmOrg)
