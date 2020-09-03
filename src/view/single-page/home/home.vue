@@ -27,11 +27,16 @@
 				</div>
 			</div>
 			<map-baidu class="curveEchart"></map-baidu>
+
+			<!-- <EZUIKitJs></EZUIKitJs> -->
 		</div>
 		<div class="publicStyle minh lDistance bTop">
 			<img src="../../../assets/images/map/soil1.png" />
 			<div class="titleImg">
 				<img src="../../../assets/images/map/watch.png" />
+			</div>
+			<div class="titleImg" style="overflow: hidden;display: flex;justify-content:center;top:17%">
+				<EZUIKitJs></EZUIKitJs>
 			</div>
 		</div>
 		<div class="publicStyle maxh lDistance bBottom">
@@ -73,9 +78,9 @@
 				<img src="../../../assets/images/map/weather.png" />
 			</div>
 			<div style="position: absolute;top: 0;right: 0;font-size: 0.75rem;">
-			<Select v-model="model1" style="width:100%;font-size: 0.75rem;background:#17233D;" size="small">
-			    <Option v-for="item in cityList" :value="item.value" :key="item.value">{{ item.label }}</Option>
-			</Select>
+				<Select v-model="model1" style="width:100%;font-size: 0.75rem;background:#17233D;" size="small">
+					<Option v-for="item in cityList" :value="item.value" :key="item.value">{{ item.label }}</Option>
+				</Select>
 			</div>
 			<div class="titleImg" style="top:10%;height: 90%;overflow: hidden;">
 				<div v-for="(item,i) in mlList" :key="'m'+i" style="width: 50%;padding:2% 0 0 5%;overflow: hidden;float: left;height: 20%;">
@@ -111,7 +116,7 @@
 			</Tooltip>
 		</div>
 	</div>
-	
+
 </template>
 
 <script>
@@ -120,18 +125,20 @@
 	import MapLine from '../component/map-line.vue'
 	import MapBaidu from '../component/map-baidu.vue'
 	import MapTemper from '../component/map-temper.vue'
+	import EZUIKitJs from '../component/EZUIKitJs.vue'
 	export default {
 		components: {
 			MapBar,
 			MapLine,
 			MapBaidu,
-			MapTemper
+			MapTemper,
+			EZUIKitJs
 		},
 		data() {
 			return {
 				mapBg,
 				// screenWidth:null
-				value:false,
+				value: false,
 				mlList: [], //气象列表
 				soilList: [], //土壤列表
 				curveList: [{
@@ -167,6 +174,7 @@
 			}
 		},
 		methods: {
+			
 			handleFullscreen() {
 				// let main = main.body
 				let main = this.$refs.map
@@ -181,7 +189,7 @@
 					} else if (document.msExitFullscreen) {
 						document.msExitFullscreen()
 					}
-			
+
 				} else {
 					this.value = true
 					if (main.requestFullscreen) {
@@ -196,9 +204,9 @@
 				}
 				// console.log(main)
 				//this.launchFullScreen(main)
-			
+
 			},
-			
+
 			curveBtn(index) {
 				this.change1 = index;
 				// e.target.style.background = "#000000"
