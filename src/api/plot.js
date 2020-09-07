@@ -105,3 +105,14 @@ export const updateIAMassifsMap = (iaMassifsMap) => {
   	method: 'post'
   })
 }
+
+//获取数据画面列表
+export const getIAVideoList = (iaBigDataMapId) => {
+	return axios.request({
+		url: '/v1/getIAVideoList',
+		params:{
+			'iaBigDataMapId':iaBigDataMapId
+		},
+		method: 'get'
+	})
+}

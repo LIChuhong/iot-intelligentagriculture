@@ -32,6 +32,7 @@
 		</div>
 		<div class="publicStyle minh lDistance bTop">
 			<img src="../../../assets/images/map/soil1.png" />
+			<Button type="text" ghost style="z-index: 1;position: absolute;left: 0;top:0;" size="small" @click="getIaVideoList">列表</Button>
 			<div class="titleImg">
 				<img src="../../../assets/images/map/watch.png" />
 			</div>
@@ -115,6 +116,10 @@
 				<Icon @click.native="handleFullscreen" :type="value ? 'md-contract' : 'md-expand'" :size="23" style="color: #FFFFFF;z-index: 200;"></Icon>
 			</Tooltip>
 		</div>
+		<Modal title="视频列表" v-model="showIaVideoList" footer-hide width="60" :transfer="false">
+			
+		</Modal>
+		
 	</div>
 
 </template>
@@ -126,6 +131,7 @@
 	import MapBaidu from '../component/map-baidu.vue'
 	import MapTemper from '../component/map-temper.vue'
 	import EZUIKitJs from '../component/EZUIKitJs.vue'
+	import { getIAVideoList } from '@/api/plot.js'
 	export default {
 		components: {
 			MapBar,
@@ -138,6 +144,8 @@
 			return {
 				mapBg,
 				// screenWidth:null
+				iaBigDataMapId:0,
+				showIaVideoList:false,
 				value: false,
 				mlList: [], //气象列表
 				soilList: [], //土壤列表
@@ -174,7 +182,14 @@
 			}
 		},
 		methods: {
-			
+			getIaVideoList() {
+				this.showIaVideoList = true
+				getIAVideoList(this.iaBigDataMapId).then(res=>{
+					console.log(res)
+				}).catch(error=>{
+					alert(error)
+				})
+			},
 			handleFullscreen() {
 				// let main = main.body
 				let main = this.$refs.map

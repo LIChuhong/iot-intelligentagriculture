@@ -142,10 +142,11 @@
 				this.center.lng = 116.404
 				this.center.lat = 39.915
 				this.zoom = 15
+				this.getDefaultMap()
 			}
 		},
-		mounted() {
-			this.getDefaultMap()
+		created() {
+			
 		}
 	}
 </script>
