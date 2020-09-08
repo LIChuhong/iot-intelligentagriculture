@@ -60,7 +60,8 @@
 						this.iaBigDataMap = data.iaBigDataMap
 						// this.iaBigDataMap.dataMapName = iaBigDataMap.bigDataMapName
 						var openFieldFarm = this.iaBigDataMap.openFieldFarm
-						console.log(data.iaBigDataMap)
+						// console.log(data.iaBigDataMap)
+						this.$emit('get-map-data',data.iaBigDataMap)
 						// this.centerPostion = openFieldFarm.centerPostion
 						this.positioning(openFieldFarm.centerPostion)
 				
@@ -86,6 +87,7 @@
 						// this.iaBigDataMap.dataMapName = iaBigDataMap.bigDataMapName
 						var openFieldFarm = this.iaBigDataMap.openFieldFarm
 						// this.centerPostion = openFieldFarm.centerPostion
+						this.$emit('get-map-data',data.iaBigDataMap)
 						this.positioning(openFieldFarm.centerPostion)
 
 					} else {

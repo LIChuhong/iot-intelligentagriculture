@@ -26,7 +26,7 @@
 					<map-temper class="curveEchart"></map-temper>
 				</div>
 			</div>
-			<map-baidu class="curveEchart"></map-baidu>
+			<map-baidu class="curveEchart" @get-map-data="getIaMapData"></map-baidu>
 
 			<!-- <EZUIKitJs></EZUIKitJs> -->
 		</div>
@@ -37,7 +37,7 @@
 				<img src="../../../assets/images/map/watch.png" />
 			</div>
 			<div class="titleImg" style="overflow: hidden;display: flex;justify-content:center;top:17%">
-				<EZUIKitJs></EZUIKitJs>
+				<EZUIKitJs :video-key="videoKey" :ia-video-list="iaVideoList" :get-video-info="getVideoInfo"></EZUIKitJs>
 			</div>
 		</div>
 		<div class="publicStyle maxh lDistance bBottom">
@@ -117,9 +117,16 @@
 			</Tooltip>
 		</div>
 		<Modal title="视频列表" v-model="showIaVideoList" footer-hide width="60" :transfer="false">
-			
+			<div style="display: flex;flex-wrap:wrap;justify-content:space-between">
+				<div style="width: 30%;height: 150px;background: #00BFFF;margin-bottom: 0.625rem;text-align: center;" v-for="(item,index) in iaVideoImgList" :key="'vi'+ index">
+					<!-- {{iaVideoImgList[0]}} -->
+					<p>视频{{index+1}}</p>
+					<img :src="item.picUrl" height="85%" @click="changeIaVideo(item)"/>
+
+				</div>
+			</div>
 		</Modal>
-		
+
 	</div>
 
 </template>
@@ -131,7 +138,9 @@
 	import MapBaidu from '../component/map-baidu.vue'
 	import MapTemper from '../component/map-temper.vue'
 	import EZUIKitJs from '../component/EZUIKitJs.vue'
-	import { getIAVideoList } from '@/api/plot.js'
+	import {
+		getIAVideoList
+	} from '@/api/plot.js'
 	export default {
 		components: {
 			MapBar,
@@ -144,8 +153,12 @@
 			return {
 				mapBg,
 				// screenWidth:null
-				iaBigDataMapId:0,
-				showIaVideoList:false,
+				getVideoInfo:'',
+				iaVideoImgList: [],
+				iaVideoList: [],
+				videoKey: '',
+				iaBigDataMapId: 0,
+				showIaVideoList: false,
 				value: false,
 				mlList: [], //气象列表
 				soilList: [], //土壤列表
@@ -182,11 +195,29 @@
 			}
 		},
 		methods: {
+			changeIaVideo(item){
+				this.getVideoInfo = item
+				// console.log(this.getVideoInfo)
+				this.showIaVideoList = false
+			},
+			getIaMapData(mapData) {
+				// console.log(1)
+				// console.log(mapData.videoKey)
+				this.iaVideoList = mapData.iaVideoList
+				this.videoKey = mapData.videoKey
+				this.iaBigDataMapId = mapData.id
+			},
 			getIaVideoList() {
 				this.showIaVideoList = true
-				getIAVideoList(this.iaBigDataMapId).then(res=>{
-					console.log(res)
-				}).catch(error=>{
+				getIAVideoList(this.iaBigDataMapId).then(res => {
+					// console.log(res)
+					const data = res.data
+					if (data.success == 1) {
+						this.iaVideoImgList = data.iaVideoList
+					} else {
+						this.$Message.error(data.errorMessage)
+					}
+				}).catch(error => {
 					alert(error)
 				})
 			},
