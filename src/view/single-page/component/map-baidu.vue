@@ -13,7 +13,7 @@
 			<bm-control anchor="BMAP_ANCHOR_BOTTOM_RIGHT">
 				<Button size="small" @click="getDataMapList">选择数据画面</Button>
 			</bm-control>
-			<bm-marker :position="center"></bm-marker>
+			<bm-marker :position="center" :title="farmAddress"></bm-marker>
 		</baidu-map>
 		<Modal title="选择数据画面" v-model="showDataMapList" footer-hide width="60" :transfer="false">
 			<data-map-list v-if="showDataMapList" @get-data-map-info="getDataMapInfo"></data-map-list>
@@ -47,6 +47,7 @@
 					lng: 0,
 					lat: 0
 				},
+				farmAddress:'',
 				zoom: 1
 			}
 		},
@@ -63,6 +64,7 @@
 						// console.log(data.iaBigDataMap)
 						this.$emit('get-map-data',data.iaBigDataMap)
 						// this.centerPostion = openFieldFarm.centerPostion
+						this.farmAddress = openFieldFarm.farmAddress;
 						this.positioning(openFieldFarm.centerPostion)
 				
 					} else {
@@ -87,6 +89,7 @@
 						// this.iaBigDataMap.dataMapName = iaBigDataMap.bigDataMapName
 						var openFieldFarm = this.iaBigDataMap.openFieldFarm
 						// this.centerPostion = openFieldFarm.centerPostion
+						this.farmAddress = openFieldFarm.farmAddress;
 						this.$emit('get-map-data',data.iaBigDataMap)
 						this.positioning(openFieldFarm.centerPostion)
 
@@ -101,9 +104,11 @@
 			positioning(centerPostion) {
 				var that = this;
 				var geco = new BMap.Geocoder();
-				geco.getLocation(centerPostion, function(res) {
+				geco.getLocation(centerPostion, res=> {
 					that.center = centerPostion //将地图的中心点更改为给定的点
 					// console.log(that.iaBigDataMap.openFieldFarm)
+					// console.log('11'+res)
+					// that.farmAddress = res.address + '-' + res.surroundingPois[0].title;
 					if (that.iaBigDataMap.openFieldFarm.iaMassifMapList != undefined) {
 						var iaMassifMapList = that.iaBigDataMap.openFieldFarm.iaMassifMapList
 						for (var i = 0; i < iaMassifMapList.length; i++) {
