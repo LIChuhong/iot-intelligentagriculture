@@ -6,7 +6,9 @@
 				<img id="mapBgImg" ref="mapBgImg" :src="mapBgImgUrl" style="z-index: 1;height: 100%;" draggable="false" />
 				<div v-for="item in rtuImgList" :key="item.rtuNumber" v-drag class="drag" :style="{top:item.heightScale+'%',left:item.widthScale+'%'}">
 					<Poptip :title="item.rtuNumber">
-						<img :src="item.rtuTypeImgUrl" class="rtu1" :alt="item.rtuNumber" draggable="false" />
+						<div class="rtuImgStyle">
+							<img :src="item.rtuTypeImgUrl" class="rtu1" :alt="item.rtuNumber" :draggable="false" />
+						</div>
 					</Poptip>
 				</div>
 			</div>
@@ -38,7 +40,7 @@
 				<Button style="margin: 5px 0;" type="primary" @click="saveMap">保存</Button>
 			</div>
 			<div v-show="mapId != null" style="position: absolute;bottom: 0;right: 0;"><a @click="goBack">返回</a></div>
-			
+
 		</div>
 		<!-- </div> -->
 		<div style="position: absolute;right:30px;">
@@ -53,21 +55,25 @@
 <script>
 	import rainfallDetector from '@/assets/images/rainfallDetector.png'
 	import bg from '@/assets/images/map.jpg'
-	import { addMap,getMap,updateMap } from '@/api/farm.js'
+	import {
+		addMap,
+		getMap,
+		updateMap
+	} from '@/api/farm.js'
 	import {
 		getRtuList,
 	} from '@/api/rtu'
 	export default {
-		props:{
-			mapId:{
+		props: {
+			mapId: {
 				type: Number,
 				default: null
-				}
+			}
 		},
 		data() {
 			return {
 				// belongOrgId:this.$store.state.user.userInfo.belongOrgId,
-				showMap:false,
+				showMap: false,
 				value: false,
 				rtuImgList: [],
 				rtuListData: [],
@@ -84,23 +90,23 @@
 				pageSize: 50,
 				keyField: 0,
 				showAddRtu: true,
-				mapName:null,
-				
+				mapName: null,
+
 			}
 		},
 
 		directives: {
 			drag(el, bindings) {
 				el.onmousedown = function(e) {
-					
-					let mapHeight =document.getElementById('mapBgDiv').offsetHeight;
-					let mapWidth =document.getElementById('mapBgDiv').offsetWidth;
+
+					let mapHeight = document.getElementById('mapBgDiv').offsetHeight;
+					let mapWidth = document.getElementById('mapBgDiv').offsetWidth;
 					let disx = e.clientX - el.offsetLeft;
 					let disy = e.clientY - el.offsetTop;
 					// console.log('disx:'+disx)
 					document.onmousemove = function(e) {
-						el.style.left = (e.clientX - disx)/mapWidth*100 + '%';
-						el.style.top = (e.clientY - disy)/mapHeight*100 + '%';
+						el.style.left = (e.clientX - disx) / mapWidth * 100 + '%';
+						el.style.top = (e.clientY - disy) / mapHeight * 100 + '%';
 					}
 					document.onmouseup = function() {
 						document.onmousemove = document.onmouseup = null;
@@ -114,61 +120,61 @@
 				let rtusPostionJson = []
 				let maps = document.getElementsByClassName('drag');
 				// console.log(maps)
-				for(var i=0; i<maps.length ;i++){
+				for (var i = 0; i < maps.length; i++) {
 					rtusPostionJson.push({
-						'rtuNumber':parseInt(maps[i].getElementsByTagName("img")[0].alt),
-						'x':parseFloat(maps[i].style.left),
-						'y':parseFloat(maps[i].style.top)
+						'rtuNumber': parseInt(maps[i].getElementsByTagName("img")[0].alt),
+						'x': parseFloat(maps[i].style.left),
+						'y': parseFloat(maps[i].style.top)
 					})
-					
+
 				}
 				let imgWidth = document.getElementById("mapBgImg").offsetWidth
 				let imgHeight = document.getElementById("mapBgImg").offsetHeight
 				let map = {
-					"mapName":this.mapName,
-					"bgImgUrl":this.mapBgImgUrl,
-					"rtuPostionList":rtusPostionJson,
-					"belongOrgId":this.$store.state.user.userInfo.belongOrgId,
-					"imgWidth":imgWidth,
-					"imgHeight":imgHeight
+					"mapName": this.mapName,
+					"bgImgUrl": this.mapBgImgUrl,
+					"rtuPostionList": rtusPostionJson,
+					"belongOrgId": this.$store.state.user.userInfo.belongOrgId,
+					"imgWidth": imgWidth,
+					"imgHeight": imgHeight
 				}
-				if(this.mapId != null &&this.mapId != ''){
+				if (this.mapId != null && this.mapId != '') {
 					map.id = this.mapId
 					// console.log(map)
-					updateMap(map).then(res=>{
+					updateMap(map).then(res => {
 						const data = res.data
-						if(data.success == 1){
+						if (data.success == 1) {
 							this.$Message.success('更改成功')
-						}else{
+						} else {
 							this.$Message.error(data.errorMessage)
 						}
-					}).catch(error=>{
+					}).catch(error => {
 						alert(error)
 					})
-				}else{
-					addMap(map).then(res=>{
+				} else {
+					addMap(map).then(res => {
 						const data = res.data
-						if(data.success == 1){
+						if (data.success == 1) {
 							this.$Message.success('保存成功')
-						}else{
+						} else {
 							this.$Message.error(data.errorMessage)
 						}
-					}).catch(error=>{
+					}).catch(error => {
 						alert(error)
 					})
 				}
-				
-				
-				
+
+
+
 			},
-			goBack(){
-				this.$emit('go-back','')
+			goBack() {
+				this.$emit('go-back', '')
 			},
-			belong(){
+			belong() {
 				this.mapBgImgUrl = bg
 			},
-			checkRtu(list,item) {
-				if(this.mapBgImgUrl ==null || this.mapBgImgUrl == ''){
+			checkRtu(list, item) {
+				if (this.mapBgImgUrl == null || this.mapBgImgUrl == '') {
 					this.$Message.warning('请先选择地图再选择设备')
 					item.checked = false
 					return
@@ -186,10 +192,10 @@
 							if (this.maxId < item.id) {
 								this.maxId = item.id
 							}
-							item.title = item.rtuNumber+'('+item.rtuName+'|'+item.rtuTypeName+')'
+							item.title = item.rtuNumber + '(' + item.rtuName + '|' + item.rtuTypeName + ')'
 							item.checked = false
-							for(var i = 0 ; i < list.length ;i++){
-								if(item.id == list[i].id){
+							for (var i = 0; i < list.length; i++) {
+								if (item.id == list[i].id) {
 									item.checked = true
 									item.heightScale = list[i].heightScale
 									item.widthScale = list[i].widthScale
@@ -210,7 +216,7 @@
 				})
 			},
 			handleSuccess(response, file) {
-				
+
 				if (response.success == 1) {
 					// console.log(response.sizeList)
 					this.showMap = true
@@ -259,12 +265,12 @@
 				//this.launchFullScreen(main)
 
 			},
-			getMapInfo(){
-				 // alert(1)
-				if(this.mapId != null && this.mapId != ''){
-					getMap(this.mapId).then(res=>{
+			getMapInfo() {
+				// alert(1)
+				if (this.mapId != null && this.mapId != '') {
+					getMap(this.mapId).then(res => {
 						const data = res.data
-						if(data.success == 1){
+						if (data.success == 1) {
 							this.showMap = true
 							const map = data.map
 							const iaRtuList = data.iaRtuList
@@ -274,13 +280,13 @@
 							// this.checkRtuData = iaRtuList
 							// console.log(this.rtuImgList)
 							this.getRtuList(iaRtuList)
-						}else{
+						} else {
 							this.$Message.error(data.errorMessage)
 						}
-					}).catch(error=>{
+					}).catch(error => {
 						alert(error)
 					})
-				}else{
+				} else {
 					this.getRtuList([])
 				}
 			}
@@ -288,7 +294,7 @@
 
 		mounted() {
 			// this.getRtuList()
-			
+
 		},
 		created() {
 			// this.$route.meta.keepAlive = true
@@ -305,11 +311,27 @@
 		z-index: 2;
 	}
 
+	.rtuImgStyle {
+		width: 1.25rem;
+		height: 1.25rem;
+		border-radius: 50%;
+		background: #00BFFF;
+		line-height: 1.25rem;
+		background: rgba(255, 0, 0, 0.5);
+		overflow: hidden;
+		box-shadow: 0 0 5px #000;
+		border-radius: 50%;
+		color: #fff;
+		text-align: center;
+	}
+
 	.drag {
 		/* width: 100px; */
 		/* display: inline-block; */
 		position: absolute;
-		width: 2%;
+		height: 1.25rem;
+		width: 1.25rem;
+		/* width: 2%; */
 		/* height: 4%; */
 		/* background: #DB7093; */
 		/* overflow: hidden; */

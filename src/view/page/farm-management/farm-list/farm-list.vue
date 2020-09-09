@@ -9,7 +9,9 @@
 						<div slot="content">
 							<div style="font-size: 0.75rem;" v-for="(item , index) in parameterDataList" :key="index"><span>{{item.parameterName}}:{{item.value}}{{item.unit}}</span></div>
 						</div>
-						<img :src="item.rtuTypeImgUrl" class="rtu1" :alt="item.rtuNumber" draggable="false" />
+						<div class="rtuImgStyle">
+						<img :src="item.rtuTypeImgUrl" class="rtu1"  :alt="item.rtuNumber+item.rtuTypeName" :draggable="false" />
+						</div>
 					</Poptip>
 
 				</div>
@@ -19,7 +21,7 @@
 			<!-- </div> -->
 			<div style="position: absolute;right:5%;text-align: center;top:1.25rem;z-index: 100;">
 				<Tooltip :content="value ? '退出全屏' : '全屏'" placement="bottom">
-					<Icon @click.native="handleFullscreen" :type="value ? 'md-contract' : 'md-expand'" :size="23"></Icon>
+					<Icon @click.native="handleFullscreen" color="#fff" :type="value ? 'md-contract' : 'md-expand'" :size="23"></Icon>
 				</Tooltip>
 				<div style="margin: 1.25rem;">
 					<button class="zoom-button" @click="getRtusMapList">
@@ -393,17 +395,34 @@
 		height: 100%;
 		z-index: 2;
 		// display: inline
-		-moz-transform: none;
-		-webkit-transform: none;
-		-o-transform: none;
-		-ms-transform: none;
-		transform: none;
+		// -moz-transform: none;
+		// -webkit-transform: none;
+		// -o-transform: none;
+		// -ms-transform: none;
+		// transform: none;
 
 	}
+	.rtuImgStyle {
+		width: 1.25rem;
+		height: 1.25rem;
+		border-radius: 50%;
+		background: #00BFFF;
+		line-height: 1.25rem;
+		background: rgba(255, 0, 0, 0.5);
+		overflow: hidden;
+		box-shadow: 0 0 5px #000;
+		border-radius: 50%;
+		color: #fff;
+		text-align: center;
+	}
+	
 
 	.drag1 {
+		// overflow: hidden;
 		position: absolute;
-		width: 2%;
+		// width:  2%;
+		height:1.25rem;
+		width: 1.25rem;
 		-moz-transform: none;
 		-webkit-transform: none;
 		-o-transform: none;
