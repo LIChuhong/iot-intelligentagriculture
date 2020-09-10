@@ -1,9 +1,9 @@
 <template>
 	<div ref="maps" style="height: 100%;overflow: auto;background: #f8f8f9">
 
-		<div ref="map" style="width:80%;float: left;overflow:hidden;background: #808695;height:100%;">
-			<div v-show="showMap" id="mapBgDiv" ref="mapBgDiv" style="position: relative;height: 100%;overflow:hidden;background: #00BFFF;display:inline-block;">
-				<img id="mapBgImg" ref="mapBgImg" :src="mapBgImgUrl" style="z-index: 1;height: 100%;" draggable="false" />
+		<div ref="map" style="width:80%;float: left;overflow:hidden;background: #808695;height:100%;display: flex;justify-content:center;position: relative;">
+			<div v-show="showMap" id="mapBgDiv" ref="mapBgDiv" style="position: absolute;height: 100%;overflow:hidden;background: #00BFFF;">
+				<img id="mapBgImg" ref="mapBgImg"  :src="mapBgImgUrl" style="z-index: 1;max-height: 100%;max-width: 100%;" draggable="false" />
 				<div v-for="item in rtuImgList" :key="item.rtuNumber" v-drag class="drag" :style="{top:item.heightScale+'%',left:item.widthScale+'%'}">
 					<Poptip :title="item.rtuNumber">
 						<div class="rtuImgStyle">
@@ -312,11 +312,11 @@
 	}
 
 	.rtuImgStyle {
-		width: 1.25rem;
-		height: 1.25rem;
+		width: 1.875rem;
+		height: 1.875rem;
 		border-radius: 50%;
 		background: #00BFFF;
-		line-height: 1.25rem;
+		line-height: 1.875rem;
 		background: rgba(255, 0, 0, 0.5);
 		overflow: hidden;
 		box-shadow: 0 0 5px #000;
@@ -329,8 +329,8 @@
 		/* width: 100px; */
 		/* display: inline-block; */
 		position: absolute;
-		height: 1.25rem;
-		width: 1.25rem;
+		height: 1.875rem;
+		width: 1.875rem;
 		/* width: 2%; */
 		/* height: 4%; */
 		/* background: #DB7093; */

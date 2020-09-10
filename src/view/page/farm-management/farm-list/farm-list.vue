@@ -105,8 +105,6 @@
 		},
 		watch: {
 			zoom(newVal, oldVal) {
-				console.log(newVal)
-				console.log(oldVal)
 				if (newVal < oldVal) {
 					this.mapHeight = this.mapHeight * (oldVal - 20) / oldVal
 				}
@@ -162,7 +160,29 @@
 			goBack(val) {
 				this.editor = false
 			},
-			touchstartView() {
+			touchstartView(event) {
+				// console.log(event)
+				this.canMove = true
+				this.initPageX = event.pageX
+				this.initPageY = event.pageY
+				this.oldMarginLeft = this.orgTreeOffsetLeft
+				this.oldMarginTop = this.orgTreeOffsetTop
+				let that = this
+				// on(document, 'mousemove', this.mousemoveView)
+				// on(document, 'mouseup', this.mouseupView)
+				document.ontouchmove = function(event) {
+					console.log(event)
+					if (!that.canMove) return
+					const {
+						pageX,
+						pageY
+					} = event
+					that.orgTreeOffsetLeft = that.oldMarginLeft + pageX - that.initPageX
+					that.orgTreeOffsetTop = that.oldMarginTop + pageY - that.initPageY
+				};
+				document.ontouchend = function() {
+					that.canMove = false
+				}
 
 			},
 
@@ -403,11 +423,11 @@
 
 	}
 	.rtuImgStyle {
-		width: 1.25rem;
-		height: 1.25rem;
+		width: 1.875rem;
+		height: 1.875rem;
 		border-radius: 50%;
 		background: #00BFFF;
-		line-height: 1.25rem;
+		line-height:1.875rem;
 		background: rgba(255, 0, 0, 0.5);
 		overflow: hidden;
 		box-shadow: 0 0 5px #000;
@@ -421,8 +441,8 @@
 		// overflow: hidden;
 		position: absolute;
 		// width:  2%;
-		height:1.25rem;
-		width: 1.25rem;
+		height:1.875rem;
+		width: 1.875rem;
 		-moz-transform: none;
 		-webkit-transform: none;
 		-o-transform: none;
