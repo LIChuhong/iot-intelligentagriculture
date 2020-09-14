@@ -8,7 +8,7 @@
 		</div>
 		<Table size="small" border :columns="rtuListColumns" :data="rtuListData" :loading="tableLoading">
 			<template slot-scope="{ row }" slot="rtuTypeImgUrl">
-				<img :src="row.rtuTypeImgUrl" alt="" width="45px" height="45px" />
+				<img :src="row.rtuTypeImgUrl" :alt="row.rtuNumber" style="height: 2.8125rem;max-width: 3.125rem;" />
 			</template>
 			<template slot-scope="{ row }" slot="nameAndserialNum">
 				<p>{{ row.rtuNumber }}({{row.rtuName}})</p>

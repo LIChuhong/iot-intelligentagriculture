@@ -3,11 +3,11 @@
 
 		<div ref="map" style="width:80%;float: left;overflow:hidden;background: #808695;height:100%;display: flex;justify-content:center;position: relative;">
 			<div v-show="showMap" id="mapBgDiv" ref="mapBgDiv" style="position: absolute;height: 100%;overflow:hidden;background: #00BFFF;">
-				<img id="mapBgImg" ref="mapBgImg"  :src="mapBgImgUrl" style="z-index: 1;max-height: 100%;max-width: 100%;" draggable="false" />
+				<img id="mapBgImg" ref="mapBgImg"  :src="mapBgImgUrl" style="z-index: 1;height: 100%;" draggable="false" :class="{ widthActive:value }" />
 				<div v-for="item in rtuImgList" :key="item.rtuNumber" v-drag class="drag" :style="{top:item.heightScale+'%',left:item.widthScale+'%'}">
 					<Poptip :title="item.rtuNumber">
 						<div class="rtuImgStyle">
-							<img :src="item.rtuTypeImgUrl" class="rtu1" :alt="item.rtuNumber" :draggable="false" />
+							<img :src="item.rtuTypeImgUrl" class="rtu" :alt="item.rtuNumber" :draggable="false" />
 						</div>
 					</Poptip>
 				</div>
@@ -305,8 +305,11 @@
 </script>
 
 <style>
-	.rtu1 {
-		width: 100%;
+	.widthActive{
+		max-width: 100%;
+	}
+	.rtu {
+		max-width: 100%;
 		height: 100%;
 		z-index: 2;
 	}
