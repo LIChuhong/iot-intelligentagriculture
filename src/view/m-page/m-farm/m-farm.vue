@@ -64,7 +64,7 @@
 	} from '@/api/rtu.js'
 	import ZoomController from '@/view/page/farm-management/component/zoom-controller.vue'
 	export default {
-		name: 'farm_list',
+		name: 'm_farm',
 		components: {
 			MapList,
 			ZoomController,
@@ -171,6 +171,7 @@
 						if (x2 > x1) {
 							if (that.zoom < 300) {
 								that.zoom += 5
+																
 							}
 						}
 						if (x2 < x1) {
@@ -341,7 +342,7 @@
 
 	.rtu1 {
 		max-width: 100%;
-		height: 100%;
+		max-height: 100%;
 		z-index: 2;
 		// display: inline
 		// -moz-transform: none;
@@ -363,6 +364,9 @@
 		border-radius: 50%;
 		color: #fff;
 		text-align: center;
+		display: flex;
+		justify-content: center;
+		align-items: center
 	}
 	
 

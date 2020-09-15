@@ -104,9 +104,9 @@
 				<div v-for="(item,i) in soilList" :key="'s'+i" style="float: left;width: 33%;height: 100%;text-align: center;line-height: 1;">
 					<div style="margin-top: 35%;">
 
-						<Icon :type="item.icon" size="40" :color="item.iconColor" />
-						<p style="font-size: 1rem;">{{item.value}}</p>
-						<p style="font-size:0.75rem;color: #31abe3;margin-top: 0.125rem;">{{item.name}}</p>
+						<Icon :type="item.icon" size="30" :color="item.iconColor" />
+						<p style="font-size: 0.75rem;margin-top: 0.625rem;">{{item.value}}</p>
+						<p style="font-size:0.5rem;color: #31abe3;margin-top: 0.125rem;">{{item.name}}</p>
 					</div>
 				</div>
 			</div>

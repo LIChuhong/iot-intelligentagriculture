@@ -310,7 +310,7 @@
 	}
 	.rtu {
 		max-width: 100%;
-		height: 100%;
+		max-height: 100%;
 		z-index: 2;
 	}
 
@@ -326,6 +326,9 @@
 		border-radius: 50%;
 		color: #fff;
 		text-align: center;
+		display: flex;
+		justify-content: center;
+		align-items: center
 	}
 
 	.drag {

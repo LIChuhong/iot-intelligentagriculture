@@ -2,15 +2,17 @@
 	<div style="height: 100%;overflow: hidden;">
 		<div v-show="!editor" ref="maps1" style="height:100%;position: relative;overflow: hidden;background: #dcdee2;">
 			<!-- <div ref="map1" > -->
-			<div :style="mapStyle" @mousewheel="mouseWheel" @mousedown="mousedownView" @touchstart="touchstartView" id="mapBgDiv1" ref="mapBgDiv1">
+			<div :style="mapStyle" @mousewheel="mouseWheel" @mousedown="mousedownView" @touchstart="touchstartView" id="mapBgDiv1"
+			 ref="mapBgDiv1">
 				<img id="mapBgImg1" ref="mapBgImg1" :src="mapBgImgUrl" style="height: 100%;" draggable="false" />
-				<div v-for="item in rtuImgList" :key="item.rtuNumber" class="drag1" :style="{top:item.heightScale+'%',left:item.widthScale+'%',cursor:'pointer'}" :title="item.rtuNumber">
+				<div v-for="item in rtuImgList" :key="item.rtuNumber" class="drag1" :style="{top:item.heightScale+'%',left:item.widthScale+'%',cursor:'pointer'}"
+				 :title="item.rtuNumber">
 					<Poptip :title="item.rtuNumber" @on-popper-show="getRtuDataInfo(item)">
 						<div slot="content">
 							<div style="font-size: 0.75rem;" v-for="(item , index) in parameterDataList" :key="index"><span>{{item.parameterName}}:{{item.value}}{{item.unit}}</span></div>
 						</div>
 						<div class="rtuImgStyle">
-						<img :src="item.rtuTypeImgUrl" class="rtu1"  :alt="item.rtuNumber+item.rtuTypeName" :draggable="false" />
+							<img :src="item.rtuTypeImgUrl" class="rtu1" :alt="item.rtuNumber+item.rtuTypeName" :draggable="false" />
 						</div>
 					</Poptip>
 
@@ -372,10 +374,12 @@
 </script>
 
 <style lang="less">
-	html,body{
+	html,
+	body {
 		padding: 0;
 		margin: 0
 	}
+
 	.trans(@duration) {
 		transition:~"all @{duration} ease-in";
 	}
@@ -411,8 +415,8 @@
 	}
 
 	.rtu1 {
-		max-width:100%;
-		height: 100%;
+		max-width: 100%;
+		max-height: 100%;
 		z-index: 2;
 		// display: inline
 		// -moz-transform: none;
@@ -422,26 +426,31 @@
 		// transform: none;
 
 	}
+
 	.rtuImgStyle {
 		width: 1.875rem;
 		height: 1.875rem;
 		border-radius: 50%;
 		background: #00BFFF;
-		line-height:1.875rem;
+		line-height: 1.875rem;
 		background: rgba(255, 0, 0, 0.5);
 		overflow: hidden;
 		box-shadow: 0 0 5px #000;
 		border-radius: 50%;
 		color: #fff;
 		text-align: center;
+		display: flex;
+		justify-content: center;
+		align-items: center
 	}
-	
+
 
 	.drag1 {
 		// overflow: hidden;
 		position: absolute;
 		// width:  2%;
-		height:1.875rem;
+		// line-height:1.875rem;
+		height: 1.875rem;
 		width: 1.875rem;
 		-moz-transform: none;
 		-webkit-transform: none;
