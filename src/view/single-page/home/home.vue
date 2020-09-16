@@ -75,14 +75,11 @@
 
 		<div class="publicStyle maxh rDistance bTop">
 			<img src="../../../assets/images/map/soil1.png" />
+			<Button type="text" ghost style="z-index: 1;position: absolute;right: 0;top:0;" size="small" @click="getIaVideoList">刷新</Button>
 			<div class="titleImg">
 				<img src="../../../assets/images/map/weather.png" />
 			</div>
-			<div style="position: absolute;top: 0;right: 0;font-size: 0.75rem;">
-				<Select v-model="model1" style="width:100%;font-size: 0.75rem;background:#17233D;" size="small">
-					<Option v-for="item in cityList" :value="item.value" :key="item.value">{{ item.label }}</Option>
-				</Select>
-			</div>
+			
 			<div class="titleImg" style="top:10%;height: 90%;overflow: hidden;">
 				<div v-for="(item,i) in mlList" :key="'m'+i" style="width: 50%;padding:2% 0 0 5%;overflow: hidden;float: left;height: 20%;">
 					<div style="float:left;height: 100%;width: 20%;">
