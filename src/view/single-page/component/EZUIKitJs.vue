@@ -32,14 +32,14 @@
 				if (value.accessToken != null && value.accessToken != '') {
 					// this.player.stop()
 					this.showPlayer(value.accessToken,this.iaVideoList[0].highDefinitionUrl)
-					console.log(this.player)
+					// console.log(this.player)
 
 				}
 			}
 		},
 		methods: {
 			showPlayer(accessToken,iaVideoUrl) {
-				console.group("mounted 组件挂载完毕状态===============》");
+				// console.group("mounted 组件挂载完毕状态===============》");
 				this.player = new EZUIKit.EZUIKitPlayer({
 					autoplay: true,
 					id: "video-container",
@@ -53,17 +53,17 @@
 					// footer: ["talk", "broadcast", "hd", "fullScreen"], // 如果template参数不为simple,该字段将被覆盖
 
 					// audio: 1, // 是否默认开启声音 0 - 关闭 1 - 开启
-					openSoundCallBack: data => console.log("开启声音回调", data),
-					closeSoundCallBack: data => console.log("关闭声音回调", data),
-					startSaveCallBack: data => console.log("开始录像回调", data),
-					stopSaveCallBack: data => console.log("录像回调", data),
-					capturePictureCallBack: data => console.log("截图成功回调", data),
-					fullScreenCallBack: data => console.log("全屏回调", data),
-					getOSDTimeCallBack: data => console.log("获取OSDTime回调", data),
+					// openSoundCallBack: data => console.log("开启声音回调", data),
+					// closeSoundCallBack: data => console.log("关闭声音回调", data),
+					// startSaveCallBack: data => console.log("开始录像回调", data),
+					// stopSaveCallBack: data => console.log("录像回调", data),
+					// capturePictureCallBack: data => console.log("截图成功回调", data),
+					// fullScreenCallBack: data => console.log("全屏回调", data),
+					// getOSDTimeCallBack: data => console.log("获取OSDTime回调", data),
 					width: 300,
 					height: 150
 				});
-				console.log("player",this.player);
+				// console.log("player",this.player);
 			}
 		},
 		mounted() {

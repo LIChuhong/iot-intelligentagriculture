@@ -116,3 +116,37 @@ export const getIAVideoList = (iaBigDataMapId) => {
 		method: 'get'
 	})
 }
+
+//获取地块土壤数据
+export const getMassifSoilData = (massifId) => {
+	return axios.request({
+		url: '/v1/getMassifSoilData',
+		params:{
+			'massifId':massifId
+		},
+		method: 'get'
+	})
+}
+
+//获取农场气象数据
+export const getFarmWeatherData = (iaBigDataMapId) => {
+	return axios.request({
+		url: '/v1/getFarmWeatherData',
+		params:{
+			'iaBigDataMapId':iaBigDataMapId
+		},
+		method: 'get'
+	})
+}
+
+//14.获取农场近日重要参数数据
+export const getNearlyDayImportParaDataList = (wsRtuNumber,iaMassifId) => {
+	return axios.request({
+		url: '/v1/getNearlyDayImportParaDataList',
+		params:{
+			'wsRtuNumber':wsRtuNumber,
+			'iaMassifId':iaMassifId
+		},
+		method: 'get'
+	})
+}
