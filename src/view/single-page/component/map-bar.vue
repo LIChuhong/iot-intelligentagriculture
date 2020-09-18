@@ -26,6 +26,10 @@
 			barColor: {
 				type: String,
 				default: '#83bff6'
+			},
+			lineLoading:{
+				type: String,
+				// default: false
 			}
 		},
 
@@ -37,6 +41,24 @@
 			}
 		},
 		watch: {
+			lineLoading(val, old){
+				// console.log('lineLoading'+val)
+				if(val){
+					this.dataList = []
+					this.setOptionMethod()
+					this.dom.showLoading({
+						 text: '',
+						 color: this.barColor,
+						 textColor: this.barColor,
+						maskColor: 'rgba(255, 255, 255, 0)',
+						zlevel: 0,
+						fontSize: 10,
+						
+					})
+				}else{
+					this.dom.hideLoading()
+				}
+			},
 			barData(val, old) {
 				if (val != null && val != '') {
 					// alert(JSON.stringify(val))

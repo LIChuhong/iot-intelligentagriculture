@@ -26,9 +26,31 @@
 			lineColor: {
 				type: String,
 				default: '#83bff6'
+			},
+			lineLoading:{
+				type: String,
+				// default: false
 			}
 		},
 		watch: {
+			lineLoading(val, old){
+				// console.log('lineLoading'+val)
+				if(val){
+					this.dataList = []
+					this.setOptionMethod()
+					this.dom.showLoading({
+						 text: '',
+						 color: this.lineColor,
+						 textColor: this.lineColor,
+						maskColor: 'rgba(255, 255, 255, 0)',
+						zlevel: 0,
+						fontSize: 10,
+						
+					})
+				}else{
+					this.dom.hideLoading()
+				}
+			},
 			lineData(val, old) {
 				// alert(JSON.stringify(old))
 
@@ -99,9 +121,9 @@
 							},
 						},
 						textStyle: {
-							fontSize: 12,
+							fontSize: 10,
 							lineHeight: 0,
-							width: '100%'
+							// width: '100%'
 						}
 					},
 					legend: {

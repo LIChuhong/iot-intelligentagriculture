@@ -60,8 +60,8 @@
 					// capturePictureCallBack: data => console.log("截图成功回调", data),
 					// fullScreenCallBack: data => console.log("全屏回调", data),
 					// getOSDTimeCallBack: data => console.log("获取OSDTime回调", data),
-					width: 300,
-					height: 150
+					width: '100%',
+					height: '100%'
 				});
 				// console.log("player",this.player);
 			}

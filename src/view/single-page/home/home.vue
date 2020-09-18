@@ -23,7 +23,7 @@
 					<span style="color: #00b8ff">当天空气、土壤温度变化曲线</span>
 				</div>
 				<div style="position: absolute;width: 100%;height: 100%;">
-					<map-temper class="curveEchart"></map-temper>
+					<map-temper :tempColor="['#00a7fe','#3ed795','#ffce6b']" :tempData="tempData" class="curveEchart"></map-temper>
 				</div>
 			</div>
 			<map-baidu class="curveEchart" @get-map-data="getIaMapData"></map-baidu>
@@ -36,7 +36,7 @@
 			<div class="titleImg">
 				<img src="../../../assets/images/map/watch.png" />
 			</div>
-			<div class="titleImg" style="overflow: hidden;display: flex;justify-content:center;top:17%">
+			<div ref="ezuikt" class="titleImg" style="overflow: hidden;display: flex;justify-content:center;top:17%">
 				<EZUIKitJs :video-key="videoKey" :ia-video-list="iaVideoList" :get-video-info="getVideoInfo"></EZUIKitJs>
 			</div>
 		</div>
@@ -48,38 +48,42 @@
 			<div class="titleImg" style="top:10%;height: 90%;overflow: hidden;line-height: 1;font-size: 0.625rem;">
 				<div style="height: 50%;overflow: hidden;">
 					<div class="curve">
-						<div v-for="(item, index) in curveList" :key="'c'+index"><button @click="curveBtn(index)" :class="{btnColor1:weatherIndex == index}">{{item.title}}</button></div>
+						<div v-for="(item, index) in curveList" :key="'c'+index"><button @click="weatherIndex = index" :class="{btnColor1:weatherIndex == index}">{{item.title}}</button></div>
 					</div>
 					<div class="curve1">
-						<map-bar class="curveEchart" :titleName="'近一年月平均值'" :legendName="'每月平均值'" :barData="this.curveList[weatherIndex].hisYearList"
-						 :barColor="'#0075ff'"></map-bar>
+						<map-bar class="curveEchart" :titleName="'近一年月平均值'" :legendName="'月平均值'+ '('+curveList[weatherIndex].unit+')'"
+						 :lineLoading="showSpin" :barData="curveList[weatherIndex].hisYearList" :barColor="'#0075ff'"></map-bar>
 					</div>
 					<div class="curve1">
-						<map-line class="curveEchart" :lineData="this.curveList[weatherIndex].hisMonList" :legendName="'每日平均值'"
-						 :titleName="'近一月日平均曲线'" :lineColor="'#00a7fe'"></map-line>
+						<map-line class="curveEchart" :lineData="curveList[weatherIndex].hisMonList" :legendName="'日平均值'+ '('+curveList[weatherIndex].unit+')'"
+						 :lineLoading="showSpin" :titleName="'近一月日平均曲线'" :lineColor="'#00a7fe'"></map-line>
 					</div>
 				</div>
 				<div style="height: 50%;overflow: hidden;">
 					<div class="curve">
-						<div v-for="(item, index) in curveList1" :key="'c1'+index"><button @click="curveBtn1(index)" :class="{btnColor1:poltIndex == index}">{{item.title}}</button></div>
+						<div v-for="(item, index) in curveList1" :key="'c1'+index"><button @click="poltIndex = index" :class="{btnColor1:poltIndex == index}">{{item.title}}</button></div>
 					</div>
 					<div class="curve1">
-						<map-line :lineData="this.curveList1[poltIndex].hisYearList" class="curveEchart" :titleName="'近一年月平均曲线'"
-						 :legendName="'每月平均值'" :lineColor="'#c624e6'"></map-line>
+						<map-line :lineData="curveList1[poltIndex].hisYearList" class="curveEchart" :titleName="'近一年月平均曲线'" :lineLoading="showSpin1"
+						 :legendName="'月平均值'+ '('+curveList1[poltIndex].unit+')'" :lineColor="'#c624e6'"></map-line>
 					</div>
 					<div class="curve1">
-						<map-line :lineData="this.curveList1[poltIndex].hisMonList" class="curveEchart" :titleName="'近一月日平均曲线'"
-						 :legendName="'每日平均值'" :lineColor="'#11cdab'"></map-line>
+						<map-line :lineData="curveList1[poltIndex].hisMonList" class="curveEchart" :titleName="'近一月日平均曲线'" :lineLoading="showSpin1"
+						 :legendName="'日平均值' + '('+curveList1[poltIndex].unit+')'" :lineColor="'#11cdab'"></map-line>
 					</div>
 				</div>
 				<!-- </div> -->
+				<!-- <Spin v-show="showSpin" fix style="background: rgba(255, 255, 255, 0.1);">
+					<Icon type="ios-loading" size=20 class="demo-spin-icon-load" color="#fff"></Icon>
+					<div style="color: #fff;">Loading</div>
+				</Spin> -->
 
 			</div>
 		</div>
 
 		<div class="publicStyle maxh rDistance bTop">
 			<img src="../../../assets/images/map/soil1.png" />
-			<Button type="text" ghost style="z-index: 1;position: absolute;right: 0;top:0;" size="small" @click="getIaVideoList">刷新</Button>
+			<Button type="text" ghost style="z-index: 1;position: absolute;right: 0;top:0;" size="small" @click="refreshDataMethod">刷新</Button>
 			<div class="titleImg">
 				<img src="../../../assets/images/map/weather.png" />
 			</div>
@@ -95,22 +99,30 @@
 					</div>
 				</div>
 			</div>
+			<Spin v-show="showSpin" fix style="background: rgba(255, 255, 255, 0.1);">
+				<Icon type="ios-loading" size=20 class="demo-spin-icon-load" color="#fff"></Icon>
+				<div style="color: #fff;">Loading</div>
+			</Spin>
 		</div>
 		<div class="publicStyle minh rDistance bBottom">
 			<img src="../../../assets/images/map/soil1.png" />
 			<div class="titleImg">
 				<img src="../../../assets/images/map/soil.png" />
 			</div>
-			<div class="titleImg" style="top:10%;height: 90%;overflow: hidden;">
-				<div v-for="(item,i) in soilList" :key="'s'+i" style="float: left;width: 33%;height: 100%;text-align: center;line-height: 1;">
-					<div style="margin-top: 35%;">
+			<div class="titleImg" style="top:10%;height: 90%;overflow: hidden;display: flex;justify-content:space-around;align-items:center">
+				<div v-for="(item,i) in soilList" :key="'s'+i" style="text-align: center;line-height: 1;">
+					<div style="margin-top: 35%;" :title="item.parameterName+':'+item.value+item.unit">
 
 						<Icon :type="item.icon" size="30" :color="item.iconColor" />
-						<p style="font-size: 0.75rem;margin-top: 0.625rem;">{{item.value}}</p>
-						<p style="font-size:0.5rem;color: #31abe3;margin-top: 0.125rem;">{{item.name}}</p>
+						<p style="font-size: 0.75rem;margin-top: 0.625rem;">{{item.value+item.unit}}</p>
+						<p style="font-size:0.5rem;color: #31abe3;margin-top: 0.125rem;">{{item.parameterName}}</p>
 					</div>
 				</div>
 			</div>
+			<Spin v-show="showSpin1" fix style="background: rgba(255, 255, 255, 0.1);">
+				<Icon type="ios-loading" size=20 class="demo-spin-icon-load" color="#fff"></Icon>
+				<div style="color: #fff;">Loading</div>
+			</Spin>
 		</div>
 		<div style="position: absolute;right:1.875rem;top:0.625rem">
 			<Tooltip :content="value ? '退出全屏' : '全屏'" placement="bottom">
@@ -146,6 +158,7 @@
 		getFarmWeatherData,
 		getNearlyDayImportParaDataList
 	} from '@/api/plot.js'
+
 	export default {
 		components: {
 			MapBar,
@@ -158,6 +171,8 @@
 			return {
 				mapBg,
 				// screenWidth:null
+				showSpin: false,
+				showSpin1: false,
 				weatherIndex: 0,
 				poltIndex: 0,
 				getVideoInfo: '',
@@ -171,10 +186,16 @@
 				soilList: [], //土壤列表
 				curveList: [{}],
 				curveList1: [{}],
+				mapData: '',
+				wsRtuNumber: null,
+				tempData: []
 
 			}
 		},
 		methods: {
+			refreshDataMethod() {
+				this.getIaMapData(this.mapData)
+			},
 			changeIaVideo(item) {
 				this.getVideoInfo = item
 				// console.log(this.getVideoInfo)
@@ -183,6 +204,7 @@
 			getIaMapData(mapData) {
 				// console.log(1)
 				// console.log(mapData)
+				this.mapData = mapData
 				this.weatherIndex = 0
 				this.poltIndex = 0
 
@@ -194,94 +216,110 @@
 				this.getFarmWeatherDataMethod(this.iaBigDataMapId)
 			},
 			getFarmWeatherDataMethod(iaBigDataMapId) { //获取农场气象数据
+				this.mlList = []
+				this.showSpin = true
 				getFarmWeatherData(iaBigDataMapId).then(res => {
 					const data = res.data
+					this.showSpin = false
 					if (data.success == 1) {
 						// alert(JSON.stringify(data))
 						// console.log(data)
-						const rtuData = data.rtuData
-						this.showWeatherData(rtuData)
-						var paraNameList = data.paraNameList
-						// this.curveList1 = data.paraNameList
-						var monList = data.rtuHistoryNearlyMonthDataList
-						var yearList = data.rtuHistoryNearlyYearDataList
-						// console.log(data)
-						this.curveList = []
-						for (var i = 0; i < paraNameList.length; i++) {
-							var title = paraNameList[i]
-							var hisMonList = []
-							var hisYearList = []
-							for (var j = 0; j < monList.length; j++) {
-								hisMonList.push({
-									dataTime: monList[j].dataTime,
-									parameterValue: monList[j].parameterValueList[i]
+						if (data.rtuData != '' && data.rtuData != null) {
+							// alert(1)
+							const rtuData = data.rtuData
+							this.wsRtuNumber = rtuData.rtuNumber
+							// this.getNearDayFarmDataMethod(this.wsRtuNumber,this.mapData.openFieldFarm.iaMassifMapList[0].id)
+							this.tempData = [{
+								wsRtuNumber: this.wsRtuNumber,
+								iaMassifId: this.mapData.openFieldFarm.iaMassifMapList[0].id
+							}]
+
+							this.showWeatherDataMethod(rtuData)
+						}
+						if (data.rtuHistoryNearlyMonthDataList.length > 0 && data.rtuHistoryNearlyYearDataList.length > 0) {
+							var paraNameList = data.paraNameList
+							// this.curveList1 = data.paraNameList
+							var monList = data.rtuHistoryNearlyMonthDataList
+							var yearList = data.rtuHistoryNearlyYearDataList
+							// console.log(data)
+							this.curveList = []
+							for (var i = 0; i < paraNameList.length; i++) {
+								var title = paraNameList[i]
+								var hisMonList = this.getHisList(monList, i)
+								var hisYearList = this.getHisList(yearList, i)
+								var unit = monList[0].parameterValueList[i].unit
+								this.curveList.push({
+									title: title,
+									unit: unit,
+									hisMonList: hisMonList.reverse(),
+									hisYearList: hisYearList.reverse()
 								})
+								// for (var j = 0; j < monList.length; j++) {
+								// 	hisMonList.push({
+								// 		dataTime: monList[j].dataTime,
+								// 		parameterValue: monList[j].parameterValueList[i]
+								// 	})
 							}
-							for (var k = 0; k < yearList.length; k++) {
-								hisYearList.push({
-									dataTime: yearList[k].dataTime,
-									parameterValue: yearList[k].parameterValueList[i]
-								})
-							}
-							this.curveList.push({
-								title: title,
-								hisMonList: hisMonList.reverse(),
-								hisYearList: hisYearList.reverse()
-							})
 						}
 					} else {
 						this.$Message.error(data.errorMessage)
 					}
 				}).catch(error => {
+					this.showSpin = false
 					alert(error)
 				})
 			},
 			getMassifSoilDataMethod(massifId) { //获取地块土壤数据
+				this.soilList = []
+				this.showSpin1 = true
 				getMassifSoilData(massifId).then(res => {
 					const data = res.data
+					this.showSpin1 = false
 					if (data.success == 1) {
-
-						const rtuData = data.rtuData
-						console.log(rtuData)
-						var paraNameList = data.paraNameList
-						// this.curveList1 = data.paraNameList
-						var monList = data.rtuHistoryNearlyMonthDataList
-						var yearList = data.rtuHistoryNearlyYearDataList
-						// console.log(data)
-						this.curveList1 = []
-						for (var i = 0; i < paraNameList.length; i++) {
-							var title = paraNameList[i]
-							var hisMonList = []
-							var hisYearList = []
-							for (var j = 0; j < monList.length; j++) {
-								hisMonList.push({
-									dataTime: monList[j].dataTime,
-									parameterValue: monList[j].parameterValueList[i]
-								})
-							}
-							for (var k = 0; k < yearList.length; k++) {
-								hisYearList.push({
-									dataTime: yearList[k].dataTime,
-									parameterValue: yearList[k].parameterValueList[i]
-								})
-							}
-							this.curveList1.push({
-								title: title,
-								hisMonList: hisMonList.reverse(),
-								hisYearList: hisYearList.reverse()
-							})
+						if (data.rtuData != '' && data.rtuData != null) {
+							const rtuData = data.rtuData
+							// console.log(rtuData)
+							this.showSoilDataMethod(rtuData)
 						}
-						// alert(JSON.stringify(this.curveList1))
-						// console.log(data.paraNameList)
-						// this.iaVideoImgList = data.iaVideoList
+						if (data.rtuHistoryNearlyMonthDataList.length > 0 && data.rtuHistoryNearlyYearDataList.length > 0) {
+							var paraNameList = data.paraNameList
+							// this.curveList1 = data.paraNameList
+							var monList = data.rtuHistoryNearlyMonthDataList
+							var yearList = data.rtuHistoryNearlyYearDataList
+							// console.log(data)
+							this.curveList1 = []
+							for (var i = 0; i < paraNameList.length; i++) {
+								var title = paraNameList[i]
+								var hisMonList = this.getHisList(monList, i)
+								var hisYearList = this.getHisList(yearList, i)
+								var unit = monList[0].parameterValueList[i].unit
+								this.curveList1.push({
+									title: title,
+									unit: unit,
+									hisMonList: hisMonList.reverse(),
+									hisYearList: hisYearList.reverse()
+								})
+							}
+						}
+						// console.log(this.curveList1)
 					} else {
 						this.$Message.error(data.errorMessage)
 					}
 				}).catch(error => {
+					this.showSpin1 = false
 					alert(error)
 				})
 			},
-
+			getHisList(list, i) {
+				var hisList = []
+				for (var j = 0; j < list.length; j++) {
+					hisList.push({
+						dataTime: list[j].dataTime,
+						parameterValue: list[j].parameterValueList[i]
+					})
+				}
+				return hisList
+			},
 			getIaVideoList() {
 				this.showIaVideoList = true
 				getIAVideoList(this.iaBigDataMapId).then(res => {
@@ -323,81 +361,95 @@
 						main.msRequestFullscreen()
 					}
 				}
-				// console.log(main)
-				//this.launchFullScreen(main)
-
 			},
 
-			curveBtn(index) {
-				// this.change1 = index;
-				this.weatherIndex = index
-				// e.target.style.background = "#000000"
+			// curveBtn(index) {
+			// 	// this.change1 = index;
+			// 	this.weatherIndex = index
+			// },
+			getNearDayFarmDataMethod(wsRtuNumber, iaMassifId) {
+				getNearlyDayImportParaDataList(wsRtuNumber, iaMassifId).then(res => {
+					const data = res.data
+					if (data.success == 1) {
+						// alert(data)
+						var wsRtuHisDataList = []
+						if (data.wsRtuHistoryDataList.length > 30) {
+							wsRtuHisDataList = data.wsRtuHistoryDataList.slice(0, 31)
+						} else {
+							wsRtuHisDataList = data.wsRtuHistoryDataList
+						}
+						console.log(wsRtuHisDataList)
+						this.tempData = wsRtuHisDataList.reverse()
 
+					} else {
+						this.$Message.error(data.errorMessage)
+					}
+				}).catch(error => {
+					alert(error)
+				})
 			},
-			curveBtn1(index) {
-				// this.change2 = index;
-				this.poltIndex = index
-				// e.target.style.background = "#000000"
 
-			},
-			showWeatherData(rtuWeatherData) {
-				// console.log(rtuWeatherData)
+
+			showWeatherDataMethod(rtuWeatherData) {
 				var list = rtuWeatherData.parameterDataList
 				for (var i = 0; i < list.length; i++) {
-					if (list[i].parameterIndex == 0) {
+					if (list[i].parameterId == 9) {
 						list[i].icon = ' iconfont icon-ic_kqwd'
 						list[i].iconColor = '#0187fc'
-					} else if (list[i].parameterIndex == 1) {
+					} else if (list[i].parameterId == 10) {
 						list[i].icon = ' iconfont icon-ic_kqsd'
 						list[i].iconColor = '#16c8c4'
-					} else if (list[i].parameterIndex == 2) {
+					} else if (list[i].parameterId == 11) {
 						list[i].icon = ' iconfont icon-ic_dqy'
 						list[i].iconColor = '#fc9143'
-					} else if (list[i].parameterIndex == 3) {
+					} else if (list[i].parameterId == 12) {
 						list[i].icon = ' iconfont icon-ic_fs'
 						list[i].iconColor = '#ffce6b'
-					} else if (list[i].parameterIndex == 4) {
+					} else if (list[i].parameterId == 13) {
 						list[i].icon = ' iconfont icon-ic_fx'
 						list[i].iconColor = '#67c300'
-					} else if (list[i].parameterIndex == 5) {
+					} else if (list[i].parameterId == 14) {
 						list[i].icon = ' iconfont icon-ic_dtjyl'
 						list[i].iconColor = '#16c8c4'
-					} else if (list[i].parameterIndex == 6) {
+					} else if (list[i].parameterId == 15) {
 						list[i].icon = ' iconfont icon-ic_ssyl'
 						list[i].iconColor = '#fc9143'
-					} else if (list[i].parameterIndex == 7) {
+					} else if (list[i].parameterId == 16) {
 						list[i].icon = ' iconfont icon-ic_zryl'
 						list[i].iconColor = '#ffce6b'
-					} else if (list[i].parameterIndex == 8) {
+					} else if (list[i].parameterId == 17) {
 						list[i].icon = ' iconfont icon-ic_zyl'
 						list[i].iconColor = '#0187fc'
-					} else if (list[i].parameterIndex == 9) {
+					} else if (list[i].parameterId == 18) {
 						list[i].icon = ' iconfont icon-ic_trsf'
 						list[i].iconColor = '#4ad595'
 					}
 				}
 				this.mlList = list
 			},
-		},
-		mounted() {
-			this.soilList = [{
-				name: '温度',
-				icon: ' iconfont icon-ic_kqwd',
-				iconColor: '#0187fc',
-				value: '36℃'
-			}, {
-				name: '水分',
-				icon: ' iconfont icon-ic_trsf',
-				iconColor: '#8f3ef7',
-				value: '23%'
-			}, {
-				name: '养分',
-				icon: ' iconfont icon-ic_yf',
-				iconColor: '#06cce4',
-				value: '1.8ms/cm'
-			}]
-		}
+			showSoilDataMethod(rtuSoilData) {
+				var list = rtuSoilData.parameterDataList
+				var list1 = []
+				for (var i = 0; i < list.length; i++) {
+					if (list[i].parameterId == 32) {
+						list[i].icon = ' iconfont icon-ic_kqwd'
+						list[i].iconColor = '#0187fc'
+						list1.push(list[i])
+					} else if (list[i].parameterId == 18) {
+						list[i].icon = ' iconfont icon-ic_trsf'
+						list[i].iconColor = '#8f3ef7'
+						list1.push(list[i])
+					} else if (list[i].parameterId == 33) {
+						list[i].icon = ' iconfont icon-ic_yf'
+						list[i].iconColor = '#06cce4'
+						list1.push(list[i])
+					}
+				}
+				this.soilList = list1
 
+			},
+		},
+		mounted() {}
 	}
 </script>
 
@@ -447,6 +499,24 @@
 		line-height: 0;
 		overflow: hidden;
 
+	}
+
+	.map .demo-spin-icon-load {
+		animation: ani-demo-spin 1s linear infinite;
+	}
+
+	@keyframes ani-demo-spin {
+		from {
+			transform: rotate(0deg);
+		}
+
+		50% {
+			transform: rotate(180deg);
+		}
+
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.publicStyle img {
