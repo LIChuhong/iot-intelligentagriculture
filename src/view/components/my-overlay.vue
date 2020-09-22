@@ -1,7 +1,7 @@
 <template>
   <bm-overlay
     ref="customOverlay"
-    :class="{sample: true, active}"
+    class="sample active"
     pane="labelPane"
     @draw="draw" :title="title">
 	<img :src="iconImg" width="100%" height="100%" @click="handlerClick"/>
@@ -10,7 +10,7 @@
 
 <script>
 export default {
-  props: ['position', 'title','iconImg','markerIndex'],
+  props: ['position', 'title','iconImg','markerIndex','markerPath'],
 	data(){
 		return{
 		}
@@ -25,7 +25,7 @@ export default {
   },
   methods: {
 		handlerClick(){
-			this.$emit('handler-click',this.position,this.markerIndex)
+			this.$emit('handler-click',this.markerPath)
 		},
     draw ({el, BMap, map}) {
       const {lng, lat} = this.position
@@ -51,7 +51,7 @@ export default {
   /* padding: 10px; */
   position: absolute;
 }
-.sample.active {
+.sample .active {
   background: rgba(0,0,0,0.75);
   color: #fff;
 }

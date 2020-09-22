@@ -26,7 +26,7 @@
 					<map-temper :tempColor="['#00a7fe','#3ed795','#ffce6b']" :tempData="tempData" class="curveEchart"></map-temper>
 				</div>
 			</div>
-			<map-baidu class="curveEchart" @get-map-data="getIaMapData"></map-baidu>
+			<map-baidu class="curveEchart" @get-map-data="getIaMapData" @get-plot-data="getPlotData"></map-baidu>
 
 			<!-- <EZUIKitJs></EZUIKitJs> -->
 		</div>
@@ -36,8 +36,8 @@
 			<div class="titleImg">
 				<img src="../../../assets/images/map/watch.png" />
 			</div>
-			<div ref="ezuikt" class="titleImg" style="overflow: hidden;display: flex;justify-content:center;top:17%">
-				<EZUIKitJs :video-key="videoKey" :ia-video-list="iaVideoList" :get-video-info="getVideoInfo"></EZUIKitJs>
+			<div ref="ezuikt" class="titleImg" style="overflow: hidden;display: flex;justify-content:center;top:17%;height: 83%;">
+				<EZUIKitJs :et-wide-high="etWideHigh" :video-key="videoKey" :ia-video-list="iaVideoList" :get-video-info="getVideoInfo"></EZUIKitJs>
 			</div>
 		</div>
 		<div class="publicStyle maxh lDistance bBottom">
@@ -51,12 +51,12 @@
 						<div v-for="(item, index) in curveList" :key="'c'+index"><button @click="weatherIndex = index" :class="{btnColor1:weatherIndex == index}">{{item.title}}</button></div>
 					</div>
 					<div class="curve1">
-						<map-bar class="curveEchart" :titleName="'近一年月平均值'" :legendName="'月平均值'+ '('+curveList[weatherIndex].unit+')'"
-						 :lineLoading="showSpin" :barData="curveList[weatherIndex].hisYearList" :barColor="'#0075ff'"></map-bar>
+						<map-bar class="curveEchart" :title-name="'近一年月平均值'" :legend-name="curveList[weatherIndex].unit?'月均值('+curveList[weatherIndex].unit+')':'月均值'"
+						 :line-loading="showSpin" :bar-data="curveList[weatherIndex].hisYearList" :bar-color="'#0075ff'"></map-bar>
 					</div>
 					<div class="curve1">
-						<map-line class="curveEchart" :lineData="curveList[weatherIndex].hisMonList" :legendName="'日平均值'+ '('+curveList[weatherIndex].unit+')'"
-						 :lineLoading="showSpin" :titleName="'近一月日平均曲线'" :lineColor="'#00a7fe'"></map-line>
+						<map-line class="curveEchart" :line-data="curveList[weatherIndex].hisMonList" :legend-name="curveList[weatherIndex].unit?'日均值('+curveList[weatherIndex].unit+')':'日均值'"
+						 :line-loading="showSpin" :title-name="'近一月日平均曲线'" :line-color="'#00a7fe'"></map-line>
 					</div>
 				</div>
 				<div style="height: 50%;overflow: hidden;">
@@ -64,12 +64,14 @@
 						<div v-for="(item, index) in curveList1" :key="'c1'+index"><button @click="poltIndex = index" :class="{btnColor1:poltIndex == index}">{{item.title}}</button></div>
 					</div>
 					<div class="curve1">
-						<map-line :lineData="curveList1[poltIndex].hisYearList" class="curveEchart" :titleName="'近一年月平均曲线'" :lineLoading="showSpin1"
-						 :legendName="'月平均值'+ '('+curveList1[poltIndex].unit+')'" :lineColor="'#c624e6'"></map-line>
+						<map-line :line-data="curveList1[poltIndex].hisYearList" class="curveEchart" :title-name="'近一年月平均曲线'"
+						 :line-loading="showSpin1" :legend-name="curveList1[poltIndex].unit?'月均值('+curveList1[poltIndex].unit+')':'月均值'"
+						 :line-color="'#c624e6'"></map-line>
 					</div>
 					<div class="curve1">
-						<map-line :lineData="curveList1[poltIndex].hisMonList" class="curveEchart" :titleName="'近一月日平均曲线'" :lineLoading="showSpin1"
-						 :legendName="'日平均值' + '('+curveList1[poltIndex].unit+')'" :lineColor="'#11cdab'"></map-line>
+						<map-line :line-data="curveList1[poltIndex].hisMonList" class="curveEchart" :title-name="'近一月日平均曲线'"
+						 :line-loading="showSpin1" :legend-name="curveList1[poltIndex].unit?'日均值('+curveList1[poltIndex].unit+')':'日均值'"
+						 :line-color="'#11cdab'"></map-line>
 					</div>
 				</div>
 				<!-- </div> -->
@@ -89,6 +91,7 @@
 			</div>
 
 			<div class="titleImg" style="top:10%;height: 90%;overflow: hidden;">
+
 				<div v-for="(item,i) in mlList" :key="'m'+i" style="width: 50%;padding:2% 0 0 5%;overflow: hidden;float: left;height: 20%;">
 					<div style="float:left;height: 100%;width: 20%;">
 						<Icon :type="item.icon" size="20" :color="item.iconColor" />
@@ -110,6 +113,7 @@
 				<img src="../../../assets/images/map/soil.png" />
 			</div>
 			<div class="titleImg" style="top:10%;height: 90%;overflow: hidden;display: flex;justify-content:space-around;align-items:center">
+
 				<div v-for="(item,i) in soilList" :key="'s'+i" style="text-align: center;line-height: 1;">
 					<div style="margin-top: 35%;" :title="item.parameterName+':'+item.value+item.unit">
 
@@ -169,6 +173,10 @@
 		},
 		data() {
 			return {
+				etWideHigh: {
+					w: 300,
+					h: 100
+				},
 				mapBg,
 				// screenWidth:null
 				showSpin: false,
@@ -188,12 +196,20 @@
 				curveList1: [{}],
 				mapData: '',
 				wsRtuNumber: null,
-				tempData: []
-
+				tempData: [],
 			}
 		},
 		methods: {
+			getPlotData(item) {
+				// console.log(item)
+				this.getMassifSoilDataMethod(item.iaMassifId)
+				this.tempData = [{
+					wsRtuNumber: this.wsRtuNumber,
+					iaMassifId: item.iaMassifId
+				}]
+			},
 			refreshDataMethod() {
+				this.getEtWideHigh()
 				this.getIaMapData(this.mapData)
 			},
 			changeIaVideo(item) {
@@ -201,19 +217,36 @@
 				// console.log(this.getVideoInfo)
 				this.showIaVideoList = false
 			},
+			getEtWideHigh() {
+				var w = this.$refs.ezuikt.offsetWidth
+				var h = this.$refs.ezuikt.offsetHeight
+				// alert(22)
+				this.etWideHigh = {
+					w: w,
+					h: h
+				}
+				// alert(JSON.stringify(this.etWideHigh))
+			},
 			getIaMapData(mapData) {
 				// console.log(1)
 				// console.log(mapData)
+				// console.log(this.$refs.ezuikt.offsetHeight)
+				// console.log(this.$refs.ezuikt.offsetWidth)
 				this.mapData = mapData
 				this.weatherIndex = 0
 				this.poltIndex = 0
-
+				this.getEtWideHigh()
 				this.iaVideoList = mapData.iaVideoList
+
 				this.videoKey = mapData.videoKey
 				this.iaBigDataMapId = mapData.id
-				var massifId = mapData.openFieldFarm.iaMassifMapList[0].id
-				this.getMassifSoilDataMethod(massifId)
-				this.getFarmWeatherDataMethod(this.iaBigDataMapId)
+				if (mapData.openFieldFarm.iaMassifMapList != [] && mapData.openFieldFarm.iaMassifMapList != null) {
+					var massifId = mapData.openFieldFarm.iaMassifMapList[0].id
+					this.getMassifSoilDataMethod(massifId)
+					this.getFarmWeatherDataMethod(this.iaBigDataMapId)
+
+				}
+
 			},
 			getFarmWeatherDataMethod(iaBigDataMapId) { //获取农场气象数据
 				this.mlList = []
@@ -236,29 +269,32 @@
 
 							this.showWeatherDataMethod(rtuData)
 						}
-						if (data.rtuHistoryNearlyMonthDataList.length > 0 && data.rtuHistoryNearlyYearDataList.length > 0) {
+						if (data.rtuHistoryNearlyMonthDataList != null && data.rtuHistoryNearlyYearDataList.length != null) {
+							// alert(1)
 							var paraNameList = data.paraNameList
 							// this.curveList1 = data.paraNameList
-							var monList = data.rtuHistoryNearlyMonthDataList
-							var yearList = data.rtuHistoryNearlyYearDataList
+							var monList = []
+							var yearList = []
+							monList = data.rtuHistoryNearlyMonthDataList
+							yearList = data.rtuHistoryNearlyYearDataList
 							// console.log(data)
 							this.curveList = []
 							for (var i = 0; i < paraNameList.length; i++) {
 								var title = paraNameList[i]
 								var hisMonList = this.getHisList(monList, i)
 								var hisYearList = this.getHisList(yearList, i)
-								var unit = monList[0].parameterValueList[i].unit
+								var unit = ""
+								if (monList.length > 0) {
+									unit = monList[0].parameterValueList[i].unit
+								}
+								// alert(unit)
 								this.curveList.push({
 									title: title,
 									unit: unit,
 									hisMonList: hisMonList.reverse(),
 									hisYearList: hisYearList.reverse()
 								})
-								// for (var j = 0; j < monList.length; j++) {
-								// 	hisMonList.push({
-								// 		dataTime: monList[j].dataTime,
-								// 		parameterValue: monList[j].parameterValueList[i]
-								// 	})
+
 							}
 						}
 					} else {
@@ -266,7 +302,7 @@
 					}
 				}).catch(error => {
 					this.showSpin = false
-					alert(error)
+					// alert(error)
 				})
 			},
 			getMassifSoilDataMethod(massifId) { //获取地块土壤数据
@@ -281,18 +317,23 @@
 							// console.log(rtuData)
 							this.showSoilDataMethod(rtuData)
 						}
-						if (data.rtuHistoryNearlyMonthDataList.length > 0 && data.rtuHistoryNearlyYearDataList.length > 0) {
+						if (data.rtuHistoryNearlyMonthDataList != null && data.rtuHistoryNearlyYearDataList.length != null) {
 							var paraNameList = data.paraNameList
 							// this.curveList1 = data.paraNameList
-							var monList = data.rtuHistoryNearlyMonthDataList
-							var yearList = data.rtuHistoryNearlyYearDataList
+							var monList = []
+							var yearList = []
+							monList = data.rtuHistoryNearlyMonthDataList
+							yearList = data.rtuHistoryNearlyYearDataList
 							// console.log(data)
 							this.curveList1 = []
 							for (var i = 0; i < paraNameList.length; i++) {
 								var title = paraNameList[i]
 								var hisMonList = this.getHisList(monList, i)
 								var hisYearList = this.getHisList(yearList, i)
-								var unit = monList[0].parameterValueList[i].unit
+								var unit = ""
+								if (monList.length > 0) {
+									unit = monList[0].parameterValueList[i].unit
+								}
 								this.curveList1.push({
 									title: title,
 									unit: unit,
@@ -307,7 +348,7 @@
 					}
 				}).catch(error => {
 					this.showSpin1 = false
-					alert(error)
+					// alert(error)
 				})
 			},
 			getHisList(list, i) {
@@ -336,6 +377,7 @@
 			},
 			handleFullscreen() {
 				// let main = main.body
+				// this.getEtWideHigh()
 				let main = this.$refs.map
 				if (this.value) {
 					this.value = false
@@ -349,7 +391,10 @@
 						document.msExitFullscreen()
 					}
 
+					// this.getEtWideHigh()
+
 				} else {
+
 					this.value = true
 					if (main.requestFullscreen) {
 						main.requestFullscreen()
@@ -360,7 +405,13 @@
 					} else if (main.msRequestFullscreen) {
 						main.msRequestFullscreen()
 					}
+
 				}
+				// this.$nextTick(()=>{
+				// 	this.getEtWideHigh()
+				// })
+
+
 			},
 
 			// curveBtn(index) {
@@ -378,14 +429,14 @@
 						} else {
 							wsRtuHisDataList = data.wsRtuHistoryDataList
 						}
-						console.log(wsRtuHisDataList)
+						// console.log(wsRtuHisDataList)
 						this.tempData = wsRtuHisDataList.reverse()
 
 					} else {
 						this.$Message.error(data.errorMessage)
 					}
 				}).catch(error => {
-					alert(error)
+					// alert(error)
 				})
 			},
 
@@ -423,6 +474,9 @@
 					} else if (list[i].parameterId == 18) {
 						list[i].icon = ' iconfont icon-ic_trsf'
 						list[i].iconColor = '#4ad595'
+					}else{
+						list[i].icon = ''
+						list[i].iconColor = '#fff'
 					}
 				}
 				this.mlList = list
@@ -563,6 +617,13 @@
 		width: 100%;
 		top: 0;
 		left: 0;
+	}
+
+	.title img {
+		pointer-events: none;
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		user-select: none;
 	}
 
 	.map .mapContent {

@@ -9,20 +9,28 @@
 
 	export default {
 		name: "HelloWorld",
-		props: ['videoKey','iaVideoList','getVideoInfo'],
+		props: ['videoKey', 'iaVideoList', 'getVideoInfo', 'etWideHigh'],
 		data() {
 			return {
-				player: ''
+				player: '',
 			}
 		},
 		watch: {
-			getVideoInfo(value){
+			etWideHigh() {
+				if (this.player == '') {
+					
+				}
+				else {
+					this.player.reZize(this.etWideHigh.w,this.etWideHigh.h)
+				}
+				// alert(1)
+			},
+			getVideoInfo(value) {
 				// console.log(value)
 				var iaVideoList = this.iaVideoList
-				for(var i=0;i<iaVideoList.length;i++){
-					if(value.deviceSerial == iaVideoList[i].deviceSerial && value.channelNo == iaVideoList[i].channelNo){
-						// console.log(iaVideoList[i].highDefinitionUrl);
-						this.showPlayer(this.videoKey.accessToken,iaVideoList[i].highDefinitionUrl)
+				for (var i = 0; i < iaVideoList.length; i++) {
+					if (value.deviceSerial == iaVideoList[i].deviceSerial && value.channelNo == iaVideoList[i].channelNo) {
+						this.showPlayer1(this.videoKey.accessToken, iaVideoList[i].highDefinitionUrl)
 						break;
 					}
 				}
@@ -30,54 +38,46 @@
 			videoKey(value) {
 				// console.log(value)
 				if (value.accessToken != null && value.accessToken != '') {
-					// this.player.stop()
-					this.showPlayer(value.accessToken,this.iaVideoList[0].highDefinitionUrl)
-					// console.log(this.player)
-
+					if (this.player == '') {
+						this.showPlayer(value.accessToken, this.iaVideoList[0].highDefinitionUrl)
+					} else {
+						this.showPlayer1(value.accessToken, this.iaVideoList[0].highDefinitionUrl)
+					}
+					// this.showPlayer1(value.accessToken, this.iaVideoList[0].highDefinitionUrl)
 				}
 			}
 		},
 		methods: {
-			showPlayer(accessToken,iaVideoUrl) {
-				// console.group("mounted 组件挂载完毕状态===============》");
-				this.player = new EZUIKit.EZUIKitPlayer({
-					autoplay: true,
-					id: "video-container",
-					accessToken: accessToken,
-					url: iaVideoUrl,
-					template: "simple", // simple - 极简版;standard-标准版;security - 安防版(预览回放);voice-语音版；
-					// 视频上方头部控件
-					//header: ["capturePicture", "save", "zoom"], // 如果templete参数不为simple,该字段将被覆盖
-					//plugin: ['talk'],                       // 加载插件，talk-对讲
-					// 视频下方底部控件
-					// footer: ["talk", "broadcast", "hd", "fullScreen"], // 如果template参数不为simple,该字段将被覆盖
+			showPlayer1(accessToken, iaVideoUrl) {
+				this.$nextTick(() => {
+					this.player.play({
+						accessToken: accessToken,
+						url: iaVideoUrl,
+					});
+				})
+			},
+			showPlayer(accessToken, iaVideoUrl) {
+				var that = this
+				// alert(JSON.stringify(this.etWideHigh))
+				this.$nextTick(() => {
+					this.player = new EZUIKit.EZUIKitPlayer({
+						autoplay: true,
+						id: "video-container",
+						accessToken: accessToken,
+						url: iaVideoUrl,
+						template: "simple",
+						splitBasis: 1,
+						width: that.etWideHigh.w,
+						height: that.etWideHigh.h
+					});
+					// console.log(this.player)
+				})
 
-					// audio: 1, // 是否默认开启声音 0 - 关闭 1 - 开启
-					// openSoundCallBack: data => console.log("开启声音回调", data),
-					// closeSoundCallBack: data => console.log("关闭声音回调", data),
-					// startSaveCallBack: data => console.log("开始录像回调", data),
-					// stopSaveCallBack: data => console.log("录像回调", data),
-					// capturePictureCallBack: data => console.log("截图成功回调", data),
-					// fullScreenCallBack: data => console.log("全屏回调", data),
-					// getOSDTimeCallBack: data => console.log("获取OSDTime回调", data),
-					width: '100%',
-					height: '100%'
-				});
-				// console.log("player",this.player);
 			}
 		},
 		mounted() {
-			// this.showPlayer()
-			// console.log(this.abc)
-			// console.log(this.videoKey)
-
-			// console.log("player",player);
-			// setTimeout(()=>{
-			//   player.stop(); // 方法调用示例，10秒后关闭视频
-			// },10000)
+			// this.showPlayer('', '')
 		},
-		destroyed() {
-			// this.player.stop()
-		}
+		destroyed() {}
 	};
 </script>

@@ -11,7 +11,7 @@
 	} from '@/libs/tools'
 	export default {
 		props: {
-			titleName:{
+			titleName: {
 				type: String,
 				default: '近一月降雨量'
 			},
@@ -21,40 +21,42 @@
 			},
 			lineData: {
 				type: Array,
-				default: []
+				default: funcution=>{
+					return []
+				}
 			},
 			lineColor: {
 				type: String,
 				default: '#83bff6'
 			},
-			lineLoading:{
-				type: String,
-				// default: false
+			lineLoading: {
+				type: Boolean,
+				default: false
 			}
 		},
 		watch: {
-			lineLoading(val, old){
+			lineLoading(val, old) {
 				// console.log('lineLoading'+val)
-				if(val){
+				if (val) {
 					this.dataList = []
 					this.setOptionMethod()
 					this.dom.showLoading({
-						 text: '',
-						 color: this.lineColor,
-						 textColor: this.lineColor,
+						text: '',
+						color: this.lineColor,
+						textColor: this.lineColor,
 						maskColor: 'rgba(255, 255, 255, 0)',
 						zlevel: 0,
 						fontSize: 10,
-						
+
 					})
-				}else{
+				} else {
 					this.dom.hideLoading()
 				}
 			},
 			lineData(val, old) {
 				// alert(JSON.stringify(old))
 
-				if (val != null && val != '') {
+				if (val != null && val != []) {
 					// alert(JSON.stringify(val))
 					this.dataList = []
 					for (var i = 0; i < val.length; i++) {
@@ -97,7 +99,7 @@
 					title: {
 						text: this.titleName,
 						top: 0,
-						right:0,
+						right: 0,
 						// bottom:'20%',
 						textStyle: {
 							fontSize: 10,

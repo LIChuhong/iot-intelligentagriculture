@@ -83,6 +83,28 @@ const getHandledValue = num => {
 }
 
 /**
+ * @param {signalValue} 信号数值 数值
+ * @returns {String} 处理后的字符图标
+ */
+export const getSignal = (signalValue) => {
+	let signal = ''
+	if (signalValue >= -85) {
+		signal = " iconfont icon-signal4"
+	} else if (signalValue >= -95 && signalValue < -85) {
+		signal = " iconfont icon-signal3"
+	} else if (signalValue >= -105 && signalValue < -95) {
+		signal = " iconfont icon-signal2"
+	} else if (signalValue >= -115 && signalValue < -105) {
+		signal = " iconfont icon-signal1"
+	} else if (signalValue >= -140 && signalValue < -115) {
+		signal = " iconfont icon-signal0"
+	} else {
+		signal = ''
+	}
+	return signal
+}
+
+/**
  * @param {Number} timeStamp 传入的时间戳
  * @param {Number} startType 要返回的时间字符串的格式类型，传入'year'则返回年开头的完整时间
  */

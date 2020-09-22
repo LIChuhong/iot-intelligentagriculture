@@ -28,11 +28,15 @@
 			},
 			tempData: {
 				type: Array,
-				default: []
+				default: funcution=>{
+					return []
+				}
 			},
 			tempColor: {
 				type: Array,
-				default: ['#00a7fe', '#3ed795', '#ffce6b']
+				default: funcution=>{
+					return ['#00a7fe', '#3ed795', '#ffce6b']
+				}
 			}
 		},
 		data() {
@@ -42,26 +46,7 @@
 			}
 		},
 		watch: {
-			// tempData(val, old) {
-			// 	if (val != null && val != '') {
-			// 		// alert(val)
-			// 		this.dataList = []
-			// 		for (var i = 0; i < val.length; i++) {
-			// 			var list = val[i].parameterValueList
-			// 			var time = timestampToTimeMethod(val[i].dataTime, 'hours')
-			// 			this.dataList.push({
-			// 				time: time,
-			// 				'空气温度(℃)': list[0].value,
-			// 				'空气湿度(%)': list[1].value,
-			// 				'土壤湿度(%)': list[9].value,
-			// 				// list:list
-			// 			})
-			// 			// console.log(val[i])
-			// 		}
-			// 		// alert(this.dataList)
-			// 		this.setOptionMethod()
-			// 	}
-			// }
+		
 			tempData(val, old) {
 				if (val != null && val != '') {
 					// alert(val)
@@ -90,6 +75,7 @@
 				})
 				getNearlyDayImportParaDataList(wsRtuNumber, iaMassifId).then(res => {
 					const data = res.data
+					this.dataList = []
 					this.dom.hideLoading()
 					if (data.success == 1) {
 						// alert(data)
@@ -113,8 +99,9 @@
 								// list:list
 							})
 							// console.log(val[i])
-							this.setOptionMethod()
+							
 						}
+						this.setOptionMethod()
 
 					} else {
 						this.$Message.error(data.errorMessage)

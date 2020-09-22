@@ -7,7 +7,7 @@
 				<div v-for="item in rtuImgList" :key="item.rtuNumber" class="drag1" :style="{top:item.heightScale+'%',left:item.widthScale+'%',cursor:'pointer'}" :title="item.rtuNumber">
 					<Poptip :title="item.rtuNumber" @on-popper-show="getRtuDataInfo(item)">
 						<div slot="content">
-							<div style="font-size: 0.75rem;" v-for="(item , index) in parameterDataList" :key="index"><span>{{item.parameterName}}:{{item.value}}{{item.unit}}</span></div>
+							<div style="font-size: 0.75rem;" v-for="(item , index) in parameterDataList" :key="index"><Icon :color="item.iconColor" :type="item.icon" /><span>{{item.parameterName}}:<span :style="{color:item.iconColor }">{{item.value}}{{item.unit}}</span></span></div>
 						</div>
 						<div class="rtuImgStyle">
 						<img :src="item.rtuTypeImgUrl" class="rtu1"  :alt="item.rtuNumber+item.rtuTypeName" :draggable="false" />
@@ -125,12 +125,9 @@
 					if (data.success == 1) {
 						// console.log(data)
 						// this.iaRtu = data.iaRtu
-						const rtuData = data.rtuData
+						var rtuData = data.rtuData
 						if (rtuData.parameterDataList != null && rtuData.parameterDataList) {
-							this.parameterDataList = rtuData.parameterDataList.map(item => {
-								// if()
-								return item
-							})
+							this.showParamDataList(rtuData.rtuTypeTag,rtuData.parameterDataList)
 
 						}
 
@@ -141,6 +138,81 @@
 					this.showSpin = false
 					alert(error)
 				})
+			},
+			showParamDataList(rtuTypeTag,list){
+				if(rtuTypeTag == 'IA_R_G' || rtuTypeTag == 'IA_R_N'){
+				this.parameterDataList = list.map(item=>{
+					if (item.parameterId == 9) {
+						item.icon = ' iconfont icon-ic_kqwd'
+						item.iconColor = '#0187fc'
+					} else if (item.parameterId == 10) {
+						item.icon = ' iconfont icon-ic_kqsd'
+						item.iconColor = '#16c8c4'
+					} else if (item.parameterId == 11) {
+						item.icon = ' iconfont icon-ic_dqy'
+						item.iconColor = '#fc9143'
+					} else if (item.parameterId == 12) {
+						item.icon = ' iconfont icon-ic_fs'
+						item.iconColor = '#ffce6b'
+					} else if (item.parameterId == 13) {
+						item.icon = ' iconfont icon-ic_fx'
+						item.iconColor = '#67c300'
+					} else if (item.parameterId == 14) {
+						item.icon = ' iconfont icon-ic_dtjyl'
+						item.iconColor = '#16c8c4'
+					} else if (item.parameterId == 15) {
+						item.icon = ' iconfont icon-ic_ssyl'
+						item.iconColor = '#fc9143'
+					} else if (item.parameterId == 16) {
+						item.icon = ' iconfont icon-ic_zryl'
+						item.iconColor = '#ffce6b'
+					} else if (item.parameterId == 17) {
+						item.icon = ' iconfont icon-ic_zyl'
+						item.iconColor = '#0187fc'
+					} else if (item.parameterId == 18) {
+						item.icon = ' iconfont icon-ic_trsf'
+						item.iconColor = '#4ad595'
+					}else{
+						item.icon = ''
+						item.iconColor = '#fff'
+					}
+					return item
+				})
+				}else if(rtuTypeTag == 'IA_SF_G' || rtuTypeTag == 'IA_SF_N'){
+					list.map(item=>{
+						if (item.parameterId == 20 || item.parameterId == 22 || item.parameterId == 28 || item.parameterId == 35) {
+							item.icon = ' iconfont icon-ic_kqwd'
+							if (item.value == 1) {
+								item.value = '开'
+								item.iconColor = '#00bfff'
+							} else {
+								item.value = '关'
+								item.iconColor = 'red'
+							}
+							this.parameterDataList.push(item)
+						} else if (item.parameterId == 25 || item.parameterId == 27 || item.parameterId == 37 || item.parameterId ==35) {
+							item.icon = ' iconfont icon-ic_kqwd'
+							if (item.value == 1) {
+								item.value = '开'
+								item.iconColor = '#00bfff'
+							} else {
+								item.value = '关'
+								item.iconColor = 'red'
+							}
+							this.parameterDataList.push(item)
+						} else {
+							item.icon = " "
+							if (item.value == 1) {
+								item.value = '开'
+								item.iconColor = '#00bfff'
+							} else {
+								item.value = '关'
+								item.iconColor = 'red'
+							}
+						}
+					})
+					
+				}
 			},
 			touchstartView(event) {
 				let that = this
@@ -164,8 +236,8 @@
 				document.ontouchmove = function(event) {
 					if (event.touches.length == 1) {
 						if (!that.canMove) return
-						that.orgTreeOffsetLeft = that.oldMarginLeft + pageX - that.initPageX
-						that.orgTreeOffsetTop = that.oldMarginTop + pageY - that.initPageY
+						// that.orgTreeOffsetLeft = that.oldMarginLeft + event.touches[0].pageX - that.initPageX
+						// that.orgTreeOffsetTop = that.oldMarginTop +event.touches[0].pageY - that.initPageY
 					} else if (event.touches.length >= 2) {
 						var x2 = that.getDistance(event.touches[0], event.touches[1])
 						if (x2 > x1) {

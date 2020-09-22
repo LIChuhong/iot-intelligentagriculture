@@ -28,6 +28,9 @@
 		getRtu,
 		getRtuData
 	} from '@/api/rtu.js'
+	import {
+		getSignal
+	} from '@/libs/tools.js'
 	export default {
 		props: ['rtuNumber'],
 		data() {
@@ -66,7 +69,9 @@
 							const rtuData = data.rtuData
 							if(rtuData.parameterDataList != null && rtuData.parameterDataList){
 								this.parameterDataList = rtuData.parameterDataList.map(item=>{
-									// if()
+									if(item.parameterId == 4){
+										item.icon = getSignal(value)
+									}
 									return item
 								})
 								

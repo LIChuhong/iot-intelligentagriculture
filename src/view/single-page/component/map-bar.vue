@@ -21,15 +21,17 @@
 			},
 			barData: {
 				type: Array,
-				default: []
+				default: funcution=>{
+					return []
+				}
 			},
 			barColor: {
 				type: String,
 				default: '#83bff6'
 			},
 			lineLoading:{
-				type: String,
-				// default: false
+				type: Boolean,
+				default: false
 			}
 		},
 

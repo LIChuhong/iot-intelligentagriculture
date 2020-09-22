@@ -9,7 +9,7 @@
 		<Table style="margin: 3.125rem 0;" size="small" border :columns="rtuListColumns" :data="rtuListData" :loading="tableLoading">
 			<template slot-scope="{ row }" slot="rtuTypeImgUrl">
 				<div style="height:2.8125rem ;display: flex;justify-content: center; align-items: center">
-				<img :src="row.rtuTypeImgUrl" :alt="row.rtuNumber" style="max-height: 2.8125rem;max-width:2.8125rem;" />
+					<img :src="row.rtuTypeImgUrl" :alt="row.rtuNumber" style="max-height: 2.8125rem;max-width:2.8125rem;" />
 				</div>
 			</template>
 			<template slot-scope="{ row }" slot="nameAndserialNum">
@@ -34,10 +34,10 @@
 
 		<Modal v-model="showRtuInfo" :title="rtuModalTitle" footer-hide fullscreen @on-cancel="cancel">
 			<!-- <rtu-form :rtu-number="rtuNumber" v-if="showRtuInfo">修改</rtu-form> -->
-			<iar-info v-if="rtuTypeTag == 'IA_R'" :rtu-number = "rtuNumber"></iar-info>
-			<iasf-info v-if="rtuTypeTag == 'IA_SF'" :rtu-number = "rtuNumber"></iasf-info>
-			<iaw-info v-if="rtuTypeTag == 'IA_W'" :rtu-number = "rtuNumber"></iaw-info>
-			<ia-wn v-if="rtuTypeTag == 'IA_W_N'" :rtu-number = "rtuNumber"></ia-wn>
+			<iar-info v-if="rtuTypeTag == 'IA_R'" :rtu-number="rtuNumber"></iar-info>
+			<iasf-info v-if="rtuTypeTag == 'IA_SF'" :rtu-number="rtuNumber"></iasf-info>
+			<iaw-info v-if="rtuTypeTag == 'IA_W'" :rtu-number="rtuNumber"></iaw-info>
+			<iat-info v-if="rtuTypeTag == 'IA_T'" :rtu-number="rtuNumber"></iat-info>
 		</Modal>
 
 	</div>
@@ -54,7 +54,7 @@
 	import IarInfo from './component/iar-info.vue'
 	import IasfInfo from './component/iasf-info.vue'
 	import IawInfo from './component/iaw-info.vue'
-	import IaWn from './component/ia-w-n.vue'
+	import IatInfo from './component/iat-info.vue'
 	// import RtuForm from '../component/rtu-form.vue'
 	// import CopyRtu from '../component/copy-rtu.vue'
 	export default {
@@ -63,7 +63,7 @@
 			IarInfo,
 			IasfInfo,
 			IawInfo,
-			IaWn
+			IatInfo
 		},
 		data() {
 			return {
@@ -115,19 +115,19 @@
 					alert(error)
 				})
 			},
-		
+
 			show_rtu_info(row, index) {
 				// console.log(row)
-				if (row.rtuTypeTag == 'IA_R') {
+				if (row.rtuTypeTag == 'IA_R_G' || row.rtuTypeTag == 'IA_R_N') {
 					this.rtuTypeTag = 'IA_R'
-				} else if (row.rtuTypeTag == 'IA_SF') {
+				} else if (row.rtuTypeTag == 'IA_SF_G' || row.rtuTypeTag == 'IA_SF_N') {
 					this.rtuTypeTag = 'IA_SF'
-				} else if (row.rtuTypeTag == 'IA_W') {
+				} else if (row.rtuTypeTag == 'IA_W_G' || row.rtuTypeTag == 'IA_W_N') {
 					this.rtuTypeTag = 'IA_W'
-				} else if (row.rtuTypeTag == 'IA_W_N'){
-					this.rtuTypeTag = 'IA_W_N'
+				} else if (row.rtuTypeTag == 'IA_T_G' || row.rtuTypeTag == 'IA_T_N') {
+					this.rtuTypeTag = 'IA_T'
 				}
-				this.rtuModalTitle = row.rtuNumber+'-'+row.rtuTypeName
+				this.rtuModalTitle = row.rtuNumber + '-' + row.rtuTypeName
 				this.rtuNumber = row.rtuNumber
 				this.showRtuInfo = true
 			},
@@ -185,7 +185,7 @@
 				this.prevId = [0]
 				this.getRtuList()
 			},
-			cancel(){
+			cancel() {
 				this.rtuTypeTag = ''
 			}
 		},

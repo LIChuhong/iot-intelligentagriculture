@@ -6,11 +6,11 @@
 		</div>
 		<div class="iarStyle">
 			<!-- <p>信号强度:</p> -->
-			<Row>
-				<Col span="12" v-for="(item,index) in parameterDataList" :key="index">
-				<p><span><Icon :type="item.icon" /></span>{{item.parameterName}}:{{item.value}}{{item.unit}}</p>
-				</Col>
-			</Row>
+			
+				<div style="width: 50%;" v-for="(item,index) in parameterDataList" :key="index">
+				<p><span><Icon :color="item.iconColor" :type="item.icon" /></span>{{item.parameterName}}:<span :style="{color:item.iconColor }">{{item.value}}{{item.unit}}</span></p>
+				
+			</div>
 		</div>
 		<Spin fix v-show="showSpin" style="background: rgba(255,255,255,0.3);">
 			<Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
@@ -24,6 +24,9 @@
 		getRtu,
 		getRtuData
 	} from '@/api/rtu.js'
+	import {
+		getSignal
+	} from '@/libs/tools.js'
 	export default {
 		props: ['rtuNumber'],
 		data() {
@@ -61,28 +64,39 @@
 							const rtuData = data.rtuData
 							if(rtuData.parameterDataList != null && rtuData.parameterDataList){
 								this.parameterDataList = rtuData.parameterDataList.map(item=>{
-									if(item.parameterName == '空气温度'){
+									if (item.parameterId == 9) {
 										item.icon = ' iconfont icon-ic_kqwd'
-									}else if(item.parameterName == '风速'){
-										item.icon = ' iconfont icon-ic_fs'
-									}else if(item.parameterName == '瞬时降雨量'){
-										item.icon = ' iconfont icon-ic_ssyl'
-									}else if(item.parameterName == '当天降雨量'){
-										item.icon = ' iconfont icon-ic_dtjyl'
-									}else if(item.parameterName == '昨天降雨量'){
-										item.icon = ' iconfont icon-ic_zryl'
-									}else if(item.parameterName == '总降雨量'){
-										item.icon = ' iconfont icon-ic_zyl'
-									}else if(item.parameterName == '土壤水分'){
-										item.icon = ' iconfont icon-ic_trsf'
-									}else if(item.parameterName == '大气压'){
-										item.icon = ' iconfont icon-ic_dqy'
-									}else if(item.parameterName == '风向'){
-										item.icon = ' iconfont icon-ic_fx'
-									}else if(item.parameterName == '空气湿度'){
+										item.iconColor = '#0187fc'
+									} else if (item.parameterId == 10) {
 										item.icon = ' iconfont icon-ic_kqsd'
+										item.iconColor = '#16c8c4'
+									} else if (item.parameterId == 11) {
+										item.icon = ' iconfont icon-ic_dqy'
+										item.iconColor = '#fc9143'
+									} else if (item.parameterId == 12) {
+										item.icon = ' iconfont icon-ic_fs'
+										item.iconColor = '#ffce6b'
+									} else if (item.parameterId == 13) {
+										item.icon = ' iconfont icon-ic_fx'
+										item.iconColor = '#67c300'
+									} else if (item.parameterId == 14) {
+										item.icon = ' iconfont icon-ic_dtjyl'
+										item.iconColor = '#16c8c4'
+									} else if (item.parameterId == 15) {
+										item.icon = ' iconfont icon-ic_ssyl'
+										item.iconColor = '#fc9143'
+									} else if (item.parameterId == 16) {
+										item.icon = ' iconfont icon-ic_zryl'
+										item.iconColor = '#ffce6b'
+									} else if (item.parameterId == 17) {
+										item.icon = ' iconfont icon-ic_zyl'
+										item.iconColor = '#0187fc'
+									} else if (item.parameterId == 18) {
+										item.icon = ' iconfont icon-ic_trsf'
+										item.iconColor = '#4ad595'
 									}else{
-										item.icon = " "
+										item.icon = ''
+										item.iconColor = '#fff'
 									}
 									return item
 								})
@@ -110,8 +124,13 @@
 </script>
 
 <style>
+	.iarStyle{
+		display: flex;
+		flex-wrap:wrap
+	}
 	.iarStyle p {
 		margin: 0.3125rem 0;
+		
 	}
 
 	.iarStyle p span {
