@@ -1,24 +1,24 @@
 <template>
 	<div>
-		<!-- 浇灌器 -->
-		<Row>
-		    <Col span="8">
-		        <div style="margin-bottom:0.625rem" v-for="(item , index) in parameterDataList" :key="index"><span>{{item.parameterName}}:{{item.value}}{{item.unit}}</span></div>
-				<!-- <div style="margin: 0.625rem 0;"><span>控制状态:</span></div>
-				<div><span>剩余时间:</span></div> -->
-		    </Col>
-		    <Col span="8" style="text-align: center">
-		       <img :src="iaRtu.rtuTypeImgUrl" width="100%"/>
-		    </Col>
-			<Col span="8" style="text-align: right;">
-			    <Button type="success" ghost >浇水记录</Button>
-				<Button style="margin: 0.625rem 0;" type="info">设置浇水</Button>
-				
-			</Col>
-		</Row>
-		<Spin fix v-show="showSpin"  style="background: rgba(255,255,255,0.3);">
+		<!-- 气象站 -->
+		<div style="height: 6.25rem;text-align: center;">
+			<img :src="iaRtu.rtuTypeImgUrl" style="height:100%;" />
+		</div>
+		<div style="display: flex;margin: 1.25rem 0;font-size: 1rem;">
+			<p style="width: 50%;text-align: center;">状态:
+				<Icon :color="iat.iconColor" :type="iat.icon" />
+			</p>
+			<p>剩余时间:<span :style="{color:iat.iconColor}">{{iat.restTime}}秒</span></p>
+		</div>
+		<div style="text-align: right;padding-right: 1.25rem;">
+			<Cascader style="display: inline-block;" :transfer="true" :data="iat.timeList" @on-change="setRtu">
+				<Button :disabled="iat.restTime > 0" style="margin-right:1.25rem ;" type="primary" shape="circle">开</Button>
+			</Cascader>
+			<Button @click="setRtu(0)" :disabled="iat.restTime == 0" type="primary" shape="circle">关</Button>
+		</div>
+		<Spin fix v-show="showSpin" style="background: rgba(255,255,255,0.3);">
 			<Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
-			<div>加载中...</div>
+			<div>{{tips}}</div>
 		</Spin>
 	</div>
 </template>
@@ -26,21 +26,43 @@
 <script>
 	import {
 		getRtu,
-		getRtuData
+		getRtuData,
+		setRtuData
 	} from '@/api/rtu.js'
 	import {
 		getSignal
 	} from '@/libs/tools.js'
+	import { rtuTimeDataList } from '@/view/components/js/data.js'
 	export default {
 		props: ['rtuNumber'],
 		data() {
 			return {
+				tips:'检测中...',
 				iaRtu: {},
-				parameterDataList:[],
-				showSpin: false
+				parameterDataList: [],
+				showSpin: false,
+				iat: {
+					show: false,
+					iconColor: '',
+					icon: '',
+					restTime: 0,
+					timeList: [],
+				},
+				timer: '',
 			}
 		},
 		methods: {
+			showRemTime() {
+				//倒计时
+			
+				if (this.iat.restTime <= 0) {
+					this.setStateValue(0)
+					clearInterval(this.timer);
+				} else {
+					this.iat.restTime--;
+			
+				}
+			},
 			getRtuInfo() {
 				if (this.rtuNumber != null && this.rtuNumber != '') {
 					getRtu(this.rtuNumber).then(res => {
@@ -48,8 +70,9 @@
 						if (data.success == 1) {
 							// console.log(data)
 							this.iaRtu = data.iaRtu
+							this.getRuDataInfo()
 						} else {
-							this.$Message.error(this.rtuNumber+data.errorMessage)
+							this.$Message.error(this.rtuNumber + data.errorMessage)
 						}
 					}).catch(error => {
 						alert(error)
@@ -57,7 +80,70 @@
 				}
 
 			},
-			getRuDataInfo(){
+			setRtu(value) {
+				// alert(this.iat.setRtuTimeValue)
+				if (value != 0) {
+					value = Number(value[0])
+					// alert(value)
+				}
+				var rtuData = {
+					rtuNumber: this.rtuNumber,
+					orderType: 2,
+					parameterDataList: [{
+							parameterIndex: 2,
+							value: 1
+						},
+						{
+							parameterIndex: 3,
+							value: value
+						},
+					]
+				}
+				// console.log(rtuData)
+				this.showSpin = true
+				this.tips = '操作中...'
+				setRtuData(rtuData).then(res => {
+					const data = res.data
+					this.showSpin = false
+					if (data.success == 1) {
+						var rtuData = data.rtuData
+						var paramList = rtuData.parameterDataList
+						for (var i = 0; i < paramList.length; i++) {
+							if (paramList[i].parameterId == 25) {
+								this.iat.restTime = paramList[i].value
+								this.setStateValue(paramList[i].value)
+								clearInterval(this.timer);
+								this.timer = setInterval(this.showRemTime, 1000);
+								if (paramList[i].value > 0) {
+									this.$Message.success('开启成功')
+								} else {
+									this.$Message.success('关闭成功')
+								}
+							}
+						}
+					} else {
+						this.$Message.error(data.errorMessage)
+					}
+				}).catch(error => {
+					this.showSpin = false
+					alert(error)
+				})
+
+			},
+
+			setStateValue(stateValue) {
+				if (stateValue > 1) {
+					this.iat.icon = " iconfont icon-water_switch_opened"
+					this.iat.iconColor = "#19be6b"
+				} else if (stateValue == 0) {
+					this.iat.icon = " iconfont icon-water_switch_closed"
+					this.iat.iconColor = "#ed4014"
+					this.iat.restTime = 0
+				} else {
+					this.iat.icon = ''
+				}
+			},
+			getRuDataInfo() {
 				if (this.rtuNumber != null && this.rtuNumber != '') {
 					this.showSpin = true
 					getRtuData(this.rtuNumber).then(res => {
@@ -67,46 +153,61 @@
 							// console.log(data)
 							// this.iaRtu = data.iaRtu
 							const rtuData = data.rtuData
-							if(rtuData.parameterDataList != null && rtuData.parameterDataList){
-								this.parameterDataList = rtuData.parameterDataList.map(item=>{
-									if(item.parameterId == 4){
-										item.icon = getSignal(value)
+							if (rtuData.parameterDataList != null && rtuData.parameterDataList) {
+
+								rtuData.parameterDataList.map(item => {
+									if (item.parameterId == 25) {
+										this.setStateValue(item.value)
+										this.iat.show = true
+										this.iat.restTime = item.value
+										clearInterval(this.timer);
+										this.timer = setInterval(this.showRemTime, 1000);
 									}
-									return item
 								})
-								
+
 							}
-							
+
 						} else {
-							this.$Message.error(this.rtuNumber+data.errorMessage)
+							this.$Message.error(this.rtuNumber + data.errorMessage)
 						}
 					}).catch(error => {
 						this.showSpin = false
 						alert(error)
 					})
 				}
-				
+
 			}
-			
+
 		},
 		computed() {
 
 		},
 		created() {
 			this.getRtuInfo()
-			this.getRuDataInfo()
+			this.iat.timeList = rtuTimeDataList
 		},
+		beforeDestroy() {
+			clearInterval(this.timer);
+		}
 	}
 </script>
 
 <style>
-	.demo-spin-icon-load{
-        animation: ani-demo-spin 1s linear infinite;
-    }
-    @keyframes ani-demo-spin {
-        from { transform: rotate(0deg);}
-        50%  { transform: rotate(180deg);}
-        to   { transform: rotate(360deg);}
-    }
-	
+	.demo-spin-icon-load {
+		animation: ani-demo-spin 1s linear infinite;
+	}
+
+	@keyframes ani-demo-spin {
+		from {
+			transform: rotate(0deg);
+		}
+
+		50% {
+			transform: rotate(180deg);
+		}
+
+		to {
+			transform: rotate(360deg);
+		}
+	}
 </style>

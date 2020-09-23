@@ -1,36 +1,16 @@
 <template>
 	<div>
-		<!-- 浇灌器 -->
-		<Row>
-			<Col span="8" style="text-align:left;">
-			<Button type="success" ghost>浇水记录</Button>
-			<Button style="margin: 0.625rem 0;" type="info">设置浇水</Button>
-			<!-- <ButtonGroup>
-				<Button @click="setRtu" :disabled="btnValue" type="primary">开</Button>
-				<Button @click="setRtu" :disabled="!btnValue" type="primary">关</Button>
-			</ButtonGroup> -->
-			<!-- <RadioGroup v-model="buttonSize" type="button">
-				<Radio label="large">开</Radio>
-				<Radio label="default"></Radio>
-			</RadioGroup> -->
-
-			</Col>
-			<Col span="8" style="text-align: center">
-			<img :src="iaRtu.rtuTypeImgUrl" width="100%" />
-			</Col>
-
-			<Col span="8">
-			<div style="margin-bottom:0.625rem" v-for="(item , index) in parameterDataList" :key="index"><span>{{item.parameterName}}:{{item.value}}{{item.unit}}</span></div>
-			<!-- <div style="margin: 0.625rem 0;"><span>控制状态:</span></div>
-				<div><span>剩余时间:</span></div> -->
-			</Col>
-		</Row>
-		<div style="text-align: center;margin: 1.875rem 0;">
-			<ButtonGroup>
-				<Button @click="setRtu" :disabled="btnValue" type="primary">开</Button>
-				<Button @click="setRtu" :disabled="!btnValue" type="primary">关</Button>
-			</ButtonGroup>
-
+		<div>
+			<!-- 气象站 -->
+			<div style="height: 6.25rem;text-align: center;">
+				<img :src="iaRtu.rtuTypeImgUrl" style="height:100%;" />
+			</div>
+			<div style="margin: 1.25rem 0;">
+				<div style="font-size: 1rem;text-align: center;" v-for="(item,index) in parameterDataList" :key="index">
+					<p><span>
+							<Icon :color="item.iconColor" :type="item.icon" /></span>{{item.parameterName}}:<span :style="{color:item.iconColor }">{{item.value}}{{item.unit}}</span></p>
+				</div>
+			</div>
 		</div>
 		<Spin fix v-show="showSpin" style="background: rgba(255,255,255,0.3);">
 			<Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
@@ -58,74 +38,30 @@
 			}
 		},
 		watch: {
-			btnValue(val) {
-				if(val){
-					this.parameterDataList[this.parameterIndex].value = 1
-				}else{
-					this.parameterDataList[this.parameterIndex].value = 0
-				}
-				// console.log(val)
-
-			}
+			
 		},
 		methods: {
-			setRtu() {
-				var value = 0
-				if (!this.btnValue) {
-					value = 1
-				}
-				var rtuData = {
-					rtuNumber: this.rtuNumber,
-					orderType: 2,
-					parameterDataList: [{
-							parameterIndex: 2,
-							value: 0
-						},
-						{
-							parameterIndex: 3,
-							value: value
-						},
-					]
-				}
-				// console.log(rtuData)
-				this.showSpin = true
-				this.tips = '操作中...'
-				setRtuData(rtuData).then(res => {
-					const data = res.data
-					this.showSpin = false
-					if (data.success == 1) {
-						this.btnValue = !this.btnValue
-						if (value == 1) {
-							this.$Message.success('开启成功')
-						} else {
-							this.$Message.success('关闭成功')
-						}
-					} else {
-						this.$Message.error(data.errorMessage)
-					}
-				}).catch(error => {
-					this.showSpin = false
-					alert(error)
-				})
-
-			},
 			getRtuInfo() {
+				this.showSpin = true
 				if (this.rtuNumber != null && this.rtuNumber != '') {
 					getRtu(this.rtuNumber).then(res => {
+						this.showSpin = false
 						const data = res.data
 						if (data.success == 1) {
 							// console.log(data)
 							this.iaRtu = data.iaRtu
+							this.getRtuDataInfo()
 						} else {
 							this.$Message.error(this.rtuNumber + data.errorMessage)
 						}
 					}).catch(error => {
+						this.showSpin = false
 						alert(error)
 					})
 				}
 
 			},
-			getRuDataInfo() {
+			getRtuDataInfo() {
 				if (this.rtuNumber != null && this.rtuNumber != '') {
 					this.showSpin = true
 					getRtuData(this.rtuNumber).then(res => {
@@ -133,24 +69,28 @@
 						this.showSpin = false
 						if (data.success == 1) {
 							const rtuData = data.rtuData
-							if (rtuData.parameterDataList != null && rtuData.parameterDataList != '') {
-
-								var list = rtuData.parameterDataList
-								for (var i = 0; i < list.length; i++) {
-									if (list[i].parameterId == 25) {
-										this.parameterIndex = i
-										if (list[i].value == 1) {
-											this.btnValue = true
-										} else {
-											this.btnValue = false
-										}
-
+							if (rtuData.parameterDataList != null && rtuData.parameterDataList) {
+								 rtuData.parameterDataList.map(item => {
+									if (item.parameterId == 18) {
+										item.icon = ' iconfont icon-ic_kqwd'
+										item.iconColor = '#0187fc'
+										this.parameterDataList.push(item)
+									} else if (item.parameterId == 32) {
+										item.icon = ' iconfont icon-ic_kqwd'
+										item.iconColor = '#0187fc'
+										this.parameterDataList.push(item)
+									} else if (item.parameterId == 33) {
+										item.icon = ' iconfont icon-ic_yf'
+										item.iconColor = '#06cce4'
+										this.parameterDataList.push(item)
+									} else {
+										item.icon = ''
+										item.iconColor = '#fff'
 									}
-									this.parameterDataList.push(list[i])
-								}
+									return item
+								})
 
 							}
-
 						} else {
 							this.$Message.error(this.rtuNumber + data.errorMessage)
 						}
@@ -168,7 +108,7 @@
 		},
 		created() {
 			this.getRtuInfo()
-			this.getRuDataInfo()
+			
 		},
 	}
 </script>

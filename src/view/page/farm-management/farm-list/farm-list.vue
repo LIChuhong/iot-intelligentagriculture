@@ -9,7 +9,20 @@
 				 :title="item.rtuNumber">
 					<Poptip :title="item.rtuNumber" @on-popper-show="getRtuDataInfo(item)">
 						<div slot="content">
-							<div style="font-size: 0.75rem;" v-for="(item , index) in parameterDataList" :key="index"><Icon :color="item.iconColor" :type="item.icon" /><span>{{item.parameterName}}:<span :style="{color:item.iconColor }">{{item.value}}{{item.unit}}</span></span></div>
+							<div style="font-size: 0.75rem;" v-for="(item1 , index) in parameterDataList" :key="index">
+								<Icon :color="item1.iconColor" :type="item1.icon" /><span>{{item1.parameterName}}:<span :style="{color:item1.iconColor }">{{item1.value}}{{item1.unit}}</span></span></div>
+							<div v-if="iat.show">
+								<p>状态:
+									<Icon :color="iat.iconColor" :type="iat.icon" />
+								</p>
+								<p>剩余时间:<span :style="{color:iat.iconColor}">{{iat.restTime}}秒</span></p>
+								<div>
+									<Cascader style="display: inline-block;" :transfer="true" :data="iat.timeList" @on-change="setRtu">
+										<Button :disabled="iat.restTime > 0" style="margin-right:0.625rem ;" type="primary" shape="circle">开</Button>
+									</Cascader>
+									<Button @click="setRtu(0)" :disabled="iat.restTime == 0" type="primary" shape="circle">关</Button>
+								</div>
+							</div>
 						</div>
 						<div class="rtuImgStyle">
 							<img :src="item.rtuTypeImgUrl" class="rtu1" :alt="item.rtuNumber+item.rtuTypeName" :draggable="false" />
@@ -64,13 +77,15 @@
 	import MapList from '../component/map-list.vue'
 	import bg from '@/assets/images/map.jpg'
 	import FarmForm from '../component/farm-form.vue'
+	import { rtuTimeDataList } from '@/view/components/js/data.js'
 	import {
 		getTopMap,
 		getMapList,
 		getMap
 	} from '@/api/farm.js'
 	import {
-		getRtuData
+		getRtuData,
+		setRtuData
 	} from '@/api/rtu.js'
 	import ZoomController from '../component/zoom-controller.vue'
 	export default {
@@ -82,6 +97,14 @@
 		},
 		data() {
 			return {
+				iat: {
+					rtuNumber:null,
+					show: false,
+					iconColor: '',
+					icon: '',
+					restTime: 0,
+					timeList: [],
+				},
 				editor: false,
 				zoom: 100,
 				showMapList: false,
@@ -101,7 +124,8 @@
 				showSpin: false,
 				parameterDataList: [],
 				mapHeight: 0,
-				mapWidth: 0
+				mapWidth: 0,
+				timer:''
 
 			}
 		},
@@ -133,9 +157,71 @@
 		},
 
 		methods: {
+			showRemTime() {
+				//倒计时
+			
+				if (this.iat.restTime <= 0) {
+					this.setStateValue(0)
+					clearInterval(this.timer);
+				} else {
+					this.iat.restTime--;
+			
+				}
+			},
+			setRtu(value) {
+				// alert(this.iat.setRtuTimeValue)
+				if(value != 0){
+					value = Number(value[0])
+					// alert(value)
+				}
+				var rtuData = {
+					rtuNumber: this.iat.rtuNumber,
+					orderType: 2,
+					parameterDataList: [{
+							parameterIndex: 2,
+							value: 1
+						},
+						{
+							parameterIndex: 3,
+							value: value
+						},
+					]
+				}
+				// console.log(rtuData)
+				this.showSpin = true
+				setRtuData(rtuData).then(res => {
+					const data = res.data
+					this.showSpin = false
+					if (data.success == 1) {
+						var rtuData = data.rtuData
+						var paramList = rtuData.parameterDataList
+						for(var i= 0 ;i<paramList.length;i++){
+							if(paramList[i].parameterId == 25){
+								this.iat.restTime = paramList[i].value
+								this.setStateValue(paramList[i].value)
+								clearInterval(this.timer);
+								this.timer = setInterval(this.showRemTime, 1000);
+								if(paramList[i].value >0){
+									this.$Message.success('开启成功')
+								}else{
+									this.$Message.success('关闭成功')
+								}
+							}
+						}
+					} else {
+						this.$Message.error(data.errorMessage)
+					}
+				}).catch(error => {
+					this.showSpin = false
+					alert(error)
+				})
+			
+			},
 			getRtuDataInfo(item) {
 				this.showSpin = true
 				this.parameterDataList = []
+				this.iat.show = false
+				this.iat.rtuNumber = null
 				getRtuData(item.rtuNumber).then(res => {
 					const data = res.data
 					this.showSpin = false
@@ -144,8 +230,11 @@
 						// this.iaRtu = data.iaRtu
 						var rtuData = data.rtuData
 						if (rtuData.parameterDataList != null && rtuData.parameterDataList) {
-							this.showParamDataList(rtuData.rtuTypeTag,rtuData.parameterDataList)
-						
+							if(rtuData.rtuTypeTag == 'IA_W_G' || rtuData.rtuTypeTag == 'IA_W_N'){
+								this.iat.rtuNumber = rtuData.rtuNumber
+							}
+							this.showParamDataList(rtuData.rtuTypeTag, rtuData.parameterDataList)
+
 						}
 
 					} else {
@@ -156,47 +245,47 @@
 					alert(error)
 				})
 			},
-			showParamDataList(rtuTypeTag,list){
-				if(rtuTypeTag == 'IA_R_G' || rtuTypeTag == 'IA_R_N'){
-				this.parameterDataList = list.map(item=>{
-					if (item.parameterId == 9) {
-						item.icon = ' iconfont icon-ic_kqwd'
-						item.iconColor = '#0187fc'
-					} else if (item.parameterId == 10) {
-						item.icon = ' iconfont icon-ic_kqsd'
-						item.iconColor = '#16c8c4'
-					} else if (item.parameterId == 11) {
-						item.icon = ' iconfont icon-ic_dqy'
-						item.iconColor = '#fc9143'
-					} else if (item.parameterId == 12) {
-						item.icon = ' iconfont icon-ic_fs'
-						item.iconColor = '#ffce6b'
-					} else if (item.parameterId == 13) {
-						item.icon = ' iconfont icon-ic_fx'
-						item.iconColor = '#67c300'
-					} else if (item.parameterId == 14) {
-						item.icon = ' iconfont icon-ic_dtjyl'
-						item.iconColor = '#16c8c4'
-					} else if (item.parameterId == 15) {
-						item.icon = ' iconfont icon-ic_ssyl'
-						item.iconColor = '#fc9143'
-					} else if (item.parameterId == 16) {
-						item.icon = ' iconfont icon-ic_zryl'
-						item.iconColor = '#ffce6b'
-					} else if (item.parameterId == 17) {
-						item.icon = ' iconfont icon-ic_zyl'
-						item.iconColor = '#0187fc'
-					} else if (item.parameterId == 18) {
-						item.icon = ' iconfont icon-ic_trsf'
-						item.iconColor = '#4ad595'
-					}else{
-						item.icon = ''
-						item.iconColor = '#fff'
-					}
-					return item
-				})
-				}else if(rtuTypeTag == 'IA_SF_G' || rtuTypeTag == 'IA_SF_N'){
-					list.map(item=>{
+			showParamDataList(rtuTypeTag, list) {
+				if (rtuTypeTag == 'IA_R_G' || rtuTypeTag == 'IA_R_N') {
+					this.parameterDataList = list.map(item => {
+						if (item.parameterId == 9) {
+							item.icon = ' iconfont icon-ic_kqwd'
+							item.iconColor = '#0187fc'
+						} else if (item.parameterId == 10) {
+							item.icon = ' iconfont icon-ic_kqsd'
+							item.iconColor = '#16c8c4'
+						} else if (item.parameterId == 11) {
+							item.icon = ' iconfont icon-ic_dqy'
+							item.iconColor = '#fc9143'
+						} else if (item.parameterId == 12) {
+							item.icon = ' iconfont icon-ic_fs'
+							item.iconColor = '#ffce6b'
+						} else if (item.parameterId == 13) {
+							item.icon = ' iconfont icon-ic_fx'
+							item.iconColor = '#67c300'
+						} else if (item.parameterId == 14) {
+							item.icon = ' iconfont icon-ic_dtjyl'
+							item.iconColor = '#16c8c4'
+						} else if (item.parameterId == 15) {
+							item.icon = ' iconfont icon-ic_ssyl'
+							item.iconColor = '#fc9143'
+						} else if (item.parameterId == 16) {
+							item.icon = ' iconfont icon-ic_zryl'
+							item.iconColor = '#ffce6b'
+						} else if (item.parameterId == 17) {
+							item.icon = ' iconfont icon-ic_zyl'
+							item.iconColor = '#0187fc'
+						} else if (item.parameterId == 18) {
+							item.icon = ' iconfont icon-ic_trsf'
+							item.iconColor = '#4ad595'
+						} else {
+							item.icon = ''
+							item.iconColor = '#fff'
+						}
+						return item
+					})
+				} else if (rtuTypeTag == 'IA_SF_G' || rtuTypeTag == 'IA_SF_N') {
+					list.map(item => {
 						if (item.parameterId == 20 || item.parameterId == 22 || item.parameterId == 28 || item.parameterId == 35) {
 							item.icon = ' iconfont icon-ic_kqwd'
 							if (item.value == 1) {
@@ -207,7 +296,7 @@
 								item.iconColor = 'red'
 							}
 							this.parameterDataList.push(item)
-						} else if (item.parameterId == 25 || item.parameterId == 27 || item.parameterId == 37 || item.parameterId ==35) {
+						} else if (item.parameterId == 25 || item.parameterId == 27 || item.parameterId == 37 || item.parameterId == 35) {
 							item.icon = ' iconfont icon-ic_kqwd'
 							if (item.value == 1) {
 								item.value = '开'
@@ -217,21 +306,55 @@
 								item.iconColor = 'red'
 							}
 							this.parameterDataList.push(item)
-						} else {
-							item.icon = " "
-							if (item.value == 1) {
-								item.value = '开'
-								item.iconColor = '#00bfff'
-							} else {
-								item.value = '关'
-								item.iconColor = 'red'
-							}
 						}
 					})
-					
+
+				} else if (rtuTypeTag == 'IA_T_G' || rtuTypeTag == 'IA_T_N') {
+					list.map(item => {
+						if (item.parameterId == 18) {
+							item.icon = ' iconfont icon-ic_kqwd'
+							item.iconColor = '#0187fc'
+							this.parameterDataList.push(item)
+						} else if (item.parameterId == 32) {
+							item.icon = ' iconfont icon-ic_kqwd'
+							item.iconColor = '#0187fc'
+							this.parameterDataList.push(item)
+						} else if (item.parameterId == 33) {
+							item.icon = ' iconfont icon-ic_yf'
+							item.iconColor = '#06cce4'
+							this.parameterDataList.push(item)
+						} else {
+							item.icon = ''
+							item.iconColor = '#fff'
+						}
+						return item
+					})
+				} else if (rtuTypeTag == 'IA_W_G' || rtuTypeTag == 'IA_W_N') {
+					// var showRtuState = ''
+					list.map(item => {
+						if (item.parameterId == 25) {
+							this.setStateValue(item.value)
+							this.iat.show = true
+							this.iat.restTime = item.value
+							clearInterval(this.timer);
+							this.timer = setInterval(this.showRemTime, 1000);
+						}
+					})
 				}
 			},
-			
+			setStateValue(stateValue) {
+				if (stateValue > 1) {
+					this.iat.icon = " iconfont icon-water_switch_opened"
+					this.iat.iconColor = "#19be6b"
+				} else if (stateValue == 0) {
+					this.iat.icon = " iconfont icon-water_switch_closed"
+					this.iat.iconColor = "#ed4014"
+					this.iat.restTime = 0
+				} else {
+					this.iat.icon = ''
+				}
+			},
+
 			goBack(val) {
 				this.editor = false
 			},
@@ -440,8 +563,8 @@
 		created() {},
 		mounted() {
 			this.getTopMapInfo()
-		},
-
+			this.iat.timeList = rtuTimeDataList
+			}
 
 	}
 </script>

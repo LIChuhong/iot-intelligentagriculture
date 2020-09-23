@@ -21,7 +21,7 @@
 
 		<Spin fix v-show="showSpin" style="background: rgba(255,255,255,0.3);">
 			<Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
-			<div>加载中...</div>
+			<div>检测中...</div>
 		</Spin>
 
 	</div>
@@ -50,6 +50,7 @@
 						if (data.success == 1) {
 							// console.log(data)
 							this.iaRtu = data.iaRtu
+							this.getRuDataInfo()
 						} else {
 							this.$Message.error(this.rtuNumber + data.errorMessage)
 						}
@@ -123,7 +124,7 @@
 
 		created() {
 			this.getRtuInfo()
-			this.getRuDataInfo()
+			
 		},
 	}
 </script>
@@ -136,6 +137,7 @@
 
 	.iasfStyle p {
 		margin: 0.3125rem 0;
+		font-size: 1rem;
 	}
 
 	.iasfStyle p span {

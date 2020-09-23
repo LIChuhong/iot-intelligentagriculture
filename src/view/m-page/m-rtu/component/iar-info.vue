@@ -7,14 +7,14 @@
 		<div class="iarStyle">
 			<!-- <p>信号强度:</p> -->
 			
-				<div style="width: 50%;" v-for="(item,index) in parameterDataList" :key="index">
+				<div style="width: 50%;text-align: center;" v-for="(item,index) in parameterDataList" :key="index">
 				<p><span><Icon :color="item.iconColor" :type="item.icon" /></span>{{item.parameterName}}:<span :style="{color:item.iconColor }">{{item.value}}{{item.unit}}</span></p>
 				
 			</div>
 		</div>
 		<Spin fix v-show="showSpin" style="background: rgba(255,255,255,0.3);">
 			<Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
-			<div>加载中...</div>
+			<div>检测中...</div>
 		</Spin>
 	</div>
 </template>
@@ -44,6 +44,7 @@
 						if (data.success == 1) {
 							// console.log(data)
 							this.iaRtu = data.iaRtu
+							this.getRuDataInfo()
 						} else {
 							this.$Message.error(this.rtuNumber+data.errorMessage)
 						}
@@ -118,7 +119,7 @@
 		},
 		created() {
 			this.getRtuInfo()
-			this.getRuDataInfo()
+			
 		},
 	}
 </script>
@@ -126,10 +127,12 @@
 <style>
 	.iarStyle{
 		display: flex;
-		flex-wrap:wrap
+		flex-wrap:wrap;
+		margin: 1.25rem 0;
 	}
 	.iarStyle p {
 		margin: 0.3125rem 0;
+		font-size: 1rem;
 		
 	}
 
