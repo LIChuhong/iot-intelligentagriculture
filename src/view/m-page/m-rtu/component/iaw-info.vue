@@ -10,11 +10,11 @@
 			</p>
 			<p>剩余时间:<span :style="{color:iat.iconColor}">{{iat.restTime}}秒</span></p>
 		</div>
-		<div style="text-align: right;padding-right: 1.25rem;">
+		<div class="btnStyle" style="text-align: right;padding-right: 1.25rem;">
 			<Cascader style="display: inline-block;" :transfer="true" :data="iat.timeList" @on-change="setRtu">
-				<Button :disabled="iat.restTime > 0" style="margin-right:1.25rem ;" type="primary" shape="circle">开</Button>
+				<Button size="large" :disabled="iat.restTime > 0" style="margin-right:1.25rem ;" type="primary" shape="circle">开</Button>
 			</Cascader>
-			<Button @click="setRtu(0)" :disabled="iat.restTime == 0" type="primary" shape="circle">关</Button>
+			<Button size="large" @click="setRtu(0)" :disabled="iat.restTime == 0" type="primary" shape="circle">关</Button>
 		</div>
 		<Spin fix v-show="showSpin" style="background: rgba(255,255,255,0.3);">
 			<Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
@@ -32,12 +32,14 @@
 	import {
 		getSignal
 	} from '@/libs/tools.js'
-	import { rtuTimeDataList } from '@/view/components/js/data.js'
+	import {
+		rtuTimeDataList
+	} from '@/view/components/js/data.js'
 	export default {
 		props: ['rtuNumber'],
 		data() {
 			return {
-				tips:'检测中...',
+				tips: '检测中...',
 				iaRtu: {},
 				parameterDataList: [],
 				showSpin: false,
@@ -54,13 +56,13 @@
 		methods: {
 			showRemTime() {
 				//倒计时
-			
+
 				if (this.iat.restTime <= 0) {
 					this.setStateValue(0)
 					clearInterval(this.timer);
 				} else {
 					this.iat.restTime--;
-			
+
 				}
 			},
 			getRtuInfo() {
@@ -193,6 +195,17 @@
 </script>
 
 <style>
+	@media screen and (min-width:300px) and (max-width:900px) {
+		.btnStyle {
+			text-align: right;
+			padding-right: 1.25rem;
+		}
+		.btnStyle .ivu-btn-large{
+			height:3.125rem;
+			font-size: 1.5rem;
+		}
+	}
+
 	.demo-spin-icon-load {
 		animation: ani-demo-spin 1s linear infinite;
 	}

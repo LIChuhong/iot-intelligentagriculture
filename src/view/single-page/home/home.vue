@@ -225,6 +225,7 @@
 					w: w,
 					h: h
 				}
+				
 				// alert(JSON.stringify(this.etWideHigh))
 			},
 			getIaMapData(mapData) {
@@ -312,6 +313,7 @@
 					const data = res.data
 					this.showSpin1 = false
 					if (data.success == 1) {
+						console.log(data)
 						if (data.rtuData != '' && data.rtuData != null) {
 							const rtuData = data.rtuData
 							// console.log(rtuData)
@@ -407,17 +409,7 @@
 					}
 
 				}
-				// this.$nextTick(()=>{
-				// 	this.getEtWideHigh()
-				// })
-
-
 			},
-
-			// curveBtn(index) {
-			// 	// this.change1 = index;
-			// 	this.weatherIndex = index
-			// },
 			getNearDayFarmDataMethod(wsRtuNumber, iaMassifId) {
 				getNearlyDayImportParaDataList(wsRtuNumber, iaMassifId).then(res => {
 					const data = res.data
@@ -484,6 +476,7 @@
 			showSoilDataMethod(rtuSoilData) {
 				var list = rtuSoilData.parameterDataList
 				var list1 = []
+				alert(rtuSoilData)
 				for (var i = 0; i < list.length; i++) {
 					if (list[i].parameterId == 32) {
 						list[i].icon = ' iconfont icon-ic_kqwd'
@@ -671,10 +664,18 @@
 		color: #ffffff;
 		position: absolute;
 		top: 0;
-		width: 40%;
-		height: 100%;
-		left: 30%;
-
+		width: 100%;
+		height: 7%;
+		// left: 30%;
+		// line-height: 100%
+		display: flex;
+		justify-content:center;
+		align-items:center
+		
+		// align-content: center
+	}
+	.titleText h2{
+		font-size: 1.5625rem
 	}
 
 	@media screen and (max-width: 1600px) {

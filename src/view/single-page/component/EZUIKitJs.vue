@@ -21,7 +21,8 @@
 					
 				}
 				else {
-					this.player.reZize(this.etWideHigh.w,this.etWideHigh.h)
+					console.log(this.etWideHigh)
+					this.player.reSize(this.etWideHigh.w,this.etWideHigh.h)
 				}
 				// alert(1)
 			},
@@ -70,7 +71,7 @@
 						width: that.etWideHigh.w,
 						height: that.etWideHigh.h
 					});
-					// console.log(this.player)
+				 console.log(this.player)
 				})
 
 			}
