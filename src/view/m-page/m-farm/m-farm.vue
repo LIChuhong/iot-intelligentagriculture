@@ -1,5 +1,6 @@
 <template>
 	<div style="height: 100%;overflow:hidden;">
+		<div style="position: absolute;top:0;left:0;z-index: 100;width: 100%;text-align: center;color: red">画面名称:{{mapName}}</div>
 		<div ref="maps1" style="height:100%;position: relative;overflow:auto;background: #dcdee2;display: flex;justify-content:center">
 			<!-- <div ref="map1" > -->
 			<div :style="mapStyle" @touchstart="touchstartView" id="mapBgDiv1" ref="mapBgDiv1">
@@ -95,6 +96,7 @@
 					restTime: 0,
 					timeList: [],
 				},
+				mapName:'',
 				timer: '',
 				zoom: 100,
 				showMapList: false,
@@ -415,10 +417,10 @@
 					this.showSpin = false
 					if (data.success == 1) {
 						// console.log(data)
-						
 						const map = data.map
 						const iaRtuList = data.iaRtuList
 						this.rtuImgList = iaRtuList
+						this.mapName = map.mapName
 						// console.log(this.rtuImgList)
 						this.mapBgImgUrl = map.bgImgUrl
 					} else {
@@ -464,6 +466,7 @@
 						if (data.map != null && data.iaRtuList != null) {
 							const map = data.map
 							const iaRtuList = data.iaRtuList
+							this.mapName = map.mapName
 							this.$nextTick(function() {
 								this.$refs.mapBgDiv1.style.height = this.$refs.maps1.clientHeight + 'px'
 								this.mapHeight = this.$refs.maps1.clientHeight

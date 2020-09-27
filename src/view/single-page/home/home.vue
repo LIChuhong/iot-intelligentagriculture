@@ -476,7 +476,7 @@
 			showSoilDataMethod(rtuSoilData) {
 				var list = rtuSoilData.parameterDataList
 				var list1 = []
-				alert(rtuSoilData)
+				// alert(rtuSoilData)
 				for (var i = 0; i < list.length; i++) {
 					if (list[i].parameterId == 32) {
 						list[i].icon = ' iconfont icon-ic_kqwd'
