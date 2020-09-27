@@ -409,12 +409,13 @@
 			},
 			showMap(id) {
 				this.resetParameters()
+				this.showSpin = true
 				getMap(id).then(res => {
 					const data = res.data
-					this.showSpin = true
+					this.showSpin = false
 					if (data.success == 1) {
 						// console.log(data)
-						this.showSpin = false
+						
 						const map = data.map
 						const iaRtuList = data.iaRtuList
 						this.rtuImgList = iaRtuList

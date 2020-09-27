@@ -18,7 +18,7 @@ const {
 Vue.use(Router)
 const originalPush = Router.prototype.push
 Router.prototype.push = function push(location) {
-  return originalPush.call(this, location).catch(err => err)
+	return originalPush.call(this, location).catch(err => err)
 }
 const router = new Router({
 	routes,
@@ -27,12 +27,18 @@ const router = new Router({
 const LOGIN_PAGE_NAME = 'login'
 
 const turnTo = (to, access, next) => {
-	// alert('iotInterFace' + store.state.app.iotInterFace)
 	if (canTurnTo(to.name, access, routes)) { // 有权限，可访问
-
-		next()
-
-
+		if (to.name === homeName) {
+			if (store.state.app.iotInterFace == 1 || store.state.app.iotInterFace == 2) {
+				next({
+					name: mHomeName // 跳转到homeName页
+				})
+			} else {
+				next()
+			}
+		}else{
+			next()
+		}
 	} else next({
 		replace: true,
 		name: 'error_401'
@@ -63,12 +69,9 @@ router.beforeEach((to, from, next) => {
 		}
 
 	} else {
-		// alert(JSON.stringify(to))
 		if (store.state.user.hasGetInfo) {
-
 			turnTo(to, store.state.user.access, next)
 		} else {
-			// alert(2)
 			store.dispatch('getUserInfo').then(user => {
 				// 拉取用户信息，通过用户权限和跳转的页面的name来判断是否有权限访问;access必须是一个数组，如：['super_admin'] ['super_admin', 'admin']
 				turnTo(to, user.access, next)
