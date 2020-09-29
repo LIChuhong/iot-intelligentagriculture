@@ -3,12 +3,10 @@
 		<div v-show="!editor" ref="maps1" style="height:100%;position: relative;overflow: hidden;background: #dcdee2;">
 			<!-- <div ref="map1" > -->
 			<div style="position: absolute;top:0;left:0;z-index: 100;width: 100%;text-align: center;color: red">画面名称:{{mapName}}</div>
-			<div :style="mapStyle" @mousewheel="mouseWheel" @mousedown="mousedownView" @touchstart="touchstartView" id="mapBgDiv1"
-			 ref="mapBgDiv1">
+			<div :style="mapStyle" @mousewheel="mouseWheel" @mousedown="mousedownView" @touchstart="touchstartView" id="mapBgDiv1" ref="mapBgDiv1">
 				<img id="mapBgImg1" ref="mapBgImg1" :src="mapBgImgUrl" style="height: 100%;" draggable="false" />
-				<div v-for="item in rtuImgList" :key="item.rtuNumber" class="drag1" :style="{top:item.heightScale+'%',left:item.widthScale+'%',cursor:'pointer'}"
-				 :title="item.rtuNumber">
-					<Poptip :title="item.rtuNumber" @on-popper-show="getRtuDataInfo(item)">
+				<div v-for="item in rtuImgList" :key="item.rtuNumber" class="drag1" :style="{top:item.heightScale+'%',left:item.widthScale+'%',cursor:'pointer'}" :title="item.rtuNumber">
+					<Poptip :width="iaSf.show?600:''" :title="item.rtuNumber" @on-popper-show="getRtuDataInfo(item)">
 						<div slot="content">
 							<div style="font-size: 0.75rem;" v-for="(item1 , index) in parameterDataList" :key="index">
 								<Icon :color="item1.iconColor" :type="item1.icon" /><span>{{item1.parameterName}}:<span :style="{color:item1.iconColor }">{{item1.value}}{{item1.unit}}</span></span></div>
@@ -23,6 +21,9 @@
 									</Cascader>
 									<Button @click="setRtu(0)" :disabled="iat.restTime == 0" type="primary" shape="circle">关</Button>
 								</div>
+							</div>
+							<div v-if="iaSf.show">
+								<sf-model></sf-model>
 							</div>
 						</div>
 						<div class="rtuImgStyle">
@@ -59,6 +60,7 @@
 			<Modal title="农场列表" v-model="showMapList" footer-hide>
 				<map-list v-if="showMapList" @get-map-info="getMapInfo"></map-list>
 			</Modal>
+			
 			<Spin fix v-show="showSpin" style="background: rgba(255,255,255,0.3);">
 				<Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
 				<div>加载中...</div>
@@ -76,6 +78,7 @@
 		off
 	} from '@/libs/tools'
 	import MapList from '../component/map-list.vue'
+	import SfModel from '../component/sf-model.vue'
 	import bg from '@/assets/images/map.jpg'
 	import FarmForm from '../component/farm-form.vue'
 	import { rtuTimeDataList } from '@/view/components/js/data.js'
@@ -94,7 +97,8 @@
 		components: {
 			MapList,
 			ZoomController,
-			FarmForm
+			FarmForm,
+			SfModel
 		},
 		data() {
 			return {
@@ -105,6 +109,9 @@
 					icon: '',
 					restTime: 0,
 					timeList: [],
+				},
+				iaSf:{
+					show:false
 				},
 				mapName:'',
 				editor: false,
@@ -220,32 +227,39 @@
 			
 			},
 			getRtuDataInfo(item) {
-				this.showSpin = true
+				// console.log(item)
 				this.parameterDataList = []
 				this.iat.show = false
+				this.iaSf.show = false
 				this.iat.rtuNumber = null
-				getRtuData(item.rtuNumber).then(res => {
-					const data = res.data
-					this.showSpin = false
-					if (data.success == 1) {
-						// console.log(data)
-						// this.iaRtu = data.iaRtu
-						var rtuData = data.rtuData
-						if (rtuData.parameterDataList != null && rtuData.parameterDataList) {
-							if(rtuData.rtuTypeTag == 'IA_W_G' || rtuData.rtuTypeTag == 'IA_W_N'){
-								this.iat.rtuNumber = rtuData.rtuNumber
+				if(item.rtuTypeTag == 'IA_SF_G' || item.rtuTypeTag == 'IA_SF_N'){
+					this.iaSf.show = true
+				}else{
+					this.showSpin = true
+					getRtuData(item.rtuNumber).then(res => {
+						const data = res.data
+						this.showSpin = false
+						if (data.success == 1) {
+							// console.log(data)
+							// this.iaRtu = data.iaRtu
+							var rtuData = data.rtuData
+							if (rtuData.parameterDataList != null && rtuData.parameterDataList) {
+								if(rtuData.rtuTypeTag == 'IA_W_G' || rtuData.rtuTypeTag == 'IA_W_N'){
+									this.iat.rtuNumber = rtuData.rtuNumber
+								}
+								this.showParamDataList(rtuData.rtuTypeTag, rtuData.parameterDataList)
+					
 							}
-							this.showParamDataList(rtuData.rtuTypeTag, rtuData.parameterDataList)
-
+					
+						} else {
+							this.$Message.error(item.rtuNumber + data.errorMessage)
 						}
-
-					} else {
-						this.$Message.error(item.rtuNumber + data.errorMessage)
-					}
-				}).catch(error => {
-					this.showSpin = false
-					alert(error)
-				})
+					}).catch(error => {
+						this.showSpin = false
+						alert(error)
+					})
+				}
+				
 			},
 			showParamDataList(rtuTypeTag, list) {
 				if (rtuTypeTag == 'IA_R_G' || rtuTypeTag == 'IA_R_N') {
@@ -287,6 +301,7 @@
 						return item
 					})
 				} else if (rtuTypeTag == 'IA_SF_G' || rtuTypeTag == 'IA_SF_N') {
+					this.iaSf.show = true
 					list.map(item => {
 						if (item.parameterId == 20 || item.parameterId == 22 || item.parameterId == 28 || item.parameterId == 35) {
 							item.icon = ' iconfont icon-ic_kqwd'

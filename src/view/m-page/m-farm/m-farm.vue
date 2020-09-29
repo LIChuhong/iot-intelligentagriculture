@@ -7,7 +7,7 @@
 				<img id="mapBgImg1" ref="mapBgImg1" :src="mapBgImgUrl" style="height: 100%;" draggable="false" />
 				<div v-for="item in rtuImgList" :key="item.rtuNumber" class="drag1" :style="{top:item.heightScale+'%',left:item.widthScale+'%',cursor:'pointer'}"
 				 :title="item.rtuNumber">
-					<Poptip :title="item.rtuNumber" @on-popper-show="getRtuDataInfo(item)">
+					<Poptip :width="iaSf.show?300:''" :title="item.rtuNumber" @on-popper-show="getRtuDataInfo(item)">
 						<div slot="content">
 							<div style="font-size: 0.75rem;" v-for="(item1 , index) in parameterDataList" :key="index">
 								<Icon :color="item1.iconColor" :type="item1.icon" /><span>{{item1.parameterName}}:<span :style="{color:item1.iconColor }">{{item1.value}}{{item1.unit}}</span></span></div>
@@ -22,6 +22,9 @@
 									</Cascader>
 									<Button @click="setRtu(0)" :disabled="iat.restTime == 0" type="primary" shape="circle">关</Button>
 								</div>
+							</div>
+							<div v-if="iaSf.show">
+								<sf-model></sf-model>
 							</div>
 						</div>
 						<div class="rtuImgStyle">
@@ -68,6 +71,7 @@
 		off
 	} from '@/libs/tools'
 	import MapList from '@/view/page/farm-management/component/map-list.vue'
+	import SfModel from '@/view/page/farm-management/component/sf-model.vue'
 	import bg from '@/assets/images/map.jpg'
 	import {
 		getTopMap,
@@ -79,15 +83,21 @@
 		setRtuData
 	} from '@/api/rtu.js'
 	import ZoomController from '@/view/page/farm-management/component/zoom-controller.vue'
-	import { rtuTimeDataList } from '@/view/components/js/data.js'
+	import {
+		rtuTimeDataList
+	} from '@/view/components/js/data.js'
 	export default {
 		name: 'm_farm',
 		components: {
 			MapList,
 			ZoomController,
+			SfModel
 		},
 		data() {
 			return {
+				iaSf: {
+					show: false
+				},
 				iat: {
 					rtuNumber: null,
 					show: false,
@@ -96,7 +106,7 @@
 					restTime: 0,
 					timeList: [],
 				},
-				mapName:'',
+				mapName: '',
 				timer: '',
 				zoom: 100,
 				showMapList: false,
@@ -204,32 +214,38 @@
 
 			},
 			getRtuDataInfo(item) {
-				this.showSpin = true
+				// this.showSpin = true
 				this.parameterDataList = []
 				this.iat.show = false
+				this.iaSf.show = false
 				this.iat.rtuNumber = null
-				getRtuData(item.rtuNumber).then(res => {
-					const data = res.data
-					this.showSpin = false
-					if (data.success == 1) {
-						// console.log(data)
-						// this.iaRtu = data.iaRtu
-						var rtuData = data.rtuData
-						if (rtuData.parameterDataList != null && rtuData.parameterDataList) {
-							if (rtuData.rtuTypeTag == 'IA_W_G' || rtuData.rtuTypeTag == 'IA_W_N') {
-								this.iat.rtuNumber = rtuData.rtuNumber
+				if (item.rtuTypeTag == 'IA_SF_G' || item.rtuTypeTag == 'IA_SF_N') {
+					this.iaSf.show = true
+				} else {
+					this.showSpin = true
+					getRtuData(item.rtuNumber).then(res => {
+						const data = res.data
+						this.showSpin = false
+						if (data.success == 1) {
+							// console.log(data)
+							// this.iaRtu = data.iaRtu
+							var rtuData = data.rtuData
+							if (rtuData.parameterDataList != null && rtuData.parameterDataList) {
+								if (rtuData.rtuTypeTag == 'IA_W_G' || rtuData.rtuTypeTag == 'IA_W_N') {
+									this.iat.rtuNumber = rtuData.rtuNumber
+								}
+								this.showParamDataList(rtuData.rtuTypeTag, rtuData.parameterDataList)
+
 							}
-							this.showParamDataList(rtuData.rtuTypeTag, rtuData.parameterDataList)
 
+						} else {
+							this.$Message.error(item.rtuNumber + data.errorMessage)
 						}
-
-					} else {
-						this.$Message.error(item.rtuNumber + data.errorMessage)
-					}
-				}).catch(error => {
-					this.showSpin = false
-					alert(error)
-				})
+					}).catch(error => {
+						this.showSpin = false
+						alert(error)
+					})
+				}
 			},
 			showParamDataList(rtuTypeTag, list) {
 				if (rtuTypeTag == 'IA_R_G' || rtuTypeTag == 'IA_R_N') {

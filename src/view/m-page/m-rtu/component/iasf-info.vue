@@ -8,14 +8,16 @@
 			<!-- <p>信号强度:</p> -->
 			<!-- <p v-for="(item,index) in parameterDataList" :key="index"><span><Icon :type="item.icon" /></span>{{item.parameterName}}:{{item.value}}{{item.unit}}</p> -->
 
-			<div style="width: 50%;" v-for="(item,index) in parameterDataList" :key="index">
+			<!-- <div style="width: 50%;" v-for="(item,index) in parameterDataList" :key="index">
 				<p><span>
 						<Icon :color="item.iconColor" :type="item.icon" /></span>{{item.parameterName}}:<span :style="{color:item.iconColor}">{{item.title}}</span></p>
 			</div>
 			<div style="width: 50%;" v-for="(item,index) in parameterDataList1" :key="'1'+index">
 				<p><span>
 						<Icon :color="item.iconColor" :type="item.icon" /></span>{{item.parameterName}}:<span :style="{color:item.iconColor}">{{item.title}}</span></p>
-			</div>
+			</div> -->
+			<sf-model></sf-model>
+			
 
 		</div>
 
@@ -28,12 +30,16 @@
 </template>
 
 <script>
+	import SfModel from '@/view/page/farm-management/component/sf-model.vue'
 	import {
 		getRtu,
 		getRtuData
 	} from '@/api/rtu.js'
 	export default {
 		props: ['rtuNumber'],
+		components:{
+			SfModel
+		},
 		data() {
 			return {
 				iaRtu: {},
@@ -137,7 +143,7 @@
 
 	.iasfStyle p {
 		margin: 0.3125rem 0;
-		font-size: 1rem;
+		/* font-size: 1rem; */
 	}
 
 	.iasfStyle p span {
