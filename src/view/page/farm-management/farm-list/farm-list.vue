@@ -16,10 +16,10 @@
 								</p>
 								<p>剩余时间:<span :style="{color:iat.iconColor}">{{iat.restTime}}秒</span></p>
 								<div>
-									<Cascader style="display: inline-block;" :transfer="true" :data="iat.timeList" @on-change="setRtu">
+									<Cascader v-model="refCas" style="display: inline-block;" :transfer="true" :data="iat.timeList" @on-change="setRtu" @on-visible-change="refreshCas">
 										<Button :disabled="iat.restTime > 0" style="margin-right:0.625rem ;" type="primary" shape="circle">开</Button>
 									</Cascader>
-									<Button @click="setRtu(0)" :disabled="iat.restTime == 0" type="primary" shape="circle">关</Button>
+									<Button @click="setRtu(0)" type="primary" shape="circle">关</Button>
 								</div>
 							</div>
 							<div v-if="iaSf.show">
@@ -102,6 +102,7 @@
 		},
 		data() {
 			return {
+				refCas:[],
 				iat: {
 					rtuNumber:null,
 					show: false,
@@ -166,6 +167,12 @@
 		},
 
 		methods: {
+			refreshCas(value){
+				if(!value){
+					this.refCas = []
+				}
+				// console.log(this.refCas)
+			},
 			showRemTime() {
 				//倒计时
 			
