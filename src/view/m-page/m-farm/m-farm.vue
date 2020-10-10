@@ -7,7 +7,10 @@
 				<img id="mapBgImg1" ref="mapBgImg1" :src="mapBgImgUrl" style="height: 100%;" draggable="false" />
 				<div v-for="item in rtuImgList" :key="item.rtuNumber" class="drag1" :style="{top:item.heightScale+'%',left:item.widthScale+'%',cursor:'pointer'}"
 				 :title="item.rtuNumber">
-					<Poptip :width="iaSf.show?300:''" :title="item.rtuNumber" @on-popper-show="getRtuDataInfo(item)">
+					<Poptip  :width="iaSf.show?300:''" :title="item.rtuNumber" @on-popper-show="getRtuDataInfo(item)">
+						<div v-if="iaSf.show && iaSf.rtuNumber == item.rtuNumber" slot="content">
+							<sf-model :sf-rtu-number="item.rtuNumber"></sf-model>
+						</div>
 						<div slot="content">
 							<div style="font-size: 0.75rem;" v-for="(item1 , index) in parameterDataList" :key="index">
 								<Icon :color="item1.iconColor" :type="item1.icon" /><span>{{item1.parameterName}}:<span :style="{color:item1.iconColor }">{{item1.value}}{{item1.unit}}</span></span></div>
@@ -23,9 +26,9 @@
 									<Button @click="setRtu(0)" type="primary" shape="circle">关</Button>
 								</div>
 							</div>
-							<div v-if="iaSf.show">
+							<!-- <div v-if="iaSf.show">
 								<sf-model></sf-model>
-							</div>
+							</div> -->
 						</div>
 						<div class="rtuImgStyle">
 							<img :src="item.rtuTypeImgUrl" class="rtu1" :alt="item.rtuNumber+item.rtuTypeName" :draggable="false" />
@@ -97,7 +100,8 @@
 			return {
 				refCas:[],
 				iaSf: {
-					show: false
+					show: false,
+					rtuNumber:null,
 				},
 				iat: {
 					rtuNumber: null,
@@ -125,8 +129,7 @@
 				showSpin: false,
 				parameterDataList: [],
 				mapHeight: 0,
-				mapWidth: 0
-
+				mapWidth: 0,
 			}
 		},
 		watch: {
@@ -227,6 +230,7 @@
 				this.iaSf.show = false
 				this.iat.rtuNumber = null
 				if (item.rtuTypeTag == 'IA_SF_G' || item.rtuTypeTag == 'IA_SF_N') {
+					this.iaSf.rtuNumber = item.rtuNumber
 					this.iaSf.show = true
 				} else {
 					this.showSpin = true

@@ -1,13 +1,17 @@
 <template>
 	<div style="height: 100%;overflow: hidden;">
+		<!-- <sf-model :sf-rtu-number="100000"></sf-model> -->
 		<div v-show="!editor" ref="maps1" style="height:100%;position: relative;overflow: hidden;background: #dcdee2;">
 			<!-- <div ref="map1" > -->
 			<div style="position: absolute;top:0;left:0;z-index: 100;width: 100%;text-align: center;color: red">画面名称:{{mapName}}</div>
 			<div :style="mapStyle" @mousewheel="mouseWheel" @mousedown="mousedownView" @touchstart="touchstartView" id="mapBgDiv1" ref="mapBgDiv1">
 				<img id="mapBgImg1" ref="mapBgImg1" :src="mapBgImgUrl" style="height: 100%;" draggable="false" />
 				<div v-for="item in rtuImgList" :key="item.rtuNumber" class="drag1" :style="{top:item.heightScale+'%',left:item.widthScale+'%',cursor:'pointer'}" :title="item.rtuNumber">
-					<Poptip :width="iaSf.show?600:''" :title="item.rtuNumber" @on-popper-show="getRtuDataInfo(item)">
-						<div slot="content">
+					<Poptip :width="iaSf.show?600:''" :title="item.rtuNumber" @on-popper-show="getRtuDataInfo(item)" @on-popper-hide="hidePop" >
+						<div v-if="iaSf.show && iaSf.rtuNumber == item.rtuNumber" slot="content">
+							<sf-model :sf-rtu-number="item.rtuNumber"></sf-model>
+						</div>
+						<div v-else slot="content">
 							<div style="font-size: 0.75rem;" v-for="(item1 , index) in parameterDataList" :key="index">
 								<Icon :color="item1.iconColor" :type="item1.icon" /><span>{{item1.parameterName}}:<span :style="{color:item1.iconColor }">{{item1.value}}{{item1.unit}}</span></span></div>
 							<div v-if="iat.show">
@@ -21,9 +25,6 @@
 									</Cascader>
 									<Button @click="setRtu(0)" type="primary" shape="circle">关</Button>
 								</div>
-							</div>
-							<div v-if="iaSf.show">
-								<sf-model></sf-model>
 							</div>
 						</div>
 						<div class="rtuImgStyle">
@@ -112,7 +113,8 @@
 					timeList: [],
 				},
 				iaSf:{
-					show:false
+					show:false,
+					rtuNumber:null,
 				},
 				mapName:'',
 				editor: false,
@@ -135,7 +137,8 @@
 				parameterDataList: [],
 				mapHeight: 0,
 				mapWidth: 0,
-				timer:''
+				timer:'',
+				// showPop:null
 
 			}
 		},
@@ -167,6 +170,10 @@
 		},
 
 		methods: {
+			hidePop(){
+				this.iat.show = false
+				this.iaSf.show = false
+			},
 			refreshCas(value){
 				if(!value){
 					this.refCas = []
@@ -234,30 +241,27 @@
 			
 			},
 			getRtuDataInfo(item) {
-				// console.log(item)
 				this.parameterDataList = []
 				this.iat.show = false
-				this.iaSf.show = false
+				// this.iaSf.show = false
 				this.iat.rtuNumber = null
 				if(item.rtuTypeTag == 'IA_SF_G' || item.rtuTypeTag == 'IA_SF_N'){
+					this.iaSf.rtuNumber = item.rtuNumber
 					this.iaSf.show = true
 				}else{
+					
 					this.showSpin = true
 					getRtuData(item.rtuNumber).then(res => {
 						const data = res.data
 						this.showSpin = false
 						if (data.success == 1) {
-							// console.log(data)
-							// this.iaRtu = data.iaRtu
 							var rtuData = data.rtuData
 							if (rtuData.parameterDataList != null && rtuData.parameterDataList) {
 								if(rtuData.rtuTypeTag == 'IA_W_G' || rtuData.rtuTypeTag == 'IA_W_N'){
 									this.iat.rtuNumber = rtuData.rtuNumber
 								}
 								this.showParamDataList(rtuData.rtuTypeTag, rtuData.parameterDataList)
-					
 							}
-					
 						} else {
 							this.$Message.error(item.rtuNumber + data.errorMessage)
 						}
@@ -307,32 +311,6 @@
 						}
 						return item
 					})
-				} else if (rtuTypeTag == 'IA_SF_G' || rtuTypeTag == 'IA_SF_N') {
-					this.iaSf.show = true
-					list.map(item => {
-						if (item.parameterId == 20 || item.parameterId == 22 || item.parameterId == 28 || item.parameterId == 35) {
-							item.icon = ' iconfont icon-ic_kqwd'
-							if (item.value == 1) {
-								item.value = '开'
-								item.iconColor = '#00bfff'
-							} else {
-								item.value = '关'
-								item.iconColor = 'red'
-							}
-							this.parameterDataList.push(item)
-						} else if (item.parameterId == 25 || item.parameterId == 27 || item.parameterId == 37 || item.parameterId == 35) {
-							item.icon = ' iconfont icon-ic_kqwd'
-							if (item.value == 1) {
-								item.value = '开'
-								item.iconColor = '#00bfff'
-							} else {
-								item.value = '关'
-								item.iconColor = 'red'
-							}
-							this.parameterDataList.push(item)
-						}
-					})
-
 				} else if (rtuTypeTag == 'IA_T_G' || rtuTypeTag == 'IA_T_N') {
 					list.map(item => {
 						if (item.parameterId == 18) {

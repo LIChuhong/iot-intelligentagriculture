@@ -120,4 +120,23 @@ export const isEnableRtu = (rtuNumber,isEnable) => {
   })
 }
 
+//远程控制水肥一体机
+export const setControlIASFRtu = (iasfRtuOrderData) => {
+  return axios.request({
+    url: '/v1/setControlIASFRtu',
+		data:iasfRtuOrderData,
+    method: 'post'
+  })
+}
+
+//获取水肥一体机运行实况
+export const getIASFRtuData = (sfRtuNumber) => {
+  return axios.request({
+    url: '/v1/getIASFRtuData',
+			params:{
+			'sfRtuNumber': sfRtuNumber
+		},
+  	method: 'get'
+  })
+}
 

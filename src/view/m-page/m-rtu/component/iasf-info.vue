@@ -16,7 +16,7 @@
 				<p><span>
 						<Icon :color="item.iconColor" :type="item.icon" /></span>{{item.parameterName}}:<span :style="{color:item.iconColor}">{{item.title}}</span></p>
 			</div> -->
-			<sf-model></sf-model>
+			<sf-model :sf-rtu-number="rtuNumber"></sf-model>
 			
 
 		</div>
@@ -56,7 +56,7 @@
 						if (data.success == 1) {
 							// console.log(data)
 							this.iaRtu = data.iaRtu
-							this.getRuDataInfo()
+							// this.getRuDataInfo()
 						} else {
 							this.$Message.error(this.rtuNumber + data.errorMessage)
 						}
