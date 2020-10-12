@@ -113,6 +113,7 @@
 			}
 		},
 		methods: {
+			cancel() {},
 			setTime() {
 				this.timer = setInterval(() => {
 					setTimeout(this.getIaSfRtuData, 0)
