@@ -1,56 +1,59 @@
 <template>
-	<div>
-		<div style="display: flex;flex-wrap: wrap;justify-content:space-between;padding:0 0.625rem;">
-			<div v-for="(item,i) in sf.waterTankList" :key="i">
-				<p>
-					<Checkbox :disabled="sf.working" v-model="item.value">{{item.label}}</Checkbox>
-				</p>
-				<p>注水容量:{{item.waterFloodingCapacity}}(L)</p>
-				<p>肥料容量:<Input :disabled="sf.working" type="number" style="width: 4.375rem;" v-model="item.fertilizerCapacity" size="small" />(kg)</p>
-				<p>肥水比例:{{item.waterFertilizerRatio}}(kg/L)</p>
+	<div style="height: 100%;">
+		<div v-show="showData">
+			<div style="display: flex;flex-wrap: wrap;justify-content:space-between;padding:0 0.625rem;">
+				<div v-for="(item,i) in sf.waterTankList" :key="i">
+					<p>
+						<Checkbox :disabled="sf.working" v-model="item.value">{{item.label}}</Checkbox>
+					</p>
+					<p>注水容量:{{item.waterFloodingCapacity}}(L)</p>
+					<p>肥料容量:<Input :disabled="sf.working" type="number" style="width: 4.375rem;" v-model="item.fertilizerCapacity"
+						 size="small" />(kg)</p>
+					<p>肥水比例:{{item.waterFertilizerRatio}}(kg/L)</p>
+				</div>
+
+			</div>
+			<div style="display: flex;flex-wrap: wrap;justify-content:space-between;padding: 0.625rem 0.625rem 0;">
+				<div>恒定流量:<Input :disabled="sf.working" type="number" size="small" style="width:4.375rem;" v-model="sf.constantFlow" />(m³/h)</div>
+				<div>停止容量:<Input :disabled="sf.working" type="number" size="small" style="width:4.375rem;" v-model="sf.stopCapacity" />(L)</div>
+
+			</div>
+			<div style="display: flex;flex-wrap: wrap;justify-content:space-between;padding:0 0.625rem 0;">
+				<div>浇灌策略:
+					<Select :disabled="sf.working" size="small" v-model="sf.switchsStrategyId" style="width:6.25rem">
+						<Option v-for="item in wateStrategyList" :value="item.id" :key="item.id">{{ item.strategyName }}</Option>
+					</Select>
+				</div>
+				<div style="width: 12.5rem;">搅拌时间:{{sf.stirTime}}分钟
+					<Slider :disabled="sf.working" style="margin-right: 1.25rem;" v-model="sf.stirTime" :step="1" :max="maxStirTime"></Slider>
+				</div>
+			</div>
+			<div style="display: flex;flex-wrap: wrap;justify-content:space-between;padding: 0 0.625rem 0;">
+
+				<div>注水时间:{{sf.waterFloodingRunTime}}</div>
+
+				<div>灌溉时间:{{sf.waterRunTime}}</div>
+				<div>施肥时间:{{sf.applyFertilizerRunTime}}</div>
+			</div>
+			<div style="display: flex;flex-wrap: wrap;justify-content:space-around">
+				<div>
+					<Button :disabled="sf.working" type="primary" @click="startRtu(7)">一键启动</Button>
+				</div>
+				<div>
+					<Poptip confirm title="确定要停止该水肥一体机吗?" @on-ok="startRtu(8)" @on-cancel="cancel">
+						<Button :disabled="!sf.working" type="primary">一键停止</Button>
+					</Poptip>
+				</div>
+				<div>
+					<Button :disabled="!sf.working" type="primary" @click="startRtu(9)">{{sf.pause?'继续':'暂停'}}</Button>
+				</div>
 			</div>
 
-		</div>
-		<div style="display: flex;flex-wrap: wrap;justify-content:space-between;padding: 0.625rem 0.625rem 0;">
-			<div>恒定流量:<Input :disabled="sf.working" type="number" size="small" style="width:4.375rem;" v-model="sf.constantFlow" />(m³/h)</div>
-			<div>停止容量:<Input :disabled="sf.working" type="number" size="small" style="width:4.375rem;" v-model="sf.stopCapacity" />(L)</div>
-
-		</div>
-		<div style="display: flex;flex-wrap: wrap;justify-content:space-between;padding:0 0.625rem 0;">
-			<div>浇灌策略:
-				<Select :disabled="sf.working" size="small" v-model="sf.switchsStrategyId" style="width:6.25rem">
-					<Option v-for="item in wateStrategyList" :value="item.id" :key="item.id">{{ item.strategyName }}</Option>
-				</Select>
-			</div>
-			<div style="width: 12.5rem;">搅拌时间:{{sf.stirTime}}分钟
-				<Slider :disabled="sf.working" style="margin-right: 1.25rem;" v-model="sf.stirTime" :step="1" :max="maxStirTime"></Slider>
-			</div>
-		</div>
-		<div style="display: flex;flex-wrap: wrap;justify-content:space-between;padding: 0 0.625rem 0;">
-
-			<div>注水时间:{{sf.waterFloodingRunTime}}</div>
-
-			<div>灌溉时间:{{sf.waterRunTime}}</div>
-			<div>施肥时间:{{sf.applyFertilizerRunTime}}</div>
-		</div>
-		<div style="display: flex;flex-wrap: wrap;justify-content:space-around">
-			<div>
-				<Button :disabled="sf.working" type="primary" @click="startRtu(7)">一键启动</Button>
-			</div>
-			<div>
-				<Poptip confirm title="确定要停止该水肥一体机吗?" @on-ok="startRtu(8)" @on-cancel="cancel">
-					<Button :disabled="!sf.working" type="primary">一键停止</Button>
-				</Poptip>
-			</div>
-			<div>
-				<Button :disabled="!sf.working" type="primary" @click="startRtu(9)">{{sf.pause?'继续':'暂停'}}</Button>
-			</div>
 		</div>
 		<Spin fix v-show="showSpin" style="background: rgba(255,255,255,0.3);">
 			<Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
 			<!-- <div>加载中...</div> -->
 		</Spin>
-
 	</div>
 </template>
 
@@ -69,6 +72,7 @@
 		props: ['sfRtuNumber'],
 		data() {
 			return {
+				showData: false,
 				timer: null, //定时器名称
 				showSpin: false,
 				orgId: this.$store.state.user.userInfo.orgId,
@@ -125,7 +129,7 @@
 				clearInterval(this.timer);
 				this.timer = null;
 				var list = this.sf.waterTankList
-				console.log(list)
+				// console.log(list)
 				var list1 = list.map(item => {
 					if (item.fertilizerCapacity != '' && item.fertilizerCapacity > 0 && item.value) {
 						item.fertilizerCapacity = parseFloat(item.fertilizerCapacity)
@@ -177,12 +181,14 @@
 						const data = res.data
 						this.showSpin = false
 						if (data.success == 1) {
+							this.showData = true
 							// const waterApplyFertilizer = data.waterApplyFertilizer
 							this.showWaterApplyFertilizer(data.waterApplyFertilizer)
 
 
 						} else {
-							this.$Message.error(data.errorMessage)
+							this.showData = false
+							this.$Message.error(data.errorMessage ? data.errorMessage : '设备不在线')
 						}
 					}).catch(error => {
 						this.showSpin = false

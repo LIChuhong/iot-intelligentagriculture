@@ -4,22 +4,12 @@
 		<div style="height: 6.25rem;text-align: center;">
 			<img :src="iaRtu.rtuTypeImgUrl" style="height:100%;" />
 		</div>
-		<div class="iasfStyle">
-			<!-- <p>信号强度:</p> -->
-			<!-- <p v-for="(item,index) in parameterDataList" :key="index"><span><Icon :type="item.icon" /></span>{{item.parameterName}}:{{item.value}}{{item.unit}}</p> -->
-
-			<!-- <div style="width: 50%;" v-for="(item,index) in parameterDataList" :key="index">
-				<p><span>
-						<Icon :color="item.iconColor" :type="item.icon" /></span>{{item.parameterName}}:<span :style="{color:item.iconColor}">{{item.title}}</span></p>
-			</div>
-			<div style="width: 50%;" v-for="(item,index) in parameterDataList1" :key="'1'+index">
-				<p><span>
-						<Icon :color="item.iconColor" :type="item.icon" /></span>{{item.parameterName}}:<span :style="{color:item.iconColor}">{{item.title}}</span></p>
-			</div> -->
+		<!-- <div class="iasfStyle"> -->
+			
 			<sf-model :sf-rtu-number="rtuNumber"></sf-model>
 			
 
-		</div>
+		<!-- </div> -->
 
 		<Spin fix v-show="showSpin" style="background: rgba(255,255,255,0.3);">
 			<Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>

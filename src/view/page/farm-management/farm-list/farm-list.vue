@@ -7,11 +7,11 @@
 			<div :style="mapStyle" @mousewheel="mouseWheel" @mousedown="mousedownView" @touchstart="touchstartView" id="mapBgDiv1" ref="mapBgDiv1">
 				<img id="mapBgImg1" ref="mapBgImg1" :src="mapBgImgUrl" style="height: 100%;" draggable="false" />
 				<div v-for="item in rtuImgList" :key="item.rtuNumber" class="drag1" :style="{top:item.heightScale+'%',left:item.widthScale+'%',cursor:'pointer'}" :title="item.rtuNumber">
-					<Poptip :width="iaSf.show?600:''" :title="item.rtuNumber" @on-popper-show="getRtuDataInfo(item)" @on-popper-hide="hidePop" >
-						<div v-if="iaSf.show && iaSf.rtuNumber == item.rtuNumber" slot="content">
+					<Poptip :title="item.rtuNumber" @on-popper-show="getRtuDataInfo(item)" @on-popper-hide="hidePop" >
+						<!-- <div v-if="iaSf.show && iaSf.rtuNumber == item.rtuNumber" slot="content">
 							<sf-model :sf-rtu-number="item.rtuNumber"></sf-model>
-						</div>
-						<div v-else slot="content">
+						</div> -->
+						<div slot="content">
 							<div style="font-size: 0.75rem;" v-for="(item1 , index) in parameterDataList" :key="index">
 								<Icon :color="item1.iconColor" :type="item1.icon" /><span>{{item1.parameterName}}:<span :style="{color:item1.iconColor }">{{item1.value}}{{item1.unit}}</span></span></div>
 							<div v-if="iat.show">
@@ -58,16 +58,19 @@
 
 				<zoom-controller v-model="zoom" :min="20" :max="300"></zoom-controller>
 			</div>
-			<Modal title="农场列表" v-model="showMapList" footer-hide>
+			<Modal title="农场列表" v-model="showMapList" footer-hide transfer="false">
 				<map-list v-if="showMapList" @get-map-info="getMapInfo"></map-list>
 			</Modal>
-			
+			<Modal :title="iaSf.rtuNumber" v-model="iaSf.show" footer-hide transfer="false">
+				<sf-model v-if="iaSf.show"  :sf-rtu-number="iaSf.rtuNumber"></sf-model>
+			</Modal>
 			<Spin fix v-show="showSpin" style="background: rgba(255,255,255,0.3);">
 				<Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
 				<div>加载中...</div>
 			</Spin>
 
 		</div>
+		
 		<farm-form v-if="editor" :mapId="mapId" @go-back="goBack" style="z-index: 100;"></farm-form>
 
 	</div>
@@ -172,7 +175,7 @@
 		methods: {
 			hidePop(){
 				this.iat.show = false
-				this.iaSf.show = false
+				// this.iaSf.show = false
 			},
 			refreshCas(value){
 				if(!value){

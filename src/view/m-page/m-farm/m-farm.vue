@@ -5,12 +5,11 @@
 			<!-- <div ref="map1" > -->
 			<div :style="mapStyle" @touchstart="touchstartView" id="mapBgDiv1" ref="mapBgDiv1">
 				<img id="mapBgImg1" ref="mapBgImg1" :src="mapBgImgUrl" style="height: 100%;" draggable="false" />
-				<div v-for="item in rtuImgList" :key="item.rtuNumber" class="drag1" :style="{top:item.heightScale+'%',left:item.widthScale+'%',cursor:'pointer'}"
-				 :title="item.rtuNumber">
-					<Poptip  :width="iaSf.show?300:''" :title="item.rtuNumber" @on-popper-show="getRtuDataInfo(item)">
-						<div v-if="iaSf.show && iaSf.rtuNumber == item.rtuNumber" slot="content">
+				<div v-for="item in rtuImgList" :key="item.rtuNumber" class="drag1" :style="{top:item.heightScale+'%',left:item.widthScale+'%',cursor:'pointer'}" :title="item.rtuNumber">
+					<Poptip :title="item.rtuNumber" @on-popper-show="getRtuDataInfo(item)">
+						<!-- <div v-if="iaSf.show && iaSf.rtuNumber == item.rtuNumber" slot="content">
 							<sf-model :sf-rtu-number="item.rtuNumber"></sf-model>
-						</div>
+						</div> -->
 						<div slot="content">
 							<div style="font-size: 0.75rem;" v-for="(item1 , index) in parameterDataList" :key="index">
 								<Icon :color="item1.iconColor" :type="item1.icon" /><span>{{item1.parameterName}}:<span :style="{color:item1.iconColor }">{{item1.value}}{{item1.unit}}</span></span></div>
@@ -59,6 +58,9 @@
 		</div>
 		<Modal title="农场列表" v-model="showMapList" footer-hide>
 			<map-list v-if="showMapList" @get-map-info="getMapInfo"></map-list>
+		</Modal>
+		<Modal :title="iaSf.rtuNumber" v-model="iaSf.show" footer-hide fullscreen @on-cancel="cancel">
+			<sf-model v-if="iaSf.show"  :sf-rtu-number="iaSf.rtuNumber"></sf-model>
 		</Modal>
 		<Spin fix v-show="showSpin" style="background: rgba(255,255,255,0.3);">
 			<Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
@@ -157,6 +159,9 @@
 		},
 
 		methods: {
+			cancel(){
+				console.log(this.iaSf.show)
+			},
 			refreshCas(value){
 				if(!value){
 					this.refCas = []
