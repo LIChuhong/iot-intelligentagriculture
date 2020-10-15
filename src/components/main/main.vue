@@ -173,7 +173,7 @@
 		},
 		created() {
 			//console.log(data.interface)
-			if (this.$store.state.app.iotInterFace == 1 ||this.$store.state.app.iotInterFace == 2) {
+			if (this.$store.state.app.iotInterFace == 1 || this.$store.state.app.iotInterFace == 2 || this.$store.state.app.iotInterFace == 3) {
 				this.show = 'mobile'
 				
 			} else {

@@ -30,16 +30,35 @@
 
 		created() {
 			// alert(1)
+			
 			if (this._isMobile()) {
-				if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
-					//Ios
-					// this.$config.iotInterFace = 2
-					this.setIotInterFace(2)
-				} else if (/(Android)/i.test(navigator.userAgent)) {
-					//Android终端
-					// this.$config.iotInterFace = 1
-					this.setIotInterFace(1)
+				
+				// alert(paramerValue)
+				var url=window.location.href.split("?")[1];
+				// alert(1)
+				var paramerValue = ''
+				if(url){
+					if(url.indexOf('interFrom')>-1){
+						paramerValue=url.split("=")[1]
+					}
 				}
+				
+				 if(paramerValue != '3'){
+					// alert(1)
+					if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
+						//Ios
+						// this.$config.iotInterFace = 2
+						this.setIotInterFace(3)
+					} else if (/(Android)/i.test(navigator.userAgent)) {
+						//Android终端
+						// this.$config.iotInterFace = 1
+						this.setIotInterFace(1)
+					}
+				}else{
+					// alert(2)
+					this.setIotInterFace(3)
+				}
+				
 
 			} else {
 				// this.$config.iotInterFace = 0

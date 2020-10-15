@@ -5,8 +5,10 @@ import { forEach, hasOneOf, objEqual } from '@/libs/tools'
 const { title, cookieExpires, useI18n } = config
 
 export const TOKEN_KEY = 'token'
+// export const REFRESH_TOKEN_KEY = 'refresh_token'
 
 export const setToken = (token) => {
+	// console.log(token)
   Cookies.set(TOKEN_KEY, token, { expires: cookieExpires || 1 })
 }
 
@@ -14,6 +16,20 @@ export const getToken = () => {
   const token = Cookies.get(TOKEN_KEY)
   if (token) return token
   else return false
+}
+
+/**
+ * @description 本地存储刷新Token
+ */
+export const setRefreshTokenLocalstorage = refreshToken => {
+  localStorage.refreshToken = refreshToken
+}
+/**
+ * @returns {string} 获取刷新Token
+ */
+export const getRefreshTokenLocalstorage = () => {
+  const refreshToken = localStorage.refreshToken
+  return refreshToken ? refreshToken : false
 }
 
 export const hasChild = (item) => {

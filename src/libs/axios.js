@@ -1,6 +1,9 @@
 import axios from 'axios'
 import store from '@/store'
 // import { Spin } from 'iview'
+import {
+	refreshTokenMethod
+} from '@/api/user'
 import router from '@/router'
 const addErrorLog = errorInfo => {
 	const {
@@ -18,6 +21,10 @@ const addErrorLog = errorInfo => {
 	}
 	if (!responseURL.includes('save_error_logger')) store.dispatch('addErrorLog', info)
 }
+//是否正在刷新的标记
+let isRefreshing = false
+//重试队列，每一项将是一个待执行的函数形式
+let requests = []
 
 class HttpRequest {
 	constructor(baseUrl = baseURL) {
@@ -63,17 +70,54 @@ class HttpRequest {
 				data,
 				status
 			} = res
+			// const config = res.config
+			// console.log(config)
 			if (data.errorCode === 'IA00000011') {
-				store.dispatch('handleLogOut', '')
-				router.replace({
-					path: '/login'
+				const config = res.config
+				// console.log(config)
+				if (!isRefreshing) {
+					isRefreshing = true
+					return refreshTokenMethod(store.state.user.refreshToken).then(res1 => {
+						const data = res1.data
+						console.log(data)
+						isRefreshing = false
+						if (data.success == 1) {
+							store.commit('setRefreshToken', data.newAccessToken)
+							config.headers['Token'] = data.newAccessToken
+							requests.forEach(cb => cb(data.newAccessToken))
+							requests = []
+							return request(config)
+						} else {
+							isRefreshing = false
+							store.dispatch('handleLogOut', '')
+							router.replace({
+								path: '/login'
 
-				})
-			} else {
-				return {
-					data,
-					status
+							})
+						}
+					}).catch(error => {
+						isRefreshing = false
+						alert(error)
+						store.dispatch('handleLogOut', '')
+						router.replace({
+							path: '/login'
+
+						})
+					})
+				} else {
+					//正在刷新Token，将返回一个未执行resolve的promise
+					return new Promise((resolve) => {
+						requests.push((token) => {
+							config.headers['Token'] = token
+							resolve(request(config))
+						})
+					})
 				}
+
+			}
+			return {
+				data,
+				status
 			}
 		}, error => {
 			this.destroy(url)

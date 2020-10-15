@@ -29,7 +29,7 @@ const LOGIN_PAGE_NAME = 'login'
 const turnTo = (to, access, next) => {
 	if (canTurnTo(to.name, access, routes)) { // 有权限，可访问
 		if (to.name === homeName) {
-			if (store.state.app.iotInterFace == 1 || store.state.app.iotInterFace == 2) {
+			if (store.state.app.iotInterFace == 1 || store.state.app.iotInterFace == 2 || store.state.app.iotInterFace == 3) {
 				next({
 					name: mHomeName // 跳转到homeName页
 				})
@@ -58,7 +58,7 @@ router.beforeEach((to, from, next) => {
 		next() // 跳转
 	} else if (token && to.name === LOGIN_PAGE_NAME) {
 		// 已登录且要跳转的页面是登录页
-		if (store.state.app.iotInterFace == 1 || store.state.app.iotInterFace == 2) {
+		if (store.state.app.iotInterFace == 1 || store.state.app.iotInterFace == 2 || store.state.app.iotInterFace == 3) {
 			next({
 				name: mHomeName // 跳转到homeName页
 			})

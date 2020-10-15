@@ -12,11 +12,14 @@ import {
 import {
 	setToken,
 	getToken,
-	setTagNavListInLocalstorage
+	setTagNavListInLocalstorage,
+	setRefreshTokenLocalstorage,
+	getRefreshTokenLocalstorage
 } from '@/libs/util'
 
 export default {
 	state: {
+		refreshToken: getRefreshTokenLocalstorage(),
 		userInfo: '',
 		userName: '',
 		userId: '',
@@ -31,6 +34,9 @@ export default {
 		messageContentStore: {}
 	},
 	mutations: {
+		setRefreshToken(state,refreshToken) {
+			state.refreshToken = refreshToken
+		},
 		setUserInfo(state, user) {
 			state.userInfo = user
 		},
@@ -105,7 +111,12 @@ export default {
 					verCode
 				}).then(res => {
 					const data = res.data
-					// console.log(data.token)
+					// console.log(data)
+					if (data.refresh_token != null && data.refresh_token != '') {
+						// setRefreshTokenLocalstorage(data.refresh_token)
+						// console.log(getRefreshTokenLocalstorage())
+						commit('setRefreshToken', data.refresh_token)
+					}
 					commit('setToken', data.token)
 					resolve(res)
 				}).catch(err => {

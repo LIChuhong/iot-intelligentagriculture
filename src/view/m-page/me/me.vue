@@ -27,6 +27,9 @@
 			</ListItem>
 
 		</List>
+		<div>
+			<Button type="primary" @click="refrish">Primary</Button>
+		</div>
 		<Modal title='修改密码' v-model="showPwd" footer-hide>
 			<!-- <reset-pwd v-if="showPwd" :vmUserId ="vmUserId"></reset-pwd> -->
 		</Modal>
@@ -35,6 +38,13 @@
 
 <script>
 	// import ResetPwd from '@/view/mVending-machine/m-user-management/components/reset-pwd.vue'
+	import { refreshTokenMethod } from '@/api/user'
+	import {
+		mapMutations,
+	} from 'vuex'
+	// import {
+	// 	setToken
+	// } from '@/libs/util'
 	export default {
 		components:{
 			// ResetPwd
@@ -64,6 +74,19 @@
 			
 		},
 		methods: {
+			...mapMutations([
+				'setToken'
+			]),
+			refrish(){
+				refreshTokenMethod(this.$store.state.user.refreshToken).then(res=>{
+					// console.log(res)
+					const data = res.data
+					if(data.success == 1){
+						// console.log(data.newAccessToken)
+						this.setToken(data.newAccessToken)
+					}
+				})
+			},
 			actionPlay(item) {
 				if (item.name === '修改密码') {
 					this.vmUserId = this.userInfo.id

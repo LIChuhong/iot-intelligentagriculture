@@ -39,6 +39,16 @@ export const logout = (token) => {
   })
 }
 
+//刷新Token
+export const refreshTokenMethod = (refreshToken) => {
+	let data = new URLSearchParams()
+	data.append('refresh_token', refreshToken)
+  return axios.request({
+    url: '/v1/refreshRefreshToken',
+		data,
+    method: 'post'
+  })
+}
 
 //获取用户角色列表
 export const getUserRolesList = () => {
