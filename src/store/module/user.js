@@ -14,12 +14,16 @@ import {
 	getToken,
 	setTagNavListInLocalstorage,
 	setRefreshTokenLocalstorage,
-	getRefreshTokenLocalstorage
+	getRefreshTokenLocalstorage,
+	getLoginInfoLocalStorage,
+	setLoginInfoLocalStorage
+	
 } from '@/libs/util'
 
 export default {
 	state: {
 		refreshToken: getRefreshTokenLocalstorage(),
+		localLoginInfo:getLoginInfoLocalStorage(),
 		userInfo: '',
 		userName: '',
 		userId: '',
@@ -34,6 +38,9 @@ export default {
 		messageContentStore: {}
 	},
 	mutations: {
+		setLoginInfo(state,localLoginInfo) {
+			state.localLoginInfo = localLoginInfo
+		},
 		setRefreshToken(state,refreshToken) {
 			state.refreshToken = refreshToken
 		},
@@ -102,20 +109,25 @@ export default {
 			password,
 			verCode
 		}) {
+			console.log(userName,password)
 			setTagNavListInLocalstorage([])
 			userName = userName.trim()
 			return new Promise((resolve, reject) => {
-				login({
+				login(
 					userName,
 					password,
 					verCode
-				}).then(res => {
+				).then(res => {
 					const data = res.data
 					// console.log(data)
-					if (data.refresh_token != null && data.refresh_token != '') {
-						// setRefreshTokenLocalstorage(data.refresh_token)
-						// console.log(getRefreshTokenLocalstorage())
-						commit('setRefreshToken', data.refresh_token)
+					if(data.success == 1){
+						setLoginInfoLocalStorage(userName,password)
+						// commit('setLoginInfo', data.refresh_token)
+						if (data.refresh_token != null && data.refresh_token != '') {
+							// setRefreshTokenLocalstorage(data.refresh_token)
+							// console.log(getRefreshTokenLocalstorage())
+							commit('setRefreshToken', data.refresh_token)
+						}
 					}
 					commit('setToken', data.token)
 					resolve(res)

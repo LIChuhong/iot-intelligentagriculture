@@ -2,7 +2,8 @@ import axios from 'axios'
 import store from '@/store'
 // import { Spin } from 'iview'
 import {
-	refreshTokenMethod
+	refreshTokenMethod,
+	login
 } from '@/api/user'
 import router from '@/router'
 const addErrorLog = errorInfo => {
@@ -70,55 +71,81 @@ class HttpRequest {
 				data,
 				status
 			} = res
-			// const config = res.config
-			// console.log(config)
+			const config = res.config
 			if (data.errorCode === 'IA00000011') {
-				const config = res.config
-				// console.log(config)
-				if (!isRefreshing) {
-					isRefreshing = true
-					return refreshTokenMethod(store.state.user.refreshToken).then(res1 => {
-						const data = res1.data
-						console.log(data)
-						isRefreshing = false
-						if (data.success == 1) {
-							store.commit('setRefreshToken', data.newAccessToken)
-							config.headers['Token'] = data.newAccessToken
-							requests.forEach(cb => cb(data.newAccessToken))
-							requests = []
-							return request(config)
-						} else {
-							isRefreshing = false
+				if (store.state.app.iotInterFace != 0) {
+					if (!isRefreshing) {
+						isRefreshing = true
+						refreshTokenMethod(store.state.user.refreshToken).then(res1 => {
+							const data = res1.data
+							if (data.success == 1) {
+								store.commit('setToken', data.newAccessToken)
+								config.baseURL = ''
+								config.headers['Token'] = data.newAccessToken
+								requests.forEach(cb => cb(data.newAccessToken))
+								requests = []
+								return this.request(config)
+							} else {
+								const userName = store.state.user.localLoginInfo.userName
+								const password = store.state.user.localLoginInfo.password
+								isRefreshing = false
+								login(userName, password, '').then(res => {
+									const data = res.data
+									if (data.success == 1) {
+										if (data.refresh_token != null && data.refresh_token != '') {
+											store.commit('setRefreshToken', data.refresh_token)
+											store.commit('setToken', data.token)
+											router.push({
+												path: '/m_farm'
+
+											})
+										}
+									} else {
+										alert(data.errorMessage)
+										store.dispatch('handleLogOut', '')
+										router.replace({
+											path: '/login'
+
+										})
+									}
+								}).catch(error => {
+									alert(error)
+								})
+							}
+						}).catch(error => {
+							alert(error)
 							store.dispatch('handleLogOut', '')
 							router.replace({
 								path: '/login'
 
 							})
-						}
-					}).catch(error => {
-						isRefreshing = false
-						alert(error)
-						store.dispatch('handleLogOut', '')
-						router.replace({
-							path: '/login'
+						}).finally(() => {
+							isRefreshing = false
+						})
 
+					} else {
+						//正在刷新Token，将返回一个未执行resolve的promise
+						return new Promise((resolve, reject) => {
+							requests.push((token) => {
+								config.baseURL = ''
+								config.headers['Token'] = token
+								resolve(config)
+							})
 						})
-					})
+					}
 				} else {
-					//正在刷新Token，将返回一个未执行resolve的promise
-					return new Promise((resolve) => {
-						requests.push((token) => {
-							config.headers['Token'] = token
-							resolve(request(config))
-						})
+					store.dispatch('handleLogOut', '')
+					router.replace({
+						path: '/login'
+
 					})
 				}
-
 			}
 			return {
 				data,
 				status
 			}
+
 		}, error => {
 			this.destroy(url)
 			let errorInfo = error.response

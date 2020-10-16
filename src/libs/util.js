@@ -22,14 +22,36 @@ export const getToken = () => {
  * @description 本地存储刷新Token
  */
 export const setRefreshTokenLocalstorage = refreshToken => {
-  localStorage.refreshToken = refreshToken
+  // localStorage.setItem() = refreshToken
+	window.localStorage.setItem('refreshToken',refreshToken);
 }
 /**
  * @returns {string} 获取刷新Token
  */
 export const getRefreshTokenLocalstorage = () => {
-  const refreshToken = localStorage.refreshToken
-  return refreshToken ? refreshToken : false
+  const refreshToken = window.localStorage.getItem('refreshToken');
+  return refreshToken
+}
+
+/**
+ * @description 本地存储用户名，密码
+ */
+export const setLoginInfoLocalStorage = (userName,password) => {
+  // localStorage.setItem() = refreshToken
+	window.localStorage.setItem('userName',userName);
+	window.localStorage.setItem('password',password);
+	
+}
+/**
+ * @returns {string} 获取本地存储用户名，密码
+ */
+export const getLoginInfoLocalStorage = () => {
+	const localLoginInfo = {
+		userName:window.localStorage.getItem('userName'),
+		password:window.localStorage.getItem('password')
+		
+	}
+  return localLoginInfo
 }
 
 export const hasChild = (item) => {

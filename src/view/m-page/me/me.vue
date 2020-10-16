@@ -28,7 +28,7 @@
 
 		</List>
 		<div>
-			<Button type="primary" @click="refrish">Primary</Button>
+			<!-- <Button type="primary" @click="refrish">Primary</Button> -->
 		</div>
 		<Modal title='修改密码' v-model="showPwd" footer-hide>
 			<!-- <reset-pwd v-if="showPwd" :vmUserId ="vmUserId"></reset-pwd> -->

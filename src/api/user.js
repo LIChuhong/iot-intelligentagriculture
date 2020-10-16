@@ -1,6 +1,6 @@
 import axios from '@/libs/api.request'
 
-export const login = ({ userName, password, verCode }) => {
+export const login = ( userName, password, verCode ) => {
   let data = new URLSearchParams()
   let url = ''
   if (verCode == '' || verCode == null) {

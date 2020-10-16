@@ -139,7 +139,7 @@
 					// console.log(data)
 					this.tableLoading = false
 					if (data.success == 1) {
-						//console.log(data)
+						// console.log(22)
 						this.rtuListData = data.iaRtuList.map(item => {
 							item.checkLoading = false
 							item.switchLoading = false
