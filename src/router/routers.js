@@ -354,6 +354,58 @@ export default [{
 	},
 	
 	{
+		path: '/video_management',
+		name: 'video_management',
+		meta: {
+			icon: ' iconfont icon-setVting',
+			title: '视频管理'
+		},
+		//component: Main,
+		component: resolve => require(['@/components/main'], resolve),
+		children: [{
+				path: 'add_brand',
+				name: 'add_brand',
+				meta: {
+					icon: ' iconfont icon-add',
+					title: '添加品牌'
+				},
+				component: resolve => require(['@/view/page/video-management/add-brand/add-brand.vue'], resolve)
+				//component: () => import('@/view/intelligentgarden/setting/addMenu/addMenu.vue')
+			},
+			{
+				path: 'brand_list',
+				name: 'brand_list',
+				meta: {
+					icon: ' iconfont icon-menum',
+					title: '品牌列表'
+				},
+				component: resolve => require(['@/view/page/video-management/brand-list/brand-list.vue'], resolve)
+				//component: () => import('@/view/intelligentgarden/setting/menuManagement/menuManagement.vue')
+			},
+			{
+				path: 'add_video',
+				name: 'add_video',
+				meta: {
+					icon: ' iconfont icon-add',
+					title: '添加视频'
+				},
+				component: resolve => require(['@/view/page/video-management/add-video/add-video.vue'], resolve)
+				//component: () => import('@/view/intelligentgarden/setting/menuManagement/menuManagement.vue')
+			},
+			{
+				path: 'video_list',
+				name: 'video_list',
+				meta: {
+					icon: ' iconfont icon-menum',
+					title: '视频列表'
+				},
+				component: resolve => require(['@/view/page/video-management/video-list/video-list.vue'], resolve)
+				//component: () => import('@/view/intelligentgarden/setting/menuManagement/menuManagement.vue')
+			},
+		]
+	},
+	
+	{
 		path: '/mobile_terminal',
 		name: 'mobile_terminal',
 		meta: {

@@ -75,6 +75,11 @@ export default {
 	m_user_list:'用户列表',
 	m_farm:'农场',
 	m_rtu:'设备',
-	me:'我'
+	me:'我',
+	video_management:'视频管理',
+	add_brand:'添加品牌',
+	brand_list:'品牌列表',
+	add_video:'添加视频',
+	video_list:'视频列表'
 
 }

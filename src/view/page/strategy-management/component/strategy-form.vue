@@ -11,6 +11,12 @@
 			<FormItem label="异常马上结束" prop="isMustAllPass">
 				<Checkbox v-model="strategyForm.isMustAllPass"></Checkbox>
 			</FormItem>
+			<FormItem label="执行模式" prop="exeMode">
+				<RadioGroup v-model="strategyForm.exeMode">
+					<Radio :label="0"><span>手动</span></Radio>
+					<Radio :label="1"><span>自动</span></Radio>
+				</RadioGroup>
+			</FormItem>
 			<FormItem v-for="(item, index) in strategyForm.switchsGroupStrategyList" :key="index" :label="'策略小组'+(index+1)"
 			 :prop="'switchsGroupStrategyList.' + index + '.sortIndex'">
 				<Row>
@@ -42,7 +48,8 @@
 
 					<Button size="small" v-show="index == strategyForm.switchsGroupStrategyList.length-1" type="primary" ghost @click="handleAddSgsList"
 					 icon="ios-add"></Button>
-					<Button size="small" v-show="index != 0" style="margin-top: 0.3125rem;" type="error" @click="handleRemove(index)" icon="ios-trash"></Button>
+					<Button size="small" v-show="index != 0" style="margin-top: 0.3125rem;" type="error" @click="handleRemove(index)"
+					 icon="ios-trash"></Button>
 					</Col>
 				</Row>
 			</FormItem>
@@ -51,7 +58,7 @@
 				<Button type="primary" @click="handleSubmit('strategyForm')">
 					<slot></slot>
 				</Button>
-				
+
 			</FormItem>
 		</Form>
 		<Modal :title="'当前选择:'+ belongOrgTitle" v-model="showBelongOrg">
@@ -91,7 +98,7 @@
 		},
 		data() {
 			return {
-				showSpin:false,
+				showSpin: false,
 				showRtuModal: false,
 				selLoading: false,
 				showBelongOrg: false,
@@ -102,6 +109,7 @@
 					strategyName: '',
 					belongOrgId: '',
 					isMustAllPass: true,
+					exeMode: 0,
 					switchsGroupStrategyList: [{
 						sortIndex: '',
 						delayTime: '',
@@ -171,7 +179,7 @@
 				this.showBelongOrg = false
 			},
 			getStrategyInfo() {
-				
+
 				if (this.strategyId != null && this.strategyId != '') {
 					this.showSpin = true
 					getSwitchsStrategy(this.strategyId).then(res => {
@@ -182,7 +190,7 @@
 							let switchsStrategy = data.switchsStrategy
 							let switchsGroupStrategyList = []
 							let list = switchsStrategy.switchsGroupStrategyList
-							
+
 							for (var i = 0; i < list.length; i++) {
 								let rtuNumberList = []
 								let list1 = list[i].rtuNumberList
@@ -203,7 +211,8 @@
 								strategyName: switchsStrategy.strategyName,
 								belongOrgId: switchsStrategy.belongOrgId,
 								isMustAllPass: switchsStrategy.mustAllPass,
-								switchsGroupStrategyList: switchsGroupStrategyList
+								switchsGroupStrategyList: switchsGroupStrategyList,
+								exeMode:switchsStrategy.exeMode
 
 							}
 							this.belongOrgName = switchsStrategy.orgName
@@ -245,10 +254,11 @@
 							strategyName: this.strategyForm.strategyName,
 							belongOrgId: this.strategyForm.belongOrgId,
 							mustAllPass: this.strategyForm.isMustAllPass,
-							switchsGroupStrategyList: switchsGroupStrategyList
+							switchsGroupStrategyList: switchsGroupStrategyList,
+							exeMode:this.strategyForm.exeMode
 						}
 						this.showSpin = true
-						if (this.strategyId != null && this.strategyId != ''){
+						if (this.strategyId != null && this.strategyId != '') {
 							strategyForm.id = this.strategyId
 							updateSwitchsStrategy(strategyForm).then(res => {
 								this.showSpin = false
@@ -262,7 +272,7 @@
 								this.showSpin = false
 								alert(error)
 							})
-						}else{
+						} else {
 							addSwitchsStrategy(strategyForm).then(res => {
 								this.showSpin = false
 								const data = res.data
@@ -277,7 +287,7 @@
 							})
 						}
 
-						
+
 
 					}
 

@@ -450,3 +450,37 @@ export const dataMapColumns = [{ //数据画面列表
 	},
 ]
 
+export const brandColumns = [{ //品牌列表
+		title: 'ID',
+		key: 'id',
+		align: 'center',
+		width: 70
+	},
+	{
+		title: '品牌名称',
+		key: 'brandName',
+		align: 'center',
+	},
+	{
+		title: '品牌标识',
+		key: 'brandTag',
+		align: 'center',
+		// width: 100
+	},
+	{
+		title: '所属组织',
+		key: 'orgName',
+		align: 'center',
+		// width: 100
+	},
+	
+	{
+		title: '操作',
+		slot: 'action',
+		align: 'center',
+		// width: 250
+		// width: 70
+
+	},
+]
+
