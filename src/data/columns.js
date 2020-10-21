@@ -484,3 +484,42 @@ export const brandColumns = [{ //品牌列表
 	},
 ]
 
+export const videoColumns = [{ //视频列表
+		title: 'ID',
+		key: 'id',
+		align: 'center',
+		width: 70
+	},
+	{
+		title: '视频名称',
+		key: 'videoName',
+		align: 'center',
+	},
+	{
+		title: '设备序列号',
+		key: 'deviceSerial',
+		align: 'center',
+		// width: 100
+	},
+	{
+		title: '品牌',
+		key: 'brandName',
+		align: 'center',
+		// width: 100
+	},
+	{
+		title: '所属组织',
+		key: 'orgName',
+		align: 'center',
+		// width: 100
+	},
+	
+	{
+		title: '操作',
+		slot: 'action',
+		align: 'center',
+		// width: 250
+		// width: 70
+
+	},
+]

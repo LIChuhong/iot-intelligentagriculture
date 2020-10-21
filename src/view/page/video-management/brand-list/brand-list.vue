@@ -4,7 +4,8 @@
 
 			<template slot-scope="{ row, index }" slot="action">
 
-				<Button type="primary" size="small" icon="ios-create-outline" @click="editorBrand(row)" style="margin-right: 8px;">编辑</Button>
+				<Button v-show="!showBrand" type="primary" size="small" icon="ios-create-outline" @click="editorBrand(row)" >编辑</Button>
+				<Button v-show="showBrand" type="primary" size="small" @click="getBrandInfo(row)">选择</Button>
 			</template>
 			
 		</Table>
@@ -30,6 +31,12 @@
 		components:{
 			BrandForm
 		},
+		props:{
+			showBrand: {
+				type: Boolean,
+				default: false
+			}
+		},
 		data(){
 			return{
 				brandColumns:brandColumns,
@@ -43,6 +50,9 @@
 			}
 		},
 		methods:{
+			getBrandInfo(row){
+				this.$emit('get-brand-info',row)
+			},
 			editorBrand(row){
 				this.brandId = row.id
 				this.showBrandInfo = true
