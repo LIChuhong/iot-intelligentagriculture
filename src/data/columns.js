@@ -270,6 +270,62 @@ export const strategyColumns = [{ //策略列表
 	},
 ]
 
+
+export const timingColumns = [
+	{ //定时列表
+		title: 'ID',
+		key: 'id',
+		align: 'center',
+		width: 70
+	},
+	{
+		title: '定时名称',
+		key: 'timerName',
+		align: 'center',
+	},
+	{
+		title: '类型/周期',
+		tooltip:true,
+		slot: 'timerType',
+		align: 'center',
+		// width: 100,
+		
+
+	},
+	{
+		title: '测试策略',
+		key: 'switchsStrategyName',
+		align: 'center',
+		// width: 250
+	},
+	{
+		title: '执行时间',
+		key: 'startTimer',
+		align: 'center',
+		width: 100
+	},
+	{
+		title: '所属组织',
+		key: 'orgName',
+		align: 'center',
+		// width: 100
+	},
+
+	{
+		title: '创建用户',
+		key: 'userName',
+		align: 'center',
+		// width: 100
+	},
+	{
+		title: '操作',
+		slot: 'action',
+		align: 'center',
+		 width: 250
+
+	},
+]
+
 export const warnListColumns = [{ //告警列表
 		title: 'ID',
 		key: 'id',
@@ -298,7 +354,7 @@ export const warnListColumns = [{ //告警列表
 		slot: 'action',
 		align: 'center',
 		// width: 250
-		
+
 
 	},
 ]
@@ -320,7 +376,7 @@ export const warnRtuColumns = [{ //告警设备列表
 		align: 'center',
 		// width: 100
 	},
-	
+
 	{
 		title: '操作',
 		slot: 'action',
@@ -359,7 +415,7 @@ export const wRDetailsColumns = [{ //告警设备列表
 		align: 'center',
 		// width: 100
 	},
-	
+
 	{
 		title: '操作',
 		slot: 'action',
@@ -473,7 +529,7 @@ export const brandColumns = [{ //品牌列表
 		align: 'center',
 		// width: 100
 	},
-	
+
 	{
 		title: '操作',
 		slot: 'action',
@@ -513,7 +569,7 @@ export const videoColumns = [{ //视频列表
 		align: 'center',
 		// width: 100
 	},
-	
+
 	{
 		title: '操作',
 		slot: 'action',

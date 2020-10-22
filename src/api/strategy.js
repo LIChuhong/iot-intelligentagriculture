@@ -57,6 +57,20 @@ export const getSwitchsStrategyList = (orgId,searchKey,maxId,pageSize) => {
   })
 }
 
+//获取执行模式策略列表
+export const getExeModeSwitchsStrategyList = (exeMode,searchKey,maxId,pageSize) => {
+  return axios.request({
+    url: '/v1/getExeModeSwitchsStrategyList',
+		params:{
+			'exeMode': exeMode,
+			'searchKey': searchKey,
+			'maxId': maxId,
+			'pageSize': pageSize
+		},
+    method: 'get'
+  })
+}
+
 //获取组织所有策略列表
 export const getOrgSwitchsStrategyList = (orgId) => {
   return axios.request({
@@ -65,5 +79,63 @@ export const getOrgSwitchsStrategyList = (orgId) => {
 			'orgId': orgId
 		},
     method: 'get'
+  })
+}
+
+//添加控制策略定时
+export const addSwitchsStrategyTimer = (switchsStrategyTimer) => {
+	//console.log(vmOrg)
+  return axios.request({
+  	url: '/v1/addSwitchsStrategyTimer',
+		data:switchsStrategyTimer,
+  	method: 'post'
+  })
+}
+
+//添加控制策略定时
+export const updateSwitchsStrategyTimer = (switchsStrategyTimer) => {
+	//console.log(vmOrg)
+  return axios.request({
+  	url: '/v1/updateSwitchsStrategyTimer',
+		data:switchsStrategyTimer,
+  	method: 'post'
+  })
+}
+
+//获取控制策略定时列表
+export const getSwitchsStrategyTimerList = (searchKey,maxId,pageSize) => {
+  return axios.request({
+    url: '/v1/getSwitchsStrategyTimerList',
+		params:{
+			'searchKey': searchKey,
+			'maxId': maxId,
+			'pageSize': pageSize
+		},
+    method: 'get'
+  })
+}
+
+//启动禁用控制策略定时
+export const enableSwitchsStrategyTimer = (id,enable) => {
+	//console.log(vmOrg)
+	const data = new URLSearchParams()
+	data.append('id', id)
+	data.append('enable', enable)
+  return axios.request({
+  	url: '/v1/enableSwitchsStrategyTimer',
+		data,
+  	method: 'post'
+  })
+}
+
+//删除控制策略定时
+export const delSwitchsStrategyTimer = (id) => {
+	//console.log(vmOrg)
+	const data = new URLSearchParams()
+	data.append('id', id)
+  return axios.request({
+  	url: '/v1/delSwitchsStrategyTimer',
+		data,
+  	method: 'post'
   })
 }

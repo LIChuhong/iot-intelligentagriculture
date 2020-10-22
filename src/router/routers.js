@@ -236,6 +236,26 @@ export default [{
 				component: resolve => require(['@/view/page/strategy-management/strategy-list/strategy-list.vue'], resolve)
 				//component: () => import('@/view/intelligentgarden/setting/menuManagement/menuManagement.vue')
 			},
+			{
+					path: 'add_timing',
+					name: 'add_timing',
+					meta: {
+						icon: ' iconfont icon-add',
+						title: '添加定时'
+					},
+					component: resolve => require(['@/view/page/strategy-management/add-timing/add-timing.vue'], resolve)
+					//component: () => import('@/view/intelligentgarden/setting/addMenu/addMenu.vue')
+				},
+			{
+				path: 'timing_list',
+				name: 'timing_list',
+				meta: {
+					icon: ' iconfont icon-menum',
+					title: '定时列表'
+				},
+				component: resolve => require(['@/view/page/strategy-management/timing-list/timing-list.vue'], resolve)
+				//component: () => import('@/view/intelligentgarden/setting/menuManagement/menuManagement.vue')
+			},
 		]
 	},
 	

@@ -61,6 +61,8 @@ export default {
 	strategy_management: '策略管理',
 	add_strategy: '添加策略',
 	strategy_list: '策略列表',
+	add_timing:'添加定时',
+	timing_list:'定时列表',
 	warn_management: '告警管理',
 	add_warn: '添加告警',
 	warn_list: '告警列表',
