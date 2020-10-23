@@ -33,7 +33,7 @@
 				<Button type="primary" @click="handleSubmit('timerForm')">
 					<slot></slot>
 				</Button>
-
+				
 			</FormItem>
 		</Form>
 		<Modal title="选择控制策略" v-model="showStrategy" footer-hide>
@@ -62,16 +62,19 @@
 		getNowFormatDate
 	} from '@/libs/tools'
 	import {
-		addSwitchsStrategyTimer
+		addSwitchsStrategyTimer,
+		getSwitchsStrategyTimer,
+		updateSwitchsStrategyTimer
 	} from '@/api/strategy.js'
 	export default {
 		components: {
 			OrgTree,
 			ModeStrategyList
 		},
+		props: ['timingId'],
 		data() {
 			return {
-				showSpin:false,
+				showSpin: false,
 				timerInterval1: [],
 				timerInterval2: [],
 				switchsStrategyName: '',
@@ -145,6 +148,44 @@
 			}
 		},
 		methods: {
+			getTimingInfo() {
+				if (this.timingId != null && this.timingId != '') {
+					this.showSpin = true
+					getSwitchsStrategyTimer(this.timingId).then(res => {
+						const data = res.data
+						this.showSpin = false
+						if (data.success == 1) {
+							
+							var switchsStrategyTimer = data.switchsStrategyTimer
+							var time = switchsStrategyTimer.startTimer.split(" ")
+							this.timerForm = {
+								timerName:switchsStrategyTimer.timerName,
+								timerType:switchsStrategyTimer.timerType,
+								timerInterval:switchsStrategyTimer.timerInterval,
+								belongOrgId:switchsStrategyTimer.belongOrgId,
+								switchsStrategyId:switchsStrategyTimer.switchsStrategyId,
+								startTimer:time[1]
+							}
+							var timerInterval = switchsStrategyTimer.timerInterval.split(",").map(item=>{
+								return parseInt(item)
+							})
+							if(switchsStrategyTimer.timerType == 1){
+								this.timerInterval1 = timerInterval
+							}
+							if(switchsStrategyTimer.timerType == 2){
+								this.timerInterval2 = timerInterval
+							}
+							this.switchsStrategyName = switchsStrategyTimer.switchsStrategyName
+							this.belongOrgName = switchsStrategyTimer.orgName
+						} else {
+							this.$Message.error(data.errorMessage)
+						}
+					}).catch(error => {
+						this.showSpin = false
+						alert(error)
+					})
+				}
+			},
 			handleSubmit(name) {
 				// console.log(getNowFormatDate(new Date(),'-'))
 				this.$refs[name].validate((valid) => {
@@ -166,23 +207,41 @@
 							belongOrgId: this.timerForm.belongOrgId,
 							switchsStrategyId: this.timerForm.switchsStrategyId
 						}
-						console.log(switchsStrategyTimer)
+						// console.log(switchsStrategyTimer)
 
 						this.showSpin = true
+						if(this.timingId != null && this.timingId != '') {
+							switchsStrategyTimer.id = this.timingId
+							updateSwitchsStrategyTimer(switchsStrategyTimer).then(res => {
+								const data = res.data
+								this.showSpin = false
+								if (data.success == 1) {
+									this.$Message.success('更新成功');
+							
+								} else {
+									this.$Message.error(data.errorMessage);
+								}
+							}).catch(error => {
+								this.showSpin = false
+								alert(error)
+							})
+						}else{
+							addSwitchsStrategyTimer(switchsStrategyTimer).then(res => {
+								const data = res.data
+								this.showSpin = false
+								if (data.success == 1) {
+									this.$Message.success('添加成功');
+							
+								} else {
+									this.$Message.error(data.errorMessage);
+								}
+							}).catch(error => {
+								this.showSpin = false
+								alert(error)
+							})
+						}
 
-						addSwitchsStrategyTimer(switchsStrategyTimer).then(res => {
-							const data = res.data
-							this.showSpin = false
-							if (data.success == 1) {
-								this.$Message.success('添加成功');
-
-							} else {
-								this.$Message.error(data.errorMessage);
-							}
-						}).catch(error => {
-							this.showSpin = false
-							alert(error)
-						})
+						
 					} else {
 						//this.$Message.error('Fail!');
 					}
@@ -214,6 +273,9 @@
 				this.belongOrgName = this.belongOrgInfo[0].orgName
 				this.showBelongOrg = false
 			},
+		},
+		mounted() {
+			this.getTimingInfo()
 		}
 	}
 </script>

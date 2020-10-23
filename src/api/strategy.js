@@ -92,7 +92,7 @@ export const addSwitchsStrategyTimer = (switchsStrategyTimer) => {
   })
 }
 
-//添加控制策略定时
+//更新控制策略定时
 export const updateSwitchsStrategyTimer = (switchsStrategyTimer) => {
 	//console.log(vmOrg)
   return axios.request({
@@ -139,3 +139,15 @@ export const delSwitchsStrategyTimer = (id) => {
   	method: 'post'
   })
 }
+
+//11.获取控制策略定时详情
+export const getSwitchsStrategyTimer = (id) => {
+  return axios.request({
+    url: '/v1/getSwitchsStrategyTimer',
+		params:{
+			'id': id
+		},
+    method: 'get'
+  })
+}
+

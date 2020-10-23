@@ -28,6 +28,9 @@
 			<Button type="primary" ghost style="float: right;" @click="nextPage">下一页</Button>
 			<Button type="primary" ghost style="float: right;margin-right: 0.625rem;" @click="prevPage">上一页</Button>
 		</div>
+		<Modal title="编辑定时" v-model="showTimingInfo" footer-hide>
+			<timing-form :timing-id="timingId" v-if="showTimingInfo">编辑</timing-form>
+		</Modal>
 	</div>
 </template>
 
@@ -40,11 +43,16 @@
 		enableSwitchsStrategyTimer,
 		delSwitchsStrategyTimer
 	} from '@/api/strategy.js'
+	import TimingForm from '../component/timing-form.vue'
 	export default {
 		name: 'timing_list',
-
+		components: {
+			TimingForm
+		},
 		data() {
 			return {
+				showTimingInfo:false,
+				timingId: null,
 				timingColumns: timingColumns,
 				timingData: [],
 				searchKey: '',
@@ -58,6 +66,10 @@
 			}
 		},
 		methods: {
+			editor(row) {
+				this.timingId = row.id
+				this.showTimingInfo = true
+			},
 			del(row, index) {
 				this.tableLoading = true
 				delSwitchsStrategyTimer(row.id).then(res => {
@@ -69,7 +81,7 @@
 					} else {
 						this.$Message.error(data.errorMessage)
 					}
-				
+
 				}).catch(error => {
 					this.tableLoading = false
 					alert(error)
@@ -104,7 +116,7 @@
 			},
 
 			nextPage() {
-				if (this.timingData.length < this.pageSize) {
+				if (this.maxId == this.prevId[this.prevId.length - 1]) {
 					this.$Message.warning('这是最后一页');
 				} else {
 					this.prevId.push(this.maxId)
