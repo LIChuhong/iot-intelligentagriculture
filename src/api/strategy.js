@@ -151,3 +151,51 @@ export const getSwitchsStrategyTimer = (id) => {
   })
 }
 
+//添加设备联动
+export const addRtuLinkage = (rtuLinkage) => {
+	//console.log(vmOrg)
+  return axios.request({
+  	url: '/v1/addRtuLinkage',
+		data:rtuLinkage,
+  	method: 'post'
+  })
+}
+
+
+//更新设备联动
+export const updateRtuLinkage = (rtuLinkage) => {
+	//console.log(vmOrg)
+  return axios.request({
+  	url: '/v1/updateRtuLinkage',
+		data:rtuLinkage,
+  	method: 'post'
+  })
+}
+
+//获取设备联动列表
+export const getRtuLinkageList = (searchKey,maxId,pageSize) => {
+  return axios.request({
+    url: '/v1/getRtuLinkageList',
+		params:{
+			'searchKey': searchKey,
+			'maxId': maxId,
+			'pageSize': pageSize
+		},
+    method: 'get'
+  })
+}
+
+//获取设备联动详情
+export const getRtuLinkage = (id) => {
+  return axios.request({
+    url: '/v1/getRtuLinkage',
+		params:{
+			'id': id
+		},
+    method: 'get'
+  })
+}
+
+
+
+

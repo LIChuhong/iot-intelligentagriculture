@@ -140,3 +140,14 @@ export const getIASFRtuData = (sfRtuNumber) => {
   })
 }
 
+//获取设备参数
+export const rtuTypeParameterList = (rtuNumber) => {
+  return axios.request({
+    url: '/v1/rtuTypeParameterList',
+		params:{
+			'rtuNumber': rtuNumber
+		},
+    method: 'get'
+  })
+}
+

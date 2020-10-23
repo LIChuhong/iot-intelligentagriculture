@@ -1,17 +1,19 @@
 <template>
-	<div class="strListStyle">
+	<div class="linkListStyle">
 		<div style="padding-bottom: 20px;">
-			<Input search enter-button placeholder="请输入关键字查找" style="width: 300px" @on-search="searchVideo" />
+			<Input search enter-button placeholder="请输入关键字查找" style="width: 300px" @on-search="searchLink" />
 		</div>
 		<!-- <div style="height: 200px;"></div> -->
-		<Table size="small" border :columns="videoColumns" :data="videoData" :loading="tableLoading">
+		<Table size="small" border :columns="linkColumns" :data="linkData" :loading="tableLoading">
+			<template slot-scope="{ row, index }" slot="linkageType">
+				<span v-show="row.linkageType == 0">执行联动</span>
+				<span v-show="row.linkageType == 1">反馈联动</span>
+
+			</template>
 
 			<template slot-scope="{ row, index }" slot="action">
 
 				<Button icon="ios-create-outline" type="primary" size="small" style="margin-right: 8px" @click="editor(row)">编辑</Button>
-				<Poptip :transfer="true" confirm title="你确定删除该视频吗?" @on-ok="del(row,index)">
-					<Button icon="md-trash" type="error" size="small">删除</Button>
-				</Poptip>
 
 			</template>
 
@@ -20,8 +22,8 @@
 			<Button type="primary" ghost style="float: right;" @click="nextPage">下一页</Button>
 			<Button type="primary" ghost style="float: right;margin-right: 0.625rem;" @click="prevPage">上一页</Button>
 		</div>
-		<Modal title="编辑视频" v-model="showVideoInfo" footer-hide>
-			<video-form :video-id="videoId" v-if="showVideoInfo">编辑</video-form>
+		<Modal title="编辑联动" v-model="showLinkInfo" footer-hide>
+			<link-form :link-id="linkId" v-if="showLinkInfo">编辑</link-form>
 		</Modal>
 	</div>
 </template>
@@ -29,23 +31,23 @@
 
 <script>
 	import {
-		videoColumns
+		linkColumns
 	} from '@/data/columns.js'
 	import {
-		getVideoList,delVideo
-	} from '@/api/video.js'
-	import VideoForm from '../component/video-form.vue'
+		getRtuLinkageList
+	} from '@/api/strategy.js'
+	import LinkForm from '../component/link-form.vue'
 	export default {
-		name:'video_list',
+		name: 'link_list',
 		components:{
-			VideoForm
+			LinkForm
 		},
 		data() {
 			return {
-				videoId:null,
-				showVideoInfo:false,
-				videoColumns: videoColumns,
-				videoData: [],
+				linkId: null,
+				showLinkInfo: false,
+				linkColumns: linkColumns,
+				linkData: [],
 				tableLoading: false,
 				searchKey: '',
 				maxId: 0,
@@ -59,7 +61,7 @@
 				this.maxId = 0
 				this.prevId = [0]
 				this.getVideoDataList()
-			
+
 			},
 			nextPage() {
 				if (this.maxId == this.prevId[this.prevId.length - 1]) {
@@ -68,7 +70,7 @@
 					this.prevId.push(this.maxId)
 					this.getVideoDataList()
 				}
-			
+
 			},
 			prevPage() {
 				if (this.prevId.length > 1) {
@@ -78,37 +80,21 @@
 				} else {
 					this.$Message.warning('这是第一页');
 				}
-			
+
 			},
-			editor(row){
-				this.videoId = row.id
-				this.showVideoInfo = true
+			editor(row) {
+				this.linkId = row.id
+				this.showLinkInfo = true
 			},
-			del(row, index) {
+
+			getLinkDataList() {
 				this.tableLoading = true
-				delVideo(row.id).then(res => {
-					const data = res.data
-					this.tableLoading = false
-					if (data.success == 1) {
-						this.videoData.splice(index, 1);
-						this.$Message.success('删除成功')
-					} else {
-						this.$Message.error(data.errorMessage)
-					}
-				
-				}).catch(error => {
-					this.tableLoading = false
-					alert(error)
-				})
-			},
-			getVideoDataList() {
-				this.tableLoading = true
-				getVideoList(this.searchKey, this.maxId, this.pageSize).then(res => {
+				getRtuLinkageList(this.searchKey, this.maxId, this.pageSize).then(res => {
 					this.tableLoading = false
 					const data = res.data
 					if (data.success == 1) {
 						// console.log(data)
-						this.videoData = data.videoList
+						this.linkData = data.rtuLinkageList
 					} else {
 						this.$Message.error(data.errorMessage)
 					}
@@ -120,7 +106,7 @@
 		},
 
 		mounted() {
-			this.getVideoDataList()
+			this.getLinkDataList()
 		}
 	}
 </script>

@@ -294,8 +294,6 @@
 				})
 			}
 
-
-
 		},
 		mounted() {
 			this.getStrategyInfo()

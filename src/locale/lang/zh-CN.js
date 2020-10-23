@@ -61,6 +61,8 @@ export default {
 	strategy_management: '策略管理',
 	add_strategy: '添加策略',
 	strategy_list: '策略列表',
+	add_link:'添加联动',
+	link_list:'联动列表',
 	add_timing:'添加定时',
 	timing_list:'定时列表',
 	warn_management: '告警管理',
@@ -82,6 +84,7 @@ export default {
 	add_brand:'添加品牌',
 	brand_list:'品牌列表',
 	add_video:'添加视频',
-	video_list:'视频列表'
+	video_list:'视频列表',
+	
 
 }

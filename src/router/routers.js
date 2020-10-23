@@ -237,6 +237,26 @@ export default [{
 				//component: () => import('@/view/intelligentgarden/setting/menuManagement/menuManagement.vue')
 			},
 			{
+					path: 'add_link',
+					name: 'add_link',
+					meta: {
+						icon: ' iconfont icon-add',
+						title: '添加联动'
+					},
+					component: resolve => require(['@/view/page/strategy-management/add-link/add-link.vue'], resolve)
+					//component: () => import('@/view/intelligentgarden/setting/addMenu/addMenu.vue')
+				},
+			{
+				path: 'link_list',
+				name: 'link_list',
+				meta: {
+					icon: ' iconfont icon-menum',
+					title: '联动列表'
+				},
+				component: resolve => require(['@/view/page/strategy-management/link-list/link-list.vue'], resolve)
+				//component: () => import('@/view/intelligentgarden/setting/menuManagement/menuManagement.vue')
+			},
+			{
 					path: 'add_timing',
 					name: 'add_timing',
 					meta: {

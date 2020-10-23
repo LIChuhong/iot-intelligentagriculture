@@ -271,6 +271,45 @@ export const strategyColumns = [{ //策略列表
 ]
 
 
+export const linkColumns = [{ //联动列表
+		title: 'ID',
+		key: 'id',
+		align: 'center',
+		width: 70
+	},
+	{
+		title: '联动名称',
+		key: 'linkageName',
+		align: 'center',
+	},
+	{
+		title: '联动类型',
+		slot: 'linkageType',
+		align: 'center',
+		// width: 100
+	},
+	{
+		title: '联动设备编号',
+		key: 'linkageRtuNumber',
+		align: 'center',
+		// width: 100
+	},
+	{
+		title: '联动参数',
+		key: 'parameterName',
+		align: 'center',
+		// width: 100
+	},
+	{
+		title: '操作',
+		slot: 'action',
+		align: 'center',
+		// width: 250
+
+	},
+]
+
+
 export const timingColumns = [
 	{ //定时列表
 		title: 'ID',
