@@ -89,7 +89,7 @@
 						var val = wsRtuHisDataList.reverse()
 						
 						for (var i = 0; i < val.length; i++) {
-							var list = val[i].parameterValueList
+							var list = val[i].parameterDataList
 							var time = timestampToTimeMethod(val[i].dataTime, 'hours')
 							this.dataList.push({
 								time: time,

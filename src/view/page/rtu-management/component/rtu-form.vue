@@ -7,6 +7,9 @@
 			<FormItem label="设备名称" prop="rtuName">
 				<Input type="text" :maxlength="100" v-model="rtuForm.rtuName" placeholder="请输入设备名称"></Input>
 			</FormItem>
+			<FormItem label="设备描述" prop="rtuDesc">
+				<Input type="text" :maxlength="100" v-model="rtuForm.rtuDesc" placeholder="请输入设备描述"></Input>
+			</FormItem>
 			<FormItem label="设备类型" prop="rtuTypeId">
 				<!-- {{newDeviceData.rtuTypeId}} -->
 				<Select :disabled="disEditor" @on-open-change="openRtuTypeList" v-model="rtuForm.rtuTypeId" placeholder="请选择设备类型"
@@ -105,7 +108,7 @@
 					gwRtuNumber: '',
 					loraAddress: '',
 					loraChannel: '',
-					// rtuDesc: '',
+					rtuDesc: '',
 				},
 				rtuRule: {
 					rtuNumber: [{
@@ -244,7 +247,8 @@
 							'belongOrgId': parseInt(this.rtuForm.belongOrgId),
 							'loraAddress': loraAddress,
 							'loraChannel': loraChannel,
-							'gwRtuNumber': gwRtuNumber
+							'gwRtuNumber': gwRtuNumber,
+							'rtuDesc':this.rtuForm.rtuDesc
 						}
 						// this.$Message.error('添加成功')
 						// console.log(rtuForm)
@@ -313,7 +317,9 @@
 									belongOrgId: iaRtu.belongOrgId,
 									loraAddress: iaRtu.loraAddress.toString(),
 									loraChannel: iaRtu.loraChannel.toString(),
-									gwRtuNumber: iaRtu.gwRtuNumber.toString()
+									gwRtuNumber: iaRtu.gwRtuNumber.toString(),
+									rtuDesc:iaRtu.rtuDesc
+									
 								}
 								this.belongOrgName = iaRtu.orgName
 								const rtuTypeList = this.rtuTypeList

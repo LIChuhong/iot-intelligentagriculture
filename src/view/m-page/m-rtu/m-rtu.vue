@@ -118,7 +118,7 @@
 
 			show_rtu_info(row, index) {
 				// console.log(row)
-				if (row.rtuTypeTag == 'IA_R_G' || row.rtuTypeTag == 'IA_R_N') {
+				if (row.rtuTypeTag == 'IA_WS_G' || row.rtuTypeTag == 'IA_WS_N') {
 					this.rtuTypeTag = 'IA_R'
 				} else if (row.rtuTypeTag == 'IA_SF_G' || row.rtuTypeTag == 'IA_SF_N') {
 					this.rtuTypeTag = 'IA_SF'

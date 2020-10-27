@@ -6,6 +6,7 @@
 			<div :style="mapStyle" @touchstart="touchstartView" id="mapBgDiv1" ref="mapBgDiv1">
 				<img id="mapBgImg1" ref="mapBgImg1" :src="mapBgImgUrl" style="height: 100%;" draggable="false" />
 				<div v-for="item in rtuImgList" :key="item.rtuNumber" class="drag1" :style="{top:item.heightScale+'%',left:item.widthScale+'%',cursor:'pointer'}" :title="item.rtuNumber">
+					<p style="position: absolute;color:#ffffff;font-size:0.5rem;padding: 0;background:rgba(255, 0, 0, 0.5) ;top:-1.125rem;right:-50%;white-space:nowrap;text-align: center;min-width: 3.75rem;">{{item.rtuDesc?item.rtuDesc:item.rtuTypeName}}</p>
 					<Poptip :title="item.rtuNumber" @on-popper-show="getRtuDataInfo(item)">
 						<!-- <div v-if="iaSf.show && iaSf.rtuNumber == item.rtuNumber" slot="content">
 							<sf-model :sf-rtu-number="item.rtuNumber"></sf-model>
@@ -264,7 +265,7 @@
 				}
 			},
 			showParamDataList(rtuTypeTag, list) {
-				if (rtuTypeTag == 'IA_R_G' || rtuTypeTag == 'IA_R_N') {
+				if (rtuTypeTag == 'IA_WS_G' || rtuTypeTag == 'IA_WS_N') {
 					this.parameterDataList = list.map(item => {
 						if (item.parameterId == 9) {
 							item.icon = ' iconfont icon-ic_kqwd'

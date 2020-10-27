@@ -7,6 +7,7 @@
 			<div :style="mapStyle" @mousewheel="mouseWheel" @mousedown="mousedownView" @touchstart="touchstartView" id="mapBgDiv1" ref="mapBgDiv1">
 				<img id="mapBgImg1" ref="mapBgImg1" :src="mapBgImgUrl" style="height: 100%;" draggable="false" />
 				<div v-for="item in rtuImgList" :key="item.rtuNumber" class="drag1" :style="{top:item.heightScale+'%',left:item.widthScale+'%',cursor:'pointer'}" :title="item.rtuNumber">
+					<p style="position: absolute;color:#ffffff;font-size:0.5rem;padding: 0;background:rgba(255, 0, 0, 0.5) ;top:-1.125rem;right:-50%;white-space:nowrap;text-align: center;min-width: 3.75rem;">{{item.rtuDesc?item.rtuDesc:item.rtuTypeName}}</p>
 					<Poptip :title="item.rtuNumber" @on-popper-show="getRtuDataInfo(item)" @on-popper-hide="hidePop" >
 						<!-- <div v-if="iaSf.show && iaSf.rtuNumber == item.rtuNumber" slot="content">
 							<sf-model :sf-rtu-number="item.rtuNumber"></sf-model>
@@ -29,8 +30,10 @@
 						</div>
 						<div class="rtuImgStyle">
 							<img :src="item.rtuTypeImgUrl" class="rtu1" :alt="item.rtuNumber+item.rtuTypeName" :draggable="false" />
+							
 						</div>
 					</Poptip>
+					
 
 				</div>
 
@@ -276,7 +279,7 @@
 				
 			},
 			showParamDataList(rtuTypeTag, list) {
-				if (rtuTypeTag == 'IA_R_G' || rtuTypeTag == 'IA_R_N') {
+				if (rtuTypeTag == 'IA_WS_G' || rtuTypeTag == 'IA_WS_N') {
 					this.parameterDataList = list.map(item => {
 						if (item.parameterId == 9) {
 							item.icon = ' iconfont icon-ic_kqwd'
@@ -633,7 +636,6 @@
 	.rtuImgStyle {
 		width: 1.875rem;
 		height: 1.875rem;
-		border-radius: 50%;
 		background: #00BFFF;
 		line-height: 1.875rem;
 		background: rgba(255, 0, 0, 0.5);
@@ -644,12 +646,15 @@
 		text-align: center;
 		display: flex;
 		justify-content: center;
-		align-items: center
+		align-items: center;
+		position: relative
+		
 	}
 
 
 	.drag1 {
 		// overflow: hidden;
+		
 		position: absolute;
 		// width:  2%;
 		// line-height:1.875rem;
@@ -660,6 +665,7 @@
 		-o-transform: none;
 		-ms-transform: none;
 		transform: none;
+		
 	}
 
 	#mapBgDiv1 {

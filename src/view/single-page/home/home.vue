@@ -286,7 +286,7 @@
 								var hisYearList = this.getHisList(yearList, i)
 								var unit = ""
 								if (monList.length > 0) {
-									unit = monList[0].parameterValueList[i].unit
+									unit = monList[0].parameterDataList[i].unit
 								}
 								// alert(unit)
 								this.curveList.push({
@@ -334,7 +334,7 @@
 								var hisYearList = this.getHisList(yearList, i)
 								var unit = ""
 								if (monList.length > 0) {
-									unit = monList[0].parameterValueList[i].unit
+									unit = monList[0].parameterDataList[i].unit
 								}
 								this.curveList1.push({
 									title: title,
@@ -358,7 +358,7 @@
 				for (var j = 0; j < list.length; j++) {
 					hisList.push({
 						dataTime: list[j].dataTime,
-						parameterValue: list[j].parameterValueList[i]
+						parameterValue: list[j].parameterDataList[i]
 					})
 				}
 				return hisList
