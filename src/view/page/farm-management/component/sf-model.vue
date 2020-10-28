@@ -63,7 +63,7 @@
 		setControlIASFRtu
 	} from '@/api/rtu.js'
 	import {
-		getOrgSwitchsStrategyList
+		getExeModeSwitchsStrategyList
 	} from '@/api/strategy.js'
 	import {
 		formatSeconds1
@@ -75,7 +75,6 @@
 				showData: false,
 				timer: null, //定时器名称
 				showSpin: false,
-				orgId: this.$store.state.user.userInfo.orgId,
 				wateStrategyList: [],
 				maxStirTime: 10, //最长搅拌时间
 				sf: {
@@ -187,6 +186,7 @@
 
 
 						} else {
+							// this.showData = true
 							this.showData = false
 							this.$Message.error(data.errorMessage ? data.errorMessage : '设备不在线')
 						}
@@ -266,26 +266,35 @@
 				this.sf.waterTankList[index].waterFertilizerRatio = waterFertilizer
 			},
 			getStirTimeNum(switchsStrategy) {
-				if (switchsStrategy != null && switchsStrategy != '') {
+				// alert(switchsStrategy)
+				if (switchsStrategy != null && switchsStrategy != '' && switchsStrategy != []) {
 					const list1 = switchsStrategy.switchsGroupStrategyList
-					var rtuNumber = list1[0].rtuNumberList[0]
-					var list2 = list1.slice(1);
-					var stirTimeNum = list1[0].delayTime + list1[0].workTime
-					for (var i = 0; i < list2.length; i++) {
-						var rtuNumberList = list2[0].rtuNumberList
-						var sameRtuNum = 0
-						for (var j = 0; j < rtuNumberList.length; j++) {
-							if (rtuNumber == rtuNumberList[j]) {
-								sameRtuNum++
+					
+					// alert(list1)
+					if(list1[0] != null && list1[0] != ''){
+						var rtuNumber = list1[0].rtuNumberList[0]
+						var list2 = list1.slice(1);
+						var stirTimeNum = list1[0].delayTime + list1[0].workTime
+						for (var i = 0; i < list2.length; i++) {
+							var rtuNumberList = list2[0].rtuNumberList
+							var sameRtuNum = 0
+							for (var j = 0; j < rtuNumberList.length; j++) {
+								if (rtuNumber == rtuNumberList[j]) {
+									sameRtuNum++
+								}
+							}
+							if (sameRtuNum == 0) {
+								stirTimeNum += (list2[i].delayTime + list2[i].workTime)
+							} else {
+								break;
 							}
 						}
-						if (sameRtuNum == 0) {
-							stirTimeNum += (list2[i].delayTime + list2[i].workTime)
-						} else {
-							break;
-						}
+						return stirTimeNum / 60
+					}else{
+						return 10
 					}
-					return stirTimeNum / 60
+					// var rtuNumber = list1[0].rtuNumberList[0]
+					
 				} else {
 					return 10
 				}
@@ -297,7 +306,7 @@
 			getStrategyList() {
 				// alert(this.sfRtuNumber)
 				this.showSpin = true
-				getOrgSwitchsStrategyList(this.orgId).then(res => {
+				getExeModeSwitchsStrategyList(0,'',0,100).then(res => {
 					const data = res.data
 					this.showSpin = false
 					if (data.success == 1) {

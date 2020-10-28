@@ -107,6 +107,7 @@
 						this.$Message.error(data.errorMessage)
 					}
 				}).catch(error => {
+					this.dom.hideLoading()
 					alert(error)
 				})
 			},

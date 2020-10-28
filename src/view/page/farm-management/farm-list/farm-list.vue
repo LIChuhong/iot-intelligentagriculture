@@ -61,10 +61,10 @@
 
 				<zoom-controller v-model="zoom" :min="20" :max="300"></zoom-controller>
 			</div>
-			<Modal title="农场列表" v-model="showMapList" footer-hide transfer="false">
+			<Modal title="农场列表" v-model="showMapList" footer-hide :transfer="false">
 				<map-list v-if="showMapList" @get-map-info="getMapInfo"></map-list>
 			</Modal>
-			<Modal :title="iaSf.rtuNumber" v-model="iaSf.show" footer-hide transfer="false">
+			<Modal :title="iaSf.rtuNumber" v-model="iaSf.show" footer-hide :transfer="false">
 				<sf-model v-if="iaSf.show"  :sf-rtu-number="iaSf.rtuNumber"></sf-model>
 			</Modal>
 			<Spin fix v-show="showSpin" style="background: rgba(255,255,255,0.3);">
