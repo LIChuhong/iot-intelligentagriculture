@@ -196,6 +196,18 @@ export const getRtuLinkage = (id) => {
   })
 }
 
+//获取设备类型参数
+export const getRtuTypeParameterList = (rtuTypeId) => {
+  return axios.request({
+    url: '/v1/getRtuTypeParameterList',
+		params:{
+			'rtuTypeId': rtuTypeId
+		},
+    method: 'get'
+  })
+}
+
+
 
 
 

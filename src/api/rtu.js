@@ -107,6 +107,18 @@ export const getAllRtuTypeList = () => {
   })
 }
 
+//获取设备类型参数
+export const getRtuTypeParameterList = (rtuTypeId) => {
+  return axios.request({
+    url: '/v1/getRtuTypeParameterList',
+		params:{
+			'rtuTypeId': rtuTypeId
+		},
+    method: 'get'
+  })
+}
+
+
 //启禁用机器
 export const isEnableRtu = (rtuNumber,isEnable) => {
 	//console.log(vmOrg)

@@ -9,16 +9,19 @@
 				<RadioGroup v-model="linkForm.linkageType">
 					<Radio :label="0"><span>执行联动</span></Radio>
 					<Radio :label="1"><span>反馈联动</span></Radio>
+					<Radio :label="2"><span>监测联动</span></Radio>
 				</RadioGroup>
 			</FormItem>
-			<FormItem label="联动设备编号" prop="linkageRtuNumber">
-				<Input @on-change="refresh" type="number" v-model="linkForm.linkageRtuNumber" placeholder="请输入联动设备编号">
-				</Input>
-			</FormItem>
+
 			<FormItem label="联动参数" prop="linkageParameterId">
-				<Select v-model="linkForm.linkageParameterId" placeholder="请输入联动参数" @on-open-change="getLinkageParamList">
+				<!-- <Select v-model="linkForm.linkageParameterId" placeholder="请输入联动参数" @on-open-change="getLinkageParamList">
 					<Option v-for="item in parameterList" :value="item.id" :key="item.id">{{ item.parameterName }}</Option>
-				</Select>
+				</Select> -->
+				<span>{{linkForm.linkageParameterName}}</span>
+				<Cascader style="display:inline-block;margin-left: 1.25rem;" :data="rtuTypeList" :load-data="getRtuTypeParamList" @on-change="handleChange">
+					<a href="javascript:void(0)">选择</a>
+				</Cascader>
+				<!-- {{linkForm.linkageParameterId}} -->
 			</FormItem>
 			<FormItem label="延迟秒数" prop="delay">
 				<Input style="width: 100px" type="number" v-model="linkForm.delay" placeholder="请输入联动延迟秒数">
@@ -36,6 +39,11 @@
 				<Input :maxlength="100" type="textarea" v-model="linkForm.tips" placeholder="请输入联动参数无法通过检测的提示">
 				</Input>
 			</FormItem>
+			<FormItem label="联动设备编号" prop="linkageRtuNumber">
+				<Input type="number" v-model="linkForm.linkageRtuNumber" placeholder="请输入联动设备编号" :search="linkForm.linkageType == 2"
+				 enter-button="设置" @on-search="getLinkageParamList">
+				</Input>
+			</FormItem>
 
 			<FormItem style="text-align:center;">
 				<Button @click="handleReset('linkForm')" style="margin-right:0.625rem">重置</Button>
@@ -43,8 +51,12 @@
 					<slot></slot>
 				</Button>
 			</FormItem>
-		
+
 		</Form>
+		<Modal title="设置联动设备参数" v-model="linkRtuShow" footer-hide>
+			<!-- <sf-model v-if="iaSf.show"  :sf-rtu-number="iaSf.rtuNumber"></sf-model> -->
+			<link-rtu-form v-if="linkRtuShow" :rtu-number="linkForm.linkageRtuNumber" @save-parameter-data="saveParameterData"></link-rtu-form>
+		</Modal>
 
 		<Spin fix v-show="showSpin">
 			<Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
@@ -55,27 +67,40 @@
 </template>
 
 <script>
+	import LinkRtuForm from '../component/link-rtu-form.vue'
 	import {
-		addRtuLinkage,getRtuLinkage,updateRtuLinkage
+		addRtuLinkage,
+		getRtuLinkage,
+		updateRtuLinkage
 	} from '@/api/strategy.js'
 	import {
-		rtuTypeParameterList
+		rtuTypeParameterList,
+		getAllRtuTypeList,
+		getRtuTypeParameterList
 	} from '@/api/rtu.js'
 	export default {
-		props:['linkId'],
+		props: ['linkId'],
+		components: {
+			LinkRtuForm
+		},
 		data() {
 			return {
+				linkRtuShow: false,
+				rtuTypeList: [],
+				rtuTypeParameterList: [],
 				showSpin: false,
 				linkForm: {
 					linkageName: '',
 					linkageType: 0,
 					linkageRtuNumber: '',
 					linkageParameterId: '',
+					linkageParameterName:'',
 					delay: '0',
 					parameterMaxValue: '',
 					parameterMinValue: '',
 					tips: '',
-					linkageParameterIndex: ''
+					linkageParameterIndex: '',
+					rtuData: null
 				},
 				parameterList: [],
 				linkRule: {
@@ -101,7 +126,7 @@
 						required: true,
 						type: 'number',
 						message: '请选择联动参数',
-						trigger: 'blur'
+						trigger: 'change'
 					}],
 					parameterMinValue: [{
 						required: true,
@@ -127,37 +152,89 @@
 			}
 		},
 		methods: {
-			getLinkInfo(){
-				if(this.linkId != '' && this.linkId != null){
+			handleChange(value,selectedData) {
+				this.linkForm.linkageParameterId = selectedData[1].value
+				this.linkForm.linkageParameterName = selectedData[1].label
+				this.linkForm.linkageParameterIndex = selectedData[1].index
+			},
+			saveParameterData(parameterDataList) {
+				this.linkForm.rtuData = {
+					rtuNumber: parseInt(this.linkForm.linkageRtuNumber),
+					orderType: this.linkForm.linkageType,
+					parameterDataList: parameterDataList
+				}
+				this.linkRtuShow = false
+			},
+			getRtuTypeList() {
+				getAllRtuTypeList().then(res => {
+					const data = res.data
+					if (data.success == 1) {
+						// console.log(data)
+						this.rtuTypeList = data.rtuTypeList.map(item => {
+							item.value = item.id
+							item.label = item.rtuTypeName
+							item.children = []
+							item.loading = false
+							return item
+						})
+					} else {
+						this.$Message.error(data.errorMessage)
+					}
+				}).catch(error => {
+					alert(error)
+				})
+			},
+			getRtuTypeParamList(item, callback) {
+				item.loading = true
+				getRtuTypeParameterList(item.value).then(res => {
+					const data = res.data
+					item.loading = false
+					if (data.success == 1) {
+						var list = data.parameterList
+						for (var i = 0; i < list.length; i++) {
+							item.children.push({
+								value: list[i].id,
+								label: list[i].parameterName,
+								index:i
+							})
+						}
+					} else {
+						this.$Message.error(data.errorMessage)
+					}
+					callback();
+				}).catch(error => {
+					item.loading = false
+					alert(error)
+					callback();
+				})
+
+			},
+			getLinkInfo() {
+				if (this.linkId != '' && this.linkId != null) {
 					this.showSpin = true
-					getRtuLinkage(this.linkId).then(res=>{
+					getRtuLinkage(this.linkId).then(res => {
 						const data = res.data
 						this.showSpin = false
-						if(data.success == 1){
+						if (data.success == 1) {
 							var rtuLinkage = data.rtuLinkage
 							this.linkForm = {
-								linkageName:rtuLinkage.linkageName,
-								linkageType:rtuLinkage.linkageType,
-								linkageRtuNumber:rtuLinkage.linkageRtuNumber.toString(),
-								linkageParameterId:rtuLinkage.linkageParameterId,
-								parameterMinValue:rtuLinkage.parameterMinValue.toString(),
-								parameterMaxValue:rtuLinkage.parameterMaxValue.toString(),
-								delay:rtuLinkage.delay.toString(),
-								tips:rtuLinkage.tips
+								linkageName: rtuLinkage.linkageName,
+								linkageType: rtuLinkage.linkageType,
+								linkageRtuNumber: rtuLinkage.linkageRtuNumber.toString(),
+								linkageParameterId: rtuLinkage.linkageParameterId,
+								linkageParameterIndex: rtuLinkage.linkageParameterIndex,
+								linkageParameterName: rtuLinkage.parameterName,
+								parameterMinValue: rtuLinkage.parameterMinValue.toString(),
+								parameterMaxValue: rtuLinkage.parameterMaxValue.toString(),
+								delay: rtuLinkage.delay.toString(),
+								tips: rtuLinkage.tips,
+								rtuData: null
 							}
-							
-							// console.log(data.rtuLinkage)
-							if(rtuLinkage.linkageRtuNumber){
-								this.showSpin = true
-								// console.log(this.linkForm)
-								this.getLinkageParamList(true)
-								// this.linkForm.linkageParameterId = rtuLinkage.linkageParameterId
-							}
-							console.log(data)
-						}else{
+
+						} else {
 							this.$Message.error(data.errorMessage)
 						}
-					}).catch(error=>{
+					}).catch(error => {
 						this.showSpin = false
 						alert(error)
 					})
@@ -167,29 +244,42 @@
 				this.$refs[name].validate((valid) => {
 					if (valid) {
 						// this.showSpin = true
-						var list = this.parameterList
-						for(var i = 0; i < list.length ; i++){
-							if(this.linkForm.linkageParameterId == list[i].id){
-								this.linkForm.linkageParameterIndex = i
-								break
-							}
-						}
-						
+						// alert(this.linkForm.linkageParameterId[0])
+						// alert(this.linkForm.linkageParameterId[1])
+						var list = this.rtuTypeList
+						// console.log(this.rtuTypeList)
+// 						for (var i = 0; i < list.length; i++) {
+// 							if (this.linkForm.linkageParameterId[0] == list[i].value) {
+// 
+// 								var list1 = list[i].children
+// 								for (var j = 0; j < list1.length; j++) {
+// 									console.log(list[i].children)
+// 									if (this.linkForm.linkageParameterId[1] == list1[j].value) {
+// 										this.linkForm.linkageParameterIndex = j
+// 										break
+// 									}
+// 								}
+// 								break
+// 							}
+// 						}
+						// alert(2)
+						// var rtuData = this.linkForm.rtuData?this.linkForm.rtuData:null
 						var rtuLinkage = {
-							linkageName:this.linkForm.linkageName,
-							linkageType:this.linkForm.linkageType,
-							linkageRtuNumber:parseInt(this.linkForm.linkageRtuNumber),
-							linkageParameterId:this.linkForm.linkageParameterId,
-							linkageParameterIndex:this.linkForm.linkageParameterIndex,
-							delay:parseInt(this.linkForm.delay),
-							parameterMinValue:Number(this.linkForm.parameterMinValue),
-							parameterMaxValue:Number(this.linkForm.parameterMaxValue),
-							tips:this.linkForm.tips
-							 // linkageParameterIconCode:"icon_p",
+							linkageName: this.linkForm.linkageName,
+							linkageType: this.linkForm.linkageType,
+							linkageRtuNumber: parseInt(this.linkForm.linkageRtuNumber),
+							linkageParameterId: this.linkForm.linkageParameterId,
+							linkageParameterIndex: this.linkForm.linkageParameterIndex,
+							delay: parseInt(this.linkForm.delay),
+							parameterMinValue: Number(this.linkForm.parameterMinValue),
+							parameterMaxValue: Number(this.linkForm.parameterMaxValue),
+							tips: this.linkForm.tips,
+							rtuData: this.linkForm.rtuData
+							// linkageParameterIconCode:"icon_p",
 						}
 						// console.log(rtuLinkage)
 						this.showSpin = true
-						if(this.linkId != null && this.linkId != ''){
+						if (this.linkId != null && this.linkId != '') {
 							rtuLinkage.id = this.linkId
 							updateRtuLinkage(rtuLinkage).then(res => {
 								this.showSpin = false
@@ -203,7 +293,7 @@
 								this.showSpin = false
 								alert(error)
 							})
-						}else{
+						} else {
 							addRtuLinkage(rtuLinkage).then(res => {
 								this.showSpin = false
 								const data = res.data
@@ -217,7 +307,7 @@
 								alert(error)
 							})
 						}
-						
+
 					}
 				})
 			},
@@ -225,30 +315,14 @@
 
 				if (val) {
 					if (this.linkForm.linkageRtuNumber != null && this.linkForm.linkageRtuNumber != '') {
-						var rtuNumber = parseInt(this.linkForm.linkageRtuNumber)
-						rtuTypeParameterList(rtuNumber).then(res => {
-							const data = res.data
-							this.showSpin = false
-							if (data.success == 1) {
-								// console.log(data)
-								this.parameterList = data.parameterList
-							} else {
-								this.$Message.error(data.errorMessage)
-							}
-						}).catch(error => {
-							this.showSpin = false
-							alert(error)
-						})
+						this.linkRtuShow = true
 					} else {
-						this.parameterList = []
-						alert('请先填写联动设备编号，再进行联动参数选择')
+						// this.parameterList = []
+						alert('请先填写联动设备编号，再进行联动设备设置')
 					}
 				}
 			},
-			refresh(){
-				// alert(1)
-				this.linkForm.linkageParameterId = ''
-			}
+
 		},
 		watch: {
 			'linkForm.linkageRtuNumber': function(val, oldVal) {
@@ -256,6 +330,7 @@
 			}
 		},
 		mounted() {
+			this.getRtuTypeList()
 			this.getLinkInfo()
 		}
 	}

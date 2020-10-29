@@ -8,6 +8,7 @@
 			<template slot-scope="{ row, index }" slot="linkageType">
 				<span v-show="row.linkageType == 0">执行联动</span>
 				<span v-show="row.linkageType == 1">反馈联动</span>
+				<span v-show="row.linkageType == 2">监测联动</span>
 
 			</template>
 
@@ -56,7 +57,7 @@
 			}
 		},
 		methods: {
-			searchVideo(val) {
+			searchLink(val) {
 				this.searchKey = val
 				this.maxId = 0
 				this.prevId = [0]
