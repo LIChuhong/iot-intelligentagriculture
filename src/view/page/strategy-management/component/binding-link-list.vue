@@ -1,21 +1,19 @@
 <template>
 	<div class="linkListStyle">
-		<div style="padding-bottom: 20px;">
-			<Input search enter-button placeholder="请输入关键字查找" style="width: 300px" @on-search="searchLink" />
+		<div style="margin-bottom: 0.625rem;overflow: hidden;">
+			<span>已选择ID：</span>
+			<Button style="float: right;" size="samll" type="primary"  @click="changeOk">确定</Button>
 		</div>
-		<!-- <div style="height: 200px;"></div> -->
+		<div>
+			<div v-for="(item,i) in bindingLinkList" :key="i" style="background: #c5c8ce;padding: 0.3125rem;border-radius:5%;margin:0 0 0.3125rem 0.3125rem;display: inline-block;">{{item.id}}
+				<Icon type="md-close" style="margin-left: 0.3125rem;cursor:pointer;" @click="delLinkRtu(i)" /></div>
+		</div>
 		<Table size="small" border :columns="linkColumns" :data="linkData" :loading="tableLoading">
-			<template slot-scope="{ row, index }" slot="linkageType">
-				<span v-show="row.linkageType == 0">执行联动</span>
-				<span v-show="row.linkageType == 1">反馈联动</span>
-				<span v-show="row.linkageType == 2">监测联动</span>
-
-			</template>
+			
 
 			<template slot-scope="{ row, index }" slot="action">
 
-				<Button icon="ios-create-outline" type="primary" size="small" style="margin-right: 8px" @click="editor(row)">编辑</Button>
-
+				<Button ghost type="primary" size="small"  @click="change(row)">选择</Button>
 			</template>
 
 		</Table>
@@ -23,31 +21,29 @@
 			<Button type="primary" ghost style="float: right;" @click="nextPage">下一页</Button>
 			<Button type="primary" ghost style="float: right;margin-right: 0.625rem;" @click="prevPage">上一页</Button>
 		</div>
-		<Modal title="编辑联动" v-model="showLinkInfo" footer-hide>
-			<link-form :link-id="linkId" v-if="showLinkInfo">编辑</link-form>
-		</Modal>
+	
 	</div>
 </template>
 
 
 <script>
 	import {
-		linkColumns
+		bindingLinkColumns
 	} from '@/data/columns.js'
 	import {
 		getRtuLinkageList
 	} from '@/api/strategy.js'
-	import LinkForm from '../component/link-form.vue'
+	
 	export default {
-		name: 'link_list',
+		// name: 'link_list',
 		components:{
-			LinkForm
+			
 		},
 		data() {
 			return {
-				linkId: null,
+				bindingLinkList:[],
 				showLinkInfo: false,
-				linkColumns: linkColumns,
+				linkColumns: bindingLinkColumns,
 				linkData: [],
 				tableLoading: false,
 				searchKey: '',
@@ -57,12 +53,23 @@
 			}
 		},
 		methods: {
-			searchLink(val) {
-				this.searchKey = val
-				this.maxId = 0
-				this.prevId = [0]
-				this.getLinkDataList()
-
+			changeOk(){
+				this.$emit('change-linding-ok',this.bindingLinkList)
+			},
+			delLinkRtu(i){
+				this.bindingLinkList.splice(i, 1)
+			},
+			change(row){
+				let bindingLinkList = this.bindingLinkList
+				var index = 0
+				for (var i in bindingLinkList) {
+					if (bindingLinkList[i].id == row.id) {
+						index++
+					}
+				}
+				if (index == 0) {
+					this.bindingLinkList.push(row)
+				}
 			},
 			nextPage() {
 				if (this.linkData.length < this.pageSize) {
@@ -83,11 +90,7 @@
 				}
 
 			},
-			editor(row) {
-				this.linkId = row.id
-				this.showLinkInfo = true
-			},
-
+			
 			getLinkDataList() {
 				this.tableLoading = true
 				getRtuLinkageList(this.searchKey, this.maxId, this.pageSize).then(res => {

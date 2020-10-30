@@ -271,6 +271,33 @@ export const strategyColumns = [{ //策略列表
 ]
 
 
+export const bindingLinkColumns = [{ //绑定联动列表
+		title: 'ID',
+		key: 'id',
+		align: 'center',
+		width: 70
+	},
+	{
+		title: '联动名称',
+		key: 'linkageName',
+		align: 'center',
+	},
+	{
+		title: '联动设备',
+		key: 'linkageRtuNumber',
+		align: 'center',
+		// width: 100
+	},
+	
+	{
+		title: '操作',
+		slot: 'action',
+		align: 'center',
+		// width: 250
+
+	},
+]
+
 export const linkColumns = [{ //联动列表
 		title: 'ID',
 		key: 'id',

@@ -44,6 +44,10 @@
 				 enter-button="设置" @on-search="getLinkageParamList">
 				</Input>
 			</FormItem>
+			<FormItem v-show="linkForm.linkageType == 2" label="监测次数" prop="totalCount">
+				<Input :maxlength="100" type="number" v-model="linkForm.totalCount" placeholder="请输入检测次数">
+				</Input>
+			</FormItem>
 
 			<FormItem style="text-align:center;">
 				<Button @click="handleReset('linkForm')" style="margin-right:0.625rem">重置</Button>
@@ -55,7 +59,7 @@
 		</Form>
 		<Modal title="设置联动设备参数" v-model="linkRtuShow" footer-hide>
 			<!-- <sf-model v-if="iaSf.show"  :sf-rtu-number="iaSf.rtuNumber"></sf-model> -->
-			<link-rtu-form v-if="linkRtuShow" :rtu-number="linkForm.linkageRtuNumber" @save-parameter-data="saveParameterData"></link-rtu-form>
+			<link-rtu-form v-if="linkRtuShow" :rtu-number="linkForm.linkageRtuNumber" :param-data-list="linkForm.rtuData?linkForm.rtuData.parameterDataList:''" @save-parameter-data="saveParameterData"></link-rtu-form>
 		</Modal>
 
 		<Spin fix v-show="showSpin">
@@ -100,7 +104,9 @@
 					parameterMinValue: '',
 					tips: '',
 					linkageParameterIndex: '',
-					rtuData: null
+					rtuData: null,
+					totalCount:0,
+					
 				},
 				parameterList: [],
 				linkRule: {
@@ -228,7 +234,26 @@
 								parameterMaxValue: rtuLinkage.parameterMaxValue.toString(),
 								delay: rtuLinkage.delay.toString(),
 								tips: rtuLinkage.tips,
-								rtuData: null
+								totalCount:rtuLinkage.totalCount
+								
+							}
+							if(rtuLinkage.linkageType == 2 && rtuLinkage.rtuData){
+								var list = rtuLinkage.rtuData.parameterDataList
+								var parameterDataList = []
+								for(var i = 0;i<list.length;i++){
+									parameterDataList.push({
+										parameterIndex:list[i].parameterIndex,
+										value:list[i].value
+									})
+									
+								}
+								this.linkForm.rtuData = {
+									rtuNumber: rtuLinkage.linkageRtuNumber,
+									orderType: rtuLinkage.linkageType,
+									parameterDataList: parameterDataList
+								}
+							}else{
+								this.linkForm.rtuData = null
 							}
 
 						} else {
@@ -243,27 +268,7 @@
 			handleSubmit(name) {
 				this.$refs[name].validate((valid) => {
 					if (valid) {
-						// this.showSpin = true
-						// alert(this.linkForm.linkageParameterId[0])
-						// alert(this.linkForm.linkageParameterId[1])
-						var list = this.rtuTypeList
-						// console.log(this.rtuTypeList)
-// 						for (var i = 0; i < list.length; i++) {
-// 							if (this.linkForm.linkageParameterId[0] == list[i].value) {
-// 
-// 								var list1 = list[i].children
-// 								for (var j = 0; j < list1.length; j++) {
-// 									console.log(list[i].children)
-// 									if (this.linkForm.linkageParameterId[1] == list1[j].value) {
-// 										this.linkForm.linkageParameterIndex = j
-// 										break
-// 									}
-// 								}
-// 								break
-// 							}
-// 						}
-						// alert(2)
-						// var rtuData = this.linkForm.rtuData?this.linkForm.rtuData:null
+						this.linkForm.totalCount = this.linkForm.totalCount?parseInt(this.linkForm.totalCount):0
 						var rtuLinkage = {
 							linkageName: this.linkForm.linkageName,
 							linkageType: this.linkForm.linkageType,
@@ -274,7 +279,8 @@
 							parameterMinValue: Number(this.linkForm.parameterMinValue),
 							parameterMaxValue: Number(this.linkForm.parameterMaxValue),
 							tips: this.linkForm.tips,
-							rtuData: this.linkForm.rtuData
+							rtuData: this.linkForm.rtuData,
+							totalCount:this.linkForm.totalCount
 							// linkageParameterIconCode:"icon_p",
 						}
 						// console.log(rtuLinkage)

@@ -276,6 +276,26 @@ export default [{
 				component: resolve => require(['@/view/page/strategy-management/timing-list/timing-list.vue'], resolve)
 				//component: () => import('@/view/intelligentgarden/setting/menuManagement/menuManagement.vue')
 			},
+			{
+					path: 'binding_link',
+					name: 'binding_link',
+					meta: {
+						icon: ' iconfont icon-add',
+						title: '绑定联动'
+					},
+					component: resolve => require(['@/view/page/strategy-management/binding-link/binding-link.vue'], resolve)
+					//component: () => import('@/view/intelligentgarden/setting/addMenu/addMenu.vue')
+				},
+			{
+				path: 'link_rtu',
+				name: 'link_rtu',
+				meta: {
+					icon: ' iconfont icon-menum',
+					title: '联动设备'
+				},
+				component: resolve => require(['@/view/page/strategy-management/link-rtu/link-rtu.vue'], resolve)
+				//component: () => import('@/view/intelligentgarden/setting/menuManagement/menuManagement.vue')
+			},
 		]
 	},
 	
