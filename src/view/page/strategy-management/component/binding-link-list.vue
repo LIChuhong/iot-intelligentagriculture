@@ -2,7 +2,7 @@
 	<div class="linkListStyle">
 		<div style="margin-bottom: 0.625rem;overflow: hidden;">
 			<span>已选择ID：</span>
-			<Button style="float: right;" size="samll" type="primary"  @click="changeOk">确定</Button>
+			<Button style="float: right;" type="primary"  @click="changeOk">确定</Button>
 		</div>
 		<div>
 			<div v-for="(item,i) in bindingLinkList" :key="i" style="background: #c5c8ce;padding: 0.3125rem;border-radius:5%;margin:0 0 0.3125rem 0.3125rem;display: inline-block;">{{item.id}}
@@ -36,6 +36,7 @@
 	
 	export default {
 		// name: 'link_list',
+		props:['linkRtuData'],
 		components:{
 			
 		},
@@ -118,6 +119,8 @@
 		},
 
 		mounted() {
+			// var list = this.linkRtuData
+			this.bindingLinkList = this.linkRtuData
 			this.getLinkDataList()
 		}
 	}

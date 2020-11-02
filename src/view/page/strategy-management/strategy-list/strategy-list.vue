@@ -9,15 +9,15 @@
 			<template slot-scope="{ row, index }" slot="action">
 
 				<div v-if="$store.state.app.iotInterFace == 0">
-					<Button icon="ios-create-outline" type="primary" size="small" style="margin-right: 15px" @click="editor(row)">编辑</Button>
+					<Button icon="ios-create-outline" type="primary" size="small" style="margin-right: 8px" @click="editor(row)">编辑</Button>
 					<Poptip :transfer="true" confirm title="你确定删除该策略吗?" @on-ok="del(row,index)">
-						<Button icon="md-trash" type="error" size="small" style="margin-right: 15px">删除</Button>
+						<Button icon="md-trash" type="error" size="small" style="margin-right: 8px">删除</Button>
 					</Poptip>
 				</div>
 				<div v-else>
 					<Button icon="ios-create-outline" type="primary" size="small" style="margin-right:0.5rem" @click="editor(row)"></Button>
 					<Poptip :transfer="true" confirm title="你确定删除该策略吗?" @on-ok="del(row,index)">
-						<Button icon="ios-trash" type="error" size="small" style="margin-right: 15px"></Button>
+						<Button icon="ios-trash" type="error" size="small" ></Button>
 					</Poptip>
 				</div>
 			</template>

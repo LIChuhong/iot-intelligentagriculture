@@ -207,6 +207,52 @@ export const getRtuTypeParameterList = (rtuTypeId) => {
   })
 }
 
+//绑定联动设备
+export const bindingRtuLinkage = (rtuLinkageIdList) => {
+	//console.log(vmOrg)
+  return axios.request({
+  	url: '/v1/bindingRtuLinkage',
+		data:rtuLinkageIdList,
+  	method: 'post'
+  })
+}
+
+//获取联动设备列表
+export const getLinkageRtuList = (searchKey,maxId,pageSize) => {
+  return axios.request({
+    url: '/v1/getLinkageRtuList',
+		params:{
+			'searchKey': searchKey,
+			'maxId': maxId,
+			'pageSize': pageSize
+		},
+    method: 'get'
+  })
+}
+//删除绑定联动设备
+export const unbindingRtuLinkage = (rtuNumber) => {
+	//console.log(vmOrg)
+	const data = new URLSearchParams()
+	data.append('rtuNumber', rtuNumber)
+  return axios.request({
+  	url: '/v1/unbindingRtuLinkage',
+		data,
+  	method: 'post'
+  })
+}
+
+//获取绑定联动设备详情
+export const getBindingRtuLinkage = (rtuNumber) => {
+  return axios.request({
+    url: '/v1/getBindingRtuLinkage',
+		params:{
+			'rtuNumber': rtuNumber
+		},
+    method: 'get'
+  })
+}
+
+
 
 
 

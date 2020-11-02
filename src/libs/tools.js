@@ -197,7 +197,7 @@ export const timestampToTimeMethod = (timestamp, timeType) => {
 	if (timeType == 'year') {
 		return M
 	} else if (timeType == 'month') {
-		return D
+		return M+'/'+D
 	} else if (timeType == 'hours') {
 		return h +':' + m
 	} else {

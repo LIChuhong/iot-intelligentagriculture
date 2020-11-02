@@ -21,7 +21,7 @@
 			},
 			lineData: {
 				type: Array,
-				default: funcution=>{
+				default: funcution => {
 					return []
 				}
 			},
@@ -69,7 +69,10 @@
 
 						} else if (this.titleName == '近一月日平均曲线') {
 							time = timestampToTimeMethod(val[i].dataTime, 'month')
+							console.log(time)
+
 						}
+						
 						this.dataList.push({
 							time: time,
 							value: value
@@ -165,11 +168,15 @@
 								color: '#fff',
 								fontSize: 10,
 								lineHeight: 0
-							}
+							},
+							interval:6
 						},
 						splitLine: {
 							show: false
 						},
+						// axisLabel:{
+						// 	interval:5
+						// }
 					}],
 					yAxis: [{
 						type: 'value',

@@ -9,6 +9,9 @@
 				<Input :maxlength="10" type="text" v-model="videoForm.deviceSerial" placeholder="请输入设备序列号">
 				</Input>
 			</FormItem>
+			<FormItem label="通道编号" prop="channelNo">
+				<Input :maxlength="10" type="number" v-model="videoForm.channelNo" placeholder="请输入通道编号"></Input>
+			</FormItem>
 			<FormItem label="设备类型" prop="videoType">
 				<RadioGroup v-model="videoForm.videoType">
 					<Radio :label="0"><span>枪机</span></Radio>
@@ -73,6 +76,7 @@
 					videoType: 0,
 					videoDesc: '',
 					brandTag: '',
+					channelNo:'',
 					brandAccountId: '',
 					videoDeviceInfo: {
 						deviceSerial: '',
@@ -104,6 +108,12 @@
 						message: '请选择设备类型',
 						trigger: 'change'
 					}],
+					channelNo: [{
+						required: true,
+						// type: 'number',
+						message: '通道编号不能为空',
+						trigger: 'blur'
+					}],
 				}
 			}
 		},
@@ -122,7 +132,8 @@
 								videoType:video.videoType,
 								videoDesc:video.videoDesc,
 								brandTag:video.brandTag,
-								videoDeviceInfo:JSON.parse(video.videoDeviceInfoJson)
+								channelNo:video.channelNo.toString(),
+								videoDeviceInfo:video.videoDeviceInfo
 							}
 						}else{
 							this.$Message.error(data.errorMessage)
@@ -141,6 +152,7 @@
 				if (this.videoForm.brandTag == 'YSY') {
 					this.videoForm.videoDeviceInfo.deviceSerial = this.videoForm.deviceSerial
 					this.videoForm.videoDeviceInfo.deviceName = this.videoForm.videoName
+					this.videoForm.videoDeviceInfo.channelNo = this.videoForm.channelNo
 				}
 				// console.log(row)
 				this.showBrand = false
@@ -159,6 +171,7 @@
 								alert("设备信息中的设备通道不能为空")
 								return
 							}
+							
 							this.videoForm.videoDeviceInfo.channelNo = parseInt(videoDeviceInfo.channelNo)
 							var video = {
 								videoName: this.videoForm.videoName,
@@ -167,7 +180,8 @@
 								videoDesc: this.videoForm.videoDesc,
 								brandTag: this.videoForm.brandTag,
 								brandAccountId: this.videoForm.brandAccountId,
-								videoDeviceInfoJson: JSON.stringify(this.videoForm.videoDeviceInfo)
+								videoDeviceInfoJson: JSON.stringify(this.videoForm.videoDeviceInfo),
+								channelNo:parseInt(this.videoForm.channelNo)
 							}
 							this.showSpin = true
 							if(this.videoId != null && this.videoId != ''){
