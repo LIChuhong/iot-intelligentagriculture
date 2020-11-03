@@ -29,46 +29,10 @@
 					<Option v-for="i in timeList" :value="i.id" :key="i.id">{{ i.label }}</Option>
 				</Select>
 			</FormItem>
-			<FormItem label="萤石appKey" prop="appKey">
-				<Input type="text" :maxlength="100" v-model="dataForm.appKey" placeholder="请输入萤石appKey"></Input>
+			<FormItem label="默认视频" prop="defalutVideoId">
+				<Input readonly v-model="dataForm.defalutVideoName" search enter-button="选择" placeholder="请选择默认视频" @on-search="showVideoList"></Input>
 			</FormItem>
-			<FormItem label="萤石appSecret" prop="appSecret">
-				<Input type="text" :maxlength="100" v-model="dataForm.appSecret" placeholder="请输入萤石appSecret"></Input>
-			</FormItem>
-			<FormItem v-for="(item, index) in dataForm.iaVideoList" :key="index" :label="'视频'+(index+1)" :prop="'iaVideoList.' + index">
-				<Row>
-					<Col span="22">
-					<div style="overflow: hidden;">
-						<p style="width:4.375rem;float: left;">设备名称：</p>
-						<Input style="width:70%;" v-model="item.deviceName" placeholder="请输入设备名称" /></Input>
-					</div>
-					<div style="overflow: hidden;">
-						<p style="width:4.375rem;float: left;text-align: right;">序列号：</p>
-						<Input style="width:70%;" v-model="item.deviceSerial" placeholder="请输入设备序列号" /></Input>
-					</div>
-					<div style="overflow: hidden;">
-						<p style="width:4.375rem;float: left;">设备通道：</p>
-						<Input type="number" style="width:70%;" v-model="item.channelNo" placeholder="请输入设备通道" /></Input>
-					</div>
-					<div style="overflow: hidden;margin: 0.3125rem 0;">
-						<p style="width:4.375rem;float: left;">高清地址：</p>
-						<Input style="width:70%;" v-model="item.highDefinitionUrl" placeholder="请输入高清地址" />
-					</div>
-					<div style="overflow: hidden;">
-						<p style="width:4.375rem;float: left;">流畅地址：</p>
-						<Input style="width:70%;" v-model="item.fluentUrl" placeholder="请输入流畅地址" />
-					</div>
-
-					</Col>
-					<Col span="2">
-					<Button size="small" v-show="index != 0" style="margin-top: 0.3125rem;" type="error" @click="handleRemove(index)"
-					 icon="ios-trash"></Button>
-					<Button size="small" v-show="index == dataForm.iaVideoList.length-1" type="primary" ghost @click="handleAddDataList"
-					 icon="ios-add"></Button>
-
-					</Col>
-				</Row>
-			</FormItem>
+		
 			<FormItem style="text-align: center;">
 				<Button @click="handleReset('dataForm')" style="margin-right: 8px">重置</Button>
 				<Button type="primary" @click="handleSubmit('dataForm')">
@@ -108,6 +72,10 @@
 				<Button type="primary" size="large" @click="belongOrgOk">确定</Button>
 			</div>
 		</Modal>
+		
+		<Modal title="选择默认视频" v-model="showVideo" footer-hide>
+			<video-list v-if="showVideo" @get-video-info="getVideoInfo"></video-list>
+		</Modal>
 		<Spin fix v-show="showSpin">
 			<Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
 			<div>加载中...</div>
@@ -119,6 +87,7 @@
 	import {
 		getMapList
 	} from '@/api/farm.js'
+	import VideoList from '@/view/components/video-list.vue'
 	import {
 		addIABigDataMap,
 		getIABigDataMap,
@@ -128,11 +97,12 @@
 	export default {
 		props: ['dataMapId'],
 		components: {
-			OrgTree
+			OrgTree,
+			VideoList
 		},
 		data() {
 			return {
-
+				showVideo:false,
 				showBelongOrg: false,
 				belongOrgTitle: '',
 				belongOrgInfo: '', //所属组织信息
@@ -162,13 +132,9 @@
 					mapId: '',
 					farmPathName: '',
 					centerPostion: '',
-					iaVideoList: [{
-						deviceName: '',
-						deviceSerial: '',
-						channelNo: '',
-						highDefinitionUrl: '',
-						fluentUrl: ''
-					}]
+					defalutVideoId:null,
+					defalutVideoName:'',
+				
 				},
 				dataRule: {
 					bigDataMapName: [{
@@ -191,6 +157,12 @@
 						required: true,
 						type: 'number',
 						message: '请选择用户所属组织',
+						trigger: 'change'
+					}],
+					defalutVideoId: [{
+						required: true,
+						type: 'number',
+						message: '请选择默认视频',
 						trigger: 'change'
 					}],
 
@@ -229,6 +201,15 @@
 			}
 		},
 		methods: {
+			getVideoInfo(row){
+				// console.log(row)
+				this.dataForm.defalutVideoId = row.id
+				this.dataForm.defalutVideoName = row.videoName
+				this.showVideo = false
+			},
+			showVideoList(){
+				this.showVideo = true
+			},
 			getDataMapInfo() {
 				if (this.dataMapId != '' && this.dataMapId != null) {
 					this.showSpin = true
@@ -246,18 +227,30 @@
 								iaVideoList: iaBigDataMap.iaVideoList,
 								updateDataInv: iaBigDataMap.updateDataInv,
 								farmType: iaBigDataMap.farmType,
-								appKey: iaBigDataMap.videoKey.appKey,
-								appSecret: iaBigDataMap.videoKey.appSecret,
+								// defalutVideoId:iaBigDataMap.defaultVideo.id,
+								// defalutVideoName:iaBigDataMap.defaultVideo.videoName,
+								// 
+								// appKey: iaBigDataMap.videoKey.appKey,
+								// appSecret: iaBigDataMap.videoKey.appSecret,
 								
+							}
+							if( iaBigDataMap.defaultVideo != null &&  iaBigDataMap.defaultVideo != ''){
+								var defaultVideo = iaBigDataMap.defaultVideo
+								this.dataForm.defalutVideoId = defaultVideo.id
+								this.dataForm.defalutVideoName = defaultVideo.videoName
+								// console.log(this.dataForm)
+							
+							}else{
+								this.dataForm.defalutVideoId = iaBigDataMap.defalutVideoId
 							}
 							if( iaBigDataMap.openFieldFarm != null &&  iaBigDataMap.openFieldFarm != ''){
 								var openFieldFarm = iaBigDataMap.openFieldFarm
 								this.dataForm.farmPathName = openFieldFarm.farmAddress
 								this.dataForm.centerPostion = openFieldFarm.centerPostion
-								console.log(this.dataForm)
+								// console.log(this.dataForm)
 							
 							}
-							console.log(this.dataForm)
+							// console.log(this.dataForm)
 							this.belongOrgName = iaBigDataMap.orgName
 
 						} else {
@@ -302,16 +295,7 @@
 					 console.log(rs)
 					this.markerName = rs.address + '-' + rs.surroundingPois[0].title;
 					this.markerPosition = e.point
-					//地址描述(string)=
-					// console.log(rs.address);    //这里打印可以看到里面的详细地址信息，可以根据需求选择想要的
-					// console.log(rs.addressComponents);//结构化的地址描述(object)
-					// console.log(rs.addressComponents.province); //省
-					// console.log(rs.addressComponents.city); //城市
-					// console.log(rs.addressComponents.district); //区县
-					// console.log(rs.addressComponents.street); //街道
-					// console.log(rs.addressComponents.streetNumber); //门牌号
-					// console.log(rs.surroundingPois); //附近的POI点(array)
-					// console.log(rs.business); //商圈字段，代表此点所属的商圈(string)
+				
 				});
 				// this.modalTitle =
 			},
@@ -357,11 +341,7 @@
 							mapId: parseInt(this.dataForm.mapId),
 							belongOrgId: parseInt(this.dataForm.belongOrgId),
 							updateDataInv: parseInt(this.dataForm.updateDataInv),
-							videoKey: {
-								appSecret: this.dataForm.appSecret,
-								appKey: this.dataForm.appKey,
-							},
-							iaVideoList: this.dataForm.iaVideoList,
+							defalutVideoId:parseInt(this.dataForm.defalutVideoId)
 
 
 						}

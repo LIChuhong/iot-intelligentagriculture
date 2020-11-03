@@ -230,16 +230,16 @@
 			},
 			getIaMapData(mapData) {
 				// console.log(1)
-				// console.log(mapData)
+				 console.log(mapData)
 				// console.log(this.$refs.ezuikt.offsetHeight)
 				// console.log(this.$refs.ezuikt.offsetWidth)
 				this.mapData = mapData
 				this.weatherIndex = 0
 				this.poltIndex = 0
 				this.getEtWideHigh()
-				this.iaVideoList = mapData.iaVideoList
+				// this.iaVideoList = mapData.iaVideoList
 
-				this.videoKey = mapData.videoKey
+				this.videoKey = mapData.defaultVideo
 				this.iaBigDataMapId = mapData.id
 				if (mapData.openFieldFarm.iaMassifMapList != [] && mapData.openFieldFarm.iaMassifMapList != null) {
 					var massifId = mapData.openFieldFarm.iaMassifMapList[0].id

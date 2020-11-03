@@ -83,7 +83,15 @@
 					const data = res.data
 					if(data.success ==1){
 						// console.log(data)
-						this.brandData = data.videoBrandAccountList
+						// this.brandData = data.videoBrandAccountList
+						this.brandData = data.videoBrandAccountList.map(item => {
+							// item.checkLoading = false
+							// item.switchLoading = false
+							if (this.maxId < item.id) {
+								this.maxId = item.id
+							}
+							return item
+						})
 					}else{
 						this.$Message.error(data.errorMessage)
 					}

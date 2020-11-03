@@ -8,11 +8,8 @@
 
 			<template slot-scope="{ row, index }" slot="action">
 
-				<Button icon="ios-create-outline" type="primary" size="small" style="margin-right: 8px" @click="editor(row)">编辑</Button>
-				<Poptip :transfer="true" confirm title="你确定删除该视频吗?" @on-ok="del(row,index)">
-					<Button icon="md-trash" type="error" size="small">删除</Button>
-				</Poptip>
-
+				<Button type="primary" size="small" @click="changeVideo(row)">选择</Button>
+			
 			</template>
 
 		</Table>
@@ -20,31 +17,29 @@
 			<Button type="primary" ghost style="float: right;" @click="nextPage">下一页</Button>
 			<Button type="primary" ghost style="float: right;margin-right: 0.625rem;" @click="prevPage">上一页</Button>
 		</div>
-		<Modal title="编辑视频" v-model="showVideoInfo" footer-hide>
-			<video-form :video-id="videoId" v-if="showVideoInfo">编辑</video-form>
-		</Modal>
+		
 	</div>
 </template>
 
 
 <script>
 	import {
-		videoColumns
+		video1Columns
 	} from '@/data/columns.js'
 	import {
-		getVideoList,delVideo
+		getVideoList
 	} from '@/api/video.js'
-	import VideoForm from '../component/video-form.vue'
+	// import VideoForm from '../component/video-form.vue'
 	export default {
 		name:'video_list',
 		components:{
-			VideoForm
+			// VideoForm
 		},
 		data() {
 			return {
 				videoId:null,
-				showVideoInfo:false,
-				videoColumns: videoColumns,
+				
+				videoColumns: video1Columns,
 				videoData: [],
 				tableLoading: false,
 				searchKey: '',
@@ -54,6 +49,9 @@
 			}
 		},
 		methods: {
+			changeVideo(row){
+				this.$emit('get-video-info',row)
+			},
 			searchVideo(val) {
 				this.searchKey = val
 				this.maxId = 0
@@ -80,27 +78,7 @@
 				}
 			
 			},
-			editor(row){
-				this.videoId = row.id
-				this.showVideoInfo = true
-			},
-			del(row, index) {
-				this.tableLoading = true
-				delVideo(row.id).then(res => {
-					const data = res.data
-					this.tableLoading = false
-					if (data.success == 1) {
-						this.videoData.splice(index, 1);
-						this.$Message.success('删除成功')
-					} else {
-						this.$Message.error(data.errorMessage)
-					}
-				
-				}).catch(error => {
-					this.tableLoading = false
-					alert(error)
-				})
-			},
+			
 			getVideoDataList() {
 				this.tableLoading = true
 				getVideoList(this.searchKey, this.maxId, this.pageSize).then(res => {

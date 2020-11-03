@@ -38,11 +38,13 @@
 			},
 			videoKey(value) {
 				// console.log(value)
-				if (value.accessToken != null && value.accessToken != '') {
+				if (value.videoBrandAccount != null && value.videoBrandAccount != '') {
+					var videoBrandAccount = value.videoBrandAccount
+					var videoDeviceInfo = value.videoDeviceInfo
 					if (this.player == '') {
-						this.showPlayer(value.accessToken, this.iaVideoList[0].highDefinitionUrl)
+						this.showPlayer(videoBrandAccount.accessToken, videoDeviceInfo.highDefinitionUrl)
 					} else {
-						this.showPlayer1(value.accessToken, this.iaVideoList[0].highDefinitionUrl)
+						this.showPlayer1(videoBrandAccount.accessToken, videoDeviceInfo.highDefinitionUrl)
 					}
 					// this.showPlayer1(value.accessToken, this.iaVideoList[0].highDefinitionUrl)
 				}
@@ -71,7 +73,7 @@
 						width: that.etWideHigh.w,
 						height: that.etWideHigh.h
 					});
-				 console.log(this.player)
+				 // console.log(this.player)
 				})
 
 			}

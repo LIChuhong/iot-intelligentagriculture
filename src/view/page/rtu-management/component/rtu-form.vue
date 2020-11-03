@@ -37,8 +37,15 @@
 			<FormItem v-show="showlora" label="lora信道" prop="loraChannel">
 				<Input type="number" v-model="rtuForm.loraChannel" placeholder="请输入设备lora信道"></Input>
 			</FormItem>
+			<FormItem v-show="showlora" label="串口节点地址" prop="serialPortNodeAddress">
+				<Input type="number" v-model="rtuForm.serialPortNodeAddress" placeholder="请输入设备串口节点地址"></Input>
+			</FormItem>
+			
 			<FormItem label="所属组织" prop="belongOrgId">
 				<Input readonly v-model="belongOrgName" search enter-button="选择" placeholder="请选择所属组织" @on-search="showBelongOrgList"></Input>
+			</FormItem>
+			<FormItem label="关联视频" prop="videoId">
+				<Input readonly v-model="rtuForm.videoName" search enter-button="选择" placeholder="请选择关联视频" @on-search="showVideoList"></Input>
 			</FormItem>
 			<!-- <FormItem label="设备描述" prop="rtuDesc">
 				<Input maxlength="500" v-model="rtuForm.rtuDesc" type="textarea" :rows="5" placeholder="请输入设备描述"></Input>
@@ -68,6 +75,9 @@
 			<Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
 			<div>Loading</div>
 		</Spin> -->
+		<Modal title="选择关联视频" v-model="showVideo" footer-hide>
+			<video-list v-if="showVideo" @get-video-info="getVideoInfo"></video-list>
+		</Modal>
 	</div>
 </template>
 
@@ -81,14 +91,17 @@
 	import {
 		getNowFormatDate
 	} from '@/libs/tools'
+	import VideoList from '@/view/components/video-list.vue'
 	import OrgTree from '@/view/components/org-tree.vue'
 	export default {
 		props: ['rtuNumber'],
 		components: {
-			OrgTree
+			OrgTree,
+			VideoList
 		},
 		data() {
 			return {
+				showVideo:false,
 				disEditor: false,
 				showBelongOrg: false,
 				belongOrgTitle: '',
@@ -108,7 +121,10 @@
 					gwRtuNumber: '',
 					loraAddress: '',
 					loraChannel: '',
+					serialPortNodeAddress:'',
 					rtuDesc: '',
+					videoId:'',
+					videoName:''
 				},
 				rtuRule: {
 					rtuNumber: [{
@@ -169,6 +185,12 @@
 						message: 'lora信道不能为空',
 						trigger: 'blur'
 					}],
+					serialPortNodeAddress: [{
+						required: true,
+						// type:'number',
+						message: '串口节点地址不能为空',
+						trigger: 'blur'
+					}],
 				},
 
 				deviceTypeList: [],
@@ -176,6 +198,15 @@
 			}
 		},
 		methods: {
+			getVideoInfo(row){
+				// console.log(row)
+				this.rtuForm.videoId = row.id
+				this.rtuForm.videoName = row.videoName
+				this.showVideo = false
+			},
+			showVideoList(){
+				this.showVideo = true
+			},
 			showBelongOrgList() { //显示所属组织列表
 				this.belongOrgTitle = this.belongOrgName
 				this.showBelongOrg = true
@@ -199,10 +230,10 @@
 						this.rtuForm.rtuTypeTag = rtuTypeList[i].rtuTypeTag
 						if (rtuTypeList[i].rtuCharacteristic == 2) {
 							this.showlora = true
-							this.rtuForm.gwRtuNumber = this.rtuForm.loraAddress = this.rtuForm.loraChannel = ''
+							this.rtuForm.gwRtuNumber = this.rtuForm.loraAddress = this.rtuForm.loraChannel = this.rtuForm.serialPortNodeAddress = ''
 						} else {
 							this.showlora = false
-							this.rtuForm.gwRtuNumber = this.rtuForm.loraAddress = this.rtuForm.loraChannel = '0'
+							this.rtuForm.gwRtuNumber = this.rtuForm.loraAddress = this.rtuForm.loraChannel = this.rtuForm.serialPortNodeAddress ='0'
 						}
 						break;
 					}
@@ -233,10 +264,16 @@
 						var loraAddress = ''
 						var loraChannel = ''
 						var gwRtuNumber = ''
+						var serialPortNodeAddress = ''
 						if (this.showlora) {
 							loraAddress = parseInt(this.rtuForm.loraAddress)
 							loraChannel = parseInt(this.rtuForm.loraChannel)
 							gwRtuNumber = parseInt(this.rtuForm.gwRtuNumber)
+							serialPortNodeAddress = parseInt(this.rtuForm.serialPortNodeAddress)
+						}
+						var videoId = ''
+						if(this.rtuForm.videoId != ''){
+							videoId = parseInt(this.rtuForm.videoId)
 						}
 						const rtuForm = {
 							'rtuNumber': parseInt(this.rtuForm.rtuNumber),
@@ -248,7 +285,10 @@
 							'loraAddress': loraAddress,
 							'loraChannel': loraChannel,
 							'gwRtuNumber': gwRtuNumber,
-							'rtuDesc':this.rtuForm.rtuDesc
+							'serialPortNodeAddress': serialPortNodeAddress,
+							'rtuDesc':this.rtuForm.rtuDesc,
+							'videoId': videoId,
+							
 						}
 						// this.$Message.error('添加成功')
 						// console.log(rtuForm)
@@ -318,8 +358,13 @@
 									loraAddress: iaRtu.loraAddress.toString(),
 									loraChannel: iaRtu.loraChannel.toString(),
 									gwRtuNumber: iaRtu.gwRtuNumber.toString(),
+									serialPortNodeAddress: iaRtu.serialPortNodeAddress.toString(),
+									videoId:iaRtu.videoId,
 									rtuDesc:iaRtu.rtuDesc
 									
+								}
+								if(iaRtu.videoName){
+									this.rtuForm.videoName = iaRtu.videoName
 								}
 								this.belongOrgName = iaRtu.orgName
 								const rtuTypeList = this.rtuTypeList
