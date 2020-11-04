@@ -5,7 +5,8 @@
 </template>
 
 <script>
-	import EZUIKit from "ezuikit-js";
+	import EZUIKit from "ezuikit-js"
+	import {getVideoByDeviceSerialChannelNo} from '@/api/video.js'
 
 	export default {
 		name: "HelloWorld",
@@ -19,22 +20,16 @@
 			etWideHigh() {
 				if (this.player == '') {
 					
-				}
-				else {
-					console.log(this.etWideHigh)
+				}else {
+					// console.log(this.etWideHigh)
 					this.player.reSize(this.etWideHigh.w,this.etWideHigh.h)
 				}
 				// alert(1)
 			},
-			getVideoInfo(value) {
+			getVideoInfo(val) {
 				// console.log(value)
-				var iaVideoList = this.iaVideoList
-				for (var i = 0; i < iaVideoList.length; i++) {
-					if (value.deviceSerial == iaVideoList[i].deviceSerial && value.channelNo == iaVideoList[i].channelNo) {
-						this.showPlayer1(this.videoKey.accessToken, iaVideoList[i].highDefinitionUrl)
-						break;
-					}
-				}
+				this.getNewVideoInfo(val.deviceSerial,val.channelNo)
+				
 			},
 			videoKey(value) {
 				// console.log(value)
@@ -51,6 +46,23 @@
 			}
 		},
 		methods: {
+			getNewVideoInfo(deviceSerial,channelNo){
+				getVideoByDeviceSerialChannelNo(deviceSerial,channelNo).then(res=>{
+					const data = res.data
+					if(data.success == 1){
+						console.log(data)
+						var video = data.video
+						var videoBrandAccount = video.videoBrandAccount
+						var videoDeviceInfo = video.videoDeviceInfo
+						this.showPlayer1(videoBrandAccount.accessToken, videoDeviceInfo.highDefinitionUrl)
+					}else{
+						this.$Message.error(data.errorMessage)
+					}
+				}).catch(error=>{
+					alert(error)
+				})
+				
+			},
 			showPlayer1(accessToken, iaVideoUrl) {
 				this.$nextTick(() => {
 					this.player.play({

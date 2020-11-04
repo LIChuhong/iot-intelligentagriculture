@@ -69,7 +69,7 @@
 
 						} else if (this.titleName == '近一月日平均曲线') {
 							time = timestampToTimeMethod(val[i].dataTime, 'month')
-							console.log(time)
+							// console.log(time)
 
 						}
 						

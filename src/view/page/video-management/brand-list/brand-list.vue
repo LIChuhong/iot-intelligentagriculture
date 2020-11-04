@@ -58,7 +58,7 @@
 				this.showBrandInfo = true
 			},
 			nextPage() {
-				if (this.maxId == this.prevId[this.prevId.length - 1]) {
+				if (this.brandData.length < this.pageSize) {
 					this.$Message.warning('这是最后一页');
 				} else {
 					this.prevId.push(this.maxId)

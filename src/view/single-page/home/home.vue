@@ -134,13 +134,13 @@
 			</Tooltip>
 		</div>
 		<Modal title="视频列表" v-model="showIaVideoList" footer-hide width="60" :transfer="false">
-			<div style="display: flex;flex-wrap:wrap;justify-content:space-between">
-				<div style="width: 30%;height: 150px;background: #00BFFF;margin-bottom: 0.625rem;text-align: center;" v-for="(item,index) in iaVideoImgList"
-				 :key="'vi'+ index">
+			<div style="display: flex;flex-wrap:wrap;justify-content:space-between;background:#e8eaec;">
+				<div style="width: 31%;margin: 1%;text-align: center;" v-for="(item,index) in iaVideoImgList" :key="'vi'+ index">
 					<!-- {{iaVideoImgList[0]}} -->
-					<p>视频{{index+1}}</p>
-					<img :src="item.picUrl" height="85%" @click="changeIaVideo(item)" />
-
+					<Card shadow>
+						<p style="color: #00BFFF;">视频{{index+1}}</p>
+						<img :src="item.picUrl" width="100%" @click="changeIaVideo(item)" />
+					</Card>
 				</div>
 			</div>
 		</Modal>
@@ -213,8 +213,10 @@
 				this.getIaMapData(this.mapData)
 			},
 			changeIaVideo(item) {
+				this.getEtWideHigh()
 				this.getVideoInfo = item
 				// console.log(this.getVideoInfo)
+				
 				this.showIaVideoList = false
 			},
 			getEtWideHigh() {
@@ -225,12 +227,12 @@
 					w: w,
 					h: h
 				}
-				
+
 				// alert(JSON.stringify(this.etWideHigh))
 			},
 			getIaMapData(mapData) {
 				// console.log(1)
-				 console.log(mapData)
+				// console.log(mapData)
 				// console.log(this.$refs.ezuikt.offsetHeight)
 				// console.log(this.$refs.ezuikt.offsetWidth)
 				this.mapData = mapData
@@ -466,7 +468,7 @@
 					} else if (list[i].parameterId == 18) {
 						list[i].icon = ' iconfont icon-ic_trsf'
 						list[i].iconColor = '#4ad595'
-					}else{
+					} else {
 						list[i].icon = ''
 						list[i].iconColor = '#fff'
 					}
@@ -669,12 +671,11 @@
 		// left: 30%;
 		// line-height: 100%
 		display: flex;
-		justify-content:center;
-		align-items:center
-		
-		// align-content: center
+		justify-content: center;
+		align-items: center // align-content: center
 	}
-	.titleText h2{
+
+	.titleText h2 {
 		font-size: 1.5625rem
 	}
 

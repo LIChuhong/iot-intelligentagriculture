@@ -87,11 +87,12 @@ export const getVideo = (id) => {
 
 
 //通过设备序列号获取视频设备信息
-export const getVideoByDeviceSerial = (deviceSerial) => {
+export const getVideoByDeviceSerialChannelNo = (deviceSerial,channelNo) => {
 	return axios.request({
-		url: '/v1/getVideoByDeviceSerial',
+		url: '/v1/getVideoByDeviceSerialChannelNo',
 		params: {
 			'deviceSerial': deviceSerial,
+			'channelNo': channelNo
 		},
 		method: 'get'
 	})
