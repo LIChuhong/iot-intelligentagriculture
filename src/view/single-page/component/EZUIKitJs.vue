@@ -27,8 +27,12 @@
 				// alert(1)
 			},
 			getVideoInfo(val) {
-				// console.log(value)
-				this.getNewVideoInfo(val.deviceSerial,val.channelNo)
+				// console.log(1)
+				//  console.log(val)
+				 var videoBrandAccount = val.videoBrandAccount
+				 var videoDeviceInfo = val.videoDeviceInfo
+				 this.showPlayer1(videoBrandAccount.accessToken, videoDeviceInfo.highDefinitionUrl)
+				// this.getNewVideoInfo(val.deviceSerial,val.channelNo)
 				
 			},
 			videoKey(value) {
@@ -50,7 +54,7 @@
 				getVideoByDeviceSerialChannelNo(deviceSerial,channelNo).then(res=>{
 					const data = res.data
 					if(data.success == 1){
-						console.log(data)
+						// console.log(data)
 						var video = data.video
 						var videoBrandAccount = video.videoBrandAccount
 						var videoDeviceInfo = video.videoDeviceInfo
@@ -92,6 +96,7 @@
 		},
 		mounted() {
 			// this.showPlayer('', '')
+			this.showPlayer(this.videoKey.videoBrandAccount.accessToken, this.videoKey.videoDeviceInfo.highDefinitionUrl)
 		},
 		destroyed() {}
 	};

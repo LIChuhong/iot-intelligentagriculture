@@ -22,7 +22,7 @@
 				<Input readonly v-model="videoForm.brandTag" search enter-button="选择" placeholder="请选择所属品牌标识" @on-search="showBrandList"></Input>
 
 			</FormItem>
-			<FormItem v-show="videoForm.brandTag == 'YSY'" label="设备信息" prop="videoDeviceInfo">
+			<FormItem v-show="videoForm.brandTag == 'YSY' || videoForm.brandTag == 'LCY'" label="设备信息" prop="videoDeviceInfo">
 				<Row>
 					<Col span="6"><span>设备序列号：</span></Col>
 					<Col span="18"><Input :maxlength="100" type="text" v-model="videoForm.videoDeviceInfo.deviceSerial" placeholder="请输入设备序列号"></Input></Col>
@@ -125,16 +125,28 @@
 						if(data.success == 1){
 							// console.log(data)
 							const video = data.video
-							this.videoForm = {
-								deviceSerial:video.deviceSerial,
-								videoName:video.videoName,
-								brandAccountId:video.brandAccountId,
-								videoType:video.videoType,
-								videoDesc:video.videoDesc,
-								brandTag:video.brandTag,
-								channelNo:video.channelNo.toString(),
-								videoDeviceInfo:video.videoDeviceInfo
-							}
+							this.videoForm.deviceSerial = video.deviceSerial
+							this.videoForm.videoName = video.videoName
+							this.videoForm.brandAccountId = video.brandAccountId
+							this.videoForm.videoType = video.videoType
+							this.videoForm.videoDesc = video.videoDesc
+							this.videoForm.brandTag = video.brandTag
+							this.videoForm.channelNo = video.channelNo.toString()
+							this.videoForm.videoDeviceInfo = video.videoDeviceInfo
+							
+							
+							// = {
+							// 	deviceSerial:video.deviceSerial,
+							// 	videoName:video.videoName,
+							// 	brandAccountId:video.brandAccountId,
+							// 	videoType:video.videoType,
+							// 	videoDesc:video.videoDesc,
+							// 	brandTag:video.brandTag,
+							// 	channelNo:video.channelNo.toString(),
+							// 	videoDeviceInfo:video.videoDeviceInfo
+							// }
+							
+							// console.log(this.videoForm)
 						}else{
 							this.$Message.error(data.errorMessage)
 						}
@@ -149,7 +161,7 @@
 			getBrandInfo(row) {
 				this.videoForm.brandTag = row.brandTag
 				this.videoForm.brandAccountId = row.id
-				if (this.videoForm.brandTag == 'YSY') {
+				if (this.videoForm.brandTag == 'YSY' || this.videoForm.brandTag == 'LCY') {
 					this.videoForm.videoDeviceInfo.deviceSerial = this.videoForm.deviceSerial
 					this.videoForm.videoDeviceInfo.deviceName = this.videoForm.videoName
 					this.videoForm.videoDeviceInfo.channelNo = this.videoForm.channelNo
@@ -161,7 +173,7 @@
 				this.$refs[name].validate((valid) => {
 					if (valid) {
 						var videoDeviceInfo = this.videoForm.videoDeviceInfo
-						if (this.videoForm.brandTag == 'YSY') {
+						if (this.videoForm.brandTag == 'YSY' || this.videoForm.brandTag == 'LCY') {
 
 							if (videoDeviceInfo.deviceSerial == '') {
 								alert("设备信息中的序列号不能为空")

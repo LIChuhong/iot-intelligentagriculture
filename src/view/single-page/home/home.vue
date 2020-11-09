@@ -37,7 +37,8 @@
 				<img src="../../../assets/images/map/watch.png" />
 			</div>
 			<div ref="ezuikt" class="titleImg" style="overflow: hidden;display: flex;justify-content:center;top:17%;height: 83%;">
-				<EZUIKitJs :et-wide-high="etWideHigh" :video-key="videoKey" :ia-video-list="iaVideoList" :get-video-info="getVideoInfo"></EZUIKitJs>
+				<EZUIKitJs v-if="brandTag == 'YSY'" :et-wide-high="etWideHigh" :video-key="videoKey" :ia-video-list="iaVideoList" :get-video-info="getVideoInfo"></EZUIKitJs>
+				<vi-player v-if="brandTag == 'LCY'" :et-wide-high="etWideHigh" :video-key="videoKey" :get-video-info="getVideoInfo"></vi-player>
 			</div>
 		</div>
 		<div class="publicStyle maxh lDistance bBottom">
@@ -156,12 +157,14 @@
 	import MapBaidu from '../component/map-baidu.vue'
 	import MapTemper from '../component/map-temper.vue'
 	import EZUIKitJs from '../component/EZUIKitJs.vue'
+	import ViPlayer from '../component/vi-player.vue'
 	import {
 		getIAVideoList,
 		getMassifSoilData,
 		getFarmWeatherData,
 		getNearlyDayImportParaDataList
 	} from '@/api/plot.js'
+	import {getVideoByDeviceSerialChannelNo} from '@/api/video.js'
 
 	export default {
 		components: {
@@ -169,7 +172,8 @@
 			MapLine,
 			MapBaidu,
 			MapTemper,
-			EZUIKitJs
+			EZUIKitJs,
+			ViPlayer
 		},
 		data() {
 			return {
@@ -179,6 +183,7 @@
 				},
 				mapBg,
 				// screenWidth:null
+				brandTag:'',
 				showSpin: false,
 				showSpin1: false,
 				weatherIndex: 0,
@@ -200,6 +205,7 @@
 			}
 		},
 		methods: {
+			
 			getPlotData(item) {
 				// console.log(item)
 				this.getMassifSoilDataMethod(item.iaMassifId)
@@ -213,11 +219,28 @@
 				this.getIaMapData(this.mapData)
 			},
 			changeIaVideo(item) {
-				this.getEtWideHigh()
-				this.getVideoInfo = item
+				getVideoByDeviceSerialChannelNo(item.deviceSerial,item.channelNo).then(res=>{
+					const data = res.data
+					this.showIaVideoList = false
+					if(data.success == 1){
+						// console.log(data)
+						var video = data.video
+						this.brandTag = video.brandTag
+						this.getEtWideHigh()
+						this.getVideoInfo = video
+						
+					}else{
+						this.$Message.error(data.errorMessage)
+					}
+				}).catch(error=>{
+					this.showIaVideoList = false
+					alert(error)
+				})
+				
+				
 				// console.log(this.getVideoInfo)
 				
-				this.showIaVideoList = false
+				
 			},
 			getEtWideHigh() {
 				var w = this.$refs.ezuikt.offsetWidth
@@ -235,12 +258,12 @@
 				// console.log(mapData)
 				// console.log(this.$refs.ezuikt.offsetHeight)
 				// console.log(this.$refs.ezuikt.offsetWidth)
+				this.brandTag = mapData.defaultVideo.brandTag
 				this.mapData = mapData
 				this.weatherIndex = 0
 				this.poltIndex = 0
+				// console.log(this.brandTag)
 				this.getEtWideHigh()
-				// this.iaVideoList = mapData.iaVideoList
-
 				this.videoKey = mapData.defaultVideo
 				this.iaBigDataMapId = mapData.id
 				if (mapData.openFieldFarm.iaMassifMapList != [] && mapData.openFieldFarm.iaMassifMapList != null) {
@@ -315,7 +338,7 @@
 					const data = res.data
 					this.showSpin1 = false
 					if (data.success == 1) {
-						console.log(data)
+						// console.log(data)
 						if (data.rtuData != '' && data.rtuData != null) {
 							const rtuData = data.rtuData
 							// console.log(rtuData)
@@ -371,7 +394,7 @@
 					// console.log(res)
 					const data = res.data
 					if (data.success == 1) {
-						this.iaVideoImgList = data.iaVideoList
+						this.iaVideoImgList = data.externalVideoList
 					} else {
 						this.$Message.error(data.errorMessage)
 					}

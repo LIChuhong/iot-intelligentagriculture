@@ -8,7 +8,9 @@ import iView from 'view-design'
 import i18n from '@/locale'
 import config from '@/config'
 import importDirective from '@/directive'
-import { directive as clickOutside } from 'v-click-outside-x'
+import {
+	directive as clickOutside
+} from 'v-click-outside-x'
 import installPlugin from '@/plugin'
 import './index.less'
 import '@/assets/icons/iconfont.css'
@@ -20,16 +22,18 @@ import BaiduMap from 'vue-baidu-map'
 // 实际打包时应该不引入mock
 /* eslint-disable */
 // if (process.env.NODE_ENV !== 'production') require('@/mock')
-
-
+import VideoPlayer from 'vue-video-player'
+require('vue-video-player/node_modules/video.js/dist/video-js.css')
+require('vue-video-player/src/custom-theme.css')
+Vue.use(VideoPlayer)
 Vue.use(iView, {
-  i18n: (key, value) => i18n.t(key, value)
+	i18n: (key, value) => i18n.t(key, value)
 })
 Vue.use(TreeTable)
 Vue.use(VOrgTree)
 Vue.use(BaiduMap, {
-  // ak 是在百度地图开发者平台申请的密钥 详见 http://lbsyun.baidu.com/apiconsole/key */
-  ak: '8hDACtVNXlGIDb5V5cve9Vndc5KEsReB'
+	// ak 是在百度地图开发者平台申请的密钥 详见 http://lbsyun.baidu.com/apiconsole/key */
+	ak: '8hDACtVNXlGIDb5V5cve9Vndc5KEsReB'
 })
 /**
  * @description 注册admin内置插件
@@ -51,9 +55,9 @@ Vue.directive('clickOutside', clickOutside)
 
 /* eslint-disable no-new */
 new Vue({
-  el: '#app',
-  router,
-  i18n,
-  store,
-  render: h => h(App)
+	el: '#app',
+	router,
+	i18n,
+	store,
+	render: h => h(App)
 })

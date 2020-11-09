@@ -26,6 +26,7 @@
 					const data =res.data
 					if(data.success == 1){
 						const org = data.org
+						org.expand = true
 						this.belongOrgList.push(org)
 					}else{
 						this.$Message.error(data.Message);
@@ -39,7 +40,9 @@
 					const data =res.data
 					if(data.success == 1){
 						const org = data.org
+						org.expand = true
 						this.belongOrgList.push(org)
+						console.log(this.belongOrgList)
 					}else{
 						this.$Message.error(data.Message);
 					}
