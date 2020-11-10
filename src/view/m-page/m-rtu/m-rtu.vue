@@ -38,6 +38,7 @@
 			<iasf-info v-if="rtuTypeTag == 'IA_SF'" :rtu-number="rtuNumber"></iasf-info>
 			<iaw-info v-if="rtuTypeTag == 'IA_W'" :rtu-number="rtuNumber"></iaw-info>
 			<iat-info v-if="rtuTypeTag == 'IA_T'" :rtu-number="rtuNumber"></iat-info>
+			<default-rtu-info v-if="rtuTypeTag == 'default_rtu'" :rtu-number="rtuNumber"></default-rtu-info>
 		</Modal>
 
 	</div>
@@ -55,6 +56,7 @@
 	import IasfInfo from './component/iasf-info.vue'
 	import IawInfo from './component/iaw-info.vue'
 	import IatInfo from './component/iat-info.vue'
+	import DefaultRtuInfo from './component/default-rtu-info.vue'
 	// import RtuForm from '../component/rtu-form.vue'
 	// import CopyRtu from '../component/copy-rtu.vue'
 	export default {
@@ -63,7 +65,9 @@
 			IarInfo,
 			IasfInfo,
 			IawInfo,
-			IatInfo
+			IatInfo,
+			DefaultRtuInfo
+			
 		},
 		data() {
 			return {
@@ -126,6 +130,8 @@
 					this.rtuTypeTag = 'IA_W'
 				} else if (row.rtuTypeTag == 'IA_T_G' || row.rtuTypeTag == 'IA_T_N') {
 					this.rtuTypeTag = 'IA_T'
+				}else{
+					this.rtuTypeTag = 'default_rtu'
 				}
 				this.rtuModalTitle = row.rtuNumber + '-' + row.rtuTypeName
 				this.rtuNumber = row.rtuNumber
