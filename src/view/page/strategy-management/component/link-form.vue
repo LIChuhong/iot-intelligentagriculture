@@ -10,6 +10,7 @@
 					<Radio :label="0"><span>执行联动</span></Radio>
 					<Radio :label="1"><span>反馈联动</span></Radio>
 					<Radio :label="2"><span>监测联动</span></Radio>
+					<Radio :label="3"><span>控制联动</span></Radio>
 				</RadioGroup>
 			</FormItem>
 
@@ -40,7 +41,7 @@
 				</Input>
 			</FormItem>
 			<FormItem label="联动设备编号" prop="linkageRtuNumber">
-				<Input type="number" v-model="linkForm.linkageRtuNumber" placeholder="请输入联动设备编号" :search="linkForm.linkageType == 2"
+				<Input type="number" v-model="linkForm.linkageRtuNumber" placeholder="请输入联动设备编号" :search="linkForm.linkageType == 2 || linkForm.linkageType == 3"
 				 enter-button="设置" @on-search="getLinkageParamList">
 				</Input>
 			</FormItem>
@@ -237,7 +238,7 @@
 								totalCount:rtuLinkage.totalCount
 								
 							}
-							if(rtuLinkage.linkageType == 2 && rtuLinkage.rtuData){
+							if(rtuLinkage.linkageType == 2 || rtuLinkage.linkageType == 3 && rtuLinkage.rtuData){
 								var list = rtuLinkage.rtuData.parameterDataList
 								var parameterDataList = []
 								for(var i = 0;i<list.length;i++){

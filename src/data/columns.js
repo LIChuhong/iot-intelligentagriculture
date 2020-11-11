@@ -349,6 +349,12 @@ export const linkColumns = [{ //联动列表
 		// width: 100
 	},
 	{
+		title: '联动设备类型',
+		key: 'rtuTypeName',
+		align: 'center',
+		// width: 100
+	},
+	{
 		title: '联动参数',
 		key: 'parameterName',
 		align: 'center',

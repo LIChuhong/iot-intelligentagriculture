@@ -133,7 +133,13 @@
 				this.$refs[name].validate((valid) => {
 					if (valid) {
 						//this.$Message.success('Success!');
-						const videoBrandAccount = this.brandForm
+						const videoBrandAccount ={
+							brandName:this.brandForm.brandName,
+							brandTag:this.brandForm.brandTag,
+							appKey:this.brandForm.appKey.trim(),
+							secret:this.brandForm.secret.trim(),
+							belongOrgId:this.brandForm.belongOrgId,
+							}
 						this.showSpin = true
 						if(this.brandId != null && this.brandId != ''){
 							videoBrandAccount.id = this.brandId

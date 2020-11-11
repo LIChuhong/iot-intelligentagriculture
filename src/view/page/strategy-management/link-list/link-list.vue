@@ -9,6 +9,7 @@
 				<span v-show="row.linkageType == 0">执行联动</span>
 				<span v-show="row.linkageType == 1">反馈联动</span>
 				<span v-show="row.linkageType == 2">监测联动</span>
+				<span v-show="row.linkageType == 3">控制联动</span>
 
 			</template>
 

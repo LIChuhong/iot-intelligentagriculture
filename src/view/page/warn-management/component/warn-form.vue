@@ -4,6 +4,13 @@
 			<FormItem label="告警名称" prop="warnName">
 				<Input v-model="warnForm.warnName" placeholder="请输入告警名称" :maxlength="50"></Input>
 			</FormItem>
+			<FormItem label="告警等级" prop="warnLevel">
+				<RadioGroup v-model="warnForm.warnLevel">
+					<Radio :label="0"><span>低</span></Radio>
+					<Radio :label="1"><span>中</span></Radio>
+					<Radio :label="2"><span>高</span></Radio>
+				</RadioGroup>
+			</FormItem>
 			<FormItem label="告警上限" prop="warnMaxValue">
 				<Input type="number" v-model="warnForm.warnMaxValue" placeholder="请输入告警上限" :maxlength="100"></Input>
 			</FormItem>
@@ -21,7 +28,7 @@
 		</Form>
 		<Spin fix v-show="showSpin">
 			<Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
-			<div>更新中...</div>
+			<div>加载中...</div>
 		</Spin>
 	</div>
 </template>
@@ -47,6 +54,7 @@
 					warnName: '',
 					warnMaxValue: null,
 					warnMinValue:null,
+					warnLevel:0
 					
 				},
 				warnRule: {
@@ -67,6 +75,12 @@
 						message: '告警下限不能为空',
 						trigger: 'blur'
 					}],
+					warnLevel: [{
+						required: true,
+						 type:'number',
+						message: '请选择告警等级',
+						trigger: 'change'
+					}],
 				},
 			}
 		},
@@ -78,6 +92,7 @@
 						warnName:this.warnInfo.warnName,
 						warnMinValue:String(this.warnInfo.warnMinValue),
 						warnMaxValue:String(this.warnInfo.warnMaxValue),
+						warnLevel:this.warnInfo.warnLevel
 					}
 				}
 			},
