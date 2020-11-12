@@ -135,11 +135,11 @@
 			</Tooltip>
 		</div>
 		<Modal title="视频列表" v-model="showIaVideoList" footer-hide width="60" :transfer="false">
-			<div style="display: flex;flex-wrap:wrap;justify-content:space-between;background:#e8eaec;">
-				<div style="width: 31%;margin: 1%;text-align: center;" v-for="(item,index) in iaVideoImgList" :key="'vi'+ index">
+			<div style="display: flex;flex-wrap:wrap;background:#e8eaec;">
+				<div style="width: 31%;margin: 1%;text-align: center;" v-for="(item,index) in iaVideoImgList" :key="'vi'+ index" :title="item.channelName">
 					<!-- {{iaVideoImgList[0]}} -->
 					<Card shadow>
-						<p style="color: #00BFFF;">视频{{index+1}}</p>
+						<p style="color: #00BFFF;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;">{{item.channelName}}</p>
 						<img :src="item.picUrl" width="100%" @click="changeIaVideo(item)" />
 					</Card>
 				</div>

@@ -30,9 +30,10 @@
 
 							<!-- <router-view /> -->
 							<keep-alive>
-								<router-view v-if="$route.meta.keepAlive"></router-view>
+								<!-- <router-view v-if="$route.meta.keepAlive"></router-view> -->
+								<router-view></router-view>
 							</keep-alive>
-							<router-view v-if="!$route.meta.keepAlive"></router-view>
+							<!-- <router-view v-if="!$route.meta.keepAlive"></router-view> -->
 							<ABackTop :height="100" :bottom="80" :right="50" container=".content-wrapper"></ABackTop>
 						</Content>
 					</Layout>
@@ -58,9 +59,10 @@
 				<Content style="position: absolute;width: 100%;bottom:3.125rem;top:3.125rem;overflow: auto;">
 					
 					<keep-alive>
-						<router-view v-if="$route.meta.keepAlive"></router-view>
+						<!-- <router-view v-if="$route.meta.keepAlive"></router-view> -->
+						<router-view></router-view>
 					</keep-alive>
-					<router-view v-if="!$route.meta.keepAlive"></router-view>
+					<!-- <router-view v-if="!$route.meta.keepAlive"></router-view> -->
 
 				</Content>
 			</Layout>
@@ -272,7 +274,7 @@
 					} else {
 						if (routeEqual(this.$route, route)) {
 							//console.log(this.$route + 1)
-							this.$route.meta.keepAlive = false
+							// this.$route.meta.keepAlive = false
 							this.closeTag(route)
 						}
 					}
