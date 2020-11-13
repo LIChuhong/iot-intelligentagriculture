@@ -14,7 +14,7 @@
 						</div> -->
 						<div slot="content">
 							<div style="font-size: 0.75rem;" v-for="(item1 , index) in parameterDataList" :key="index">
-								<Icon :color="item1.iconColor" :type="item1.icon" /><span>{{item1.parameterName}}:<span :style="{color:item1.iconColor }">{{item1.value}}{{item1.unit}}</span></span></div>
+								<Icon :color="item1.iconColor" :type="' iconfont'+ ' ' +item1.iconFont" /><span>{{item1.parameterName}}:<span :style="{color:item1.iconColor }">{{item1.value}}{{item1.unit}}</span></span></div>
 							<div v-if="iat.show">
 								<p>状态:
 									<Icon :color="iat.iconColor" :type="iat.icon" />
@@ -282,58 +282,43 @@
 				if (rtuTypeTag == 'IA_WS_G' || rtuTypeTag == 'IA_WS_N') {
 					this.parameterDataList = list.map(item => {
 						if (item.parameterId == 9) {
-							item.icon = ' iconfont icon-ic_kqwd'
 							item.iconColor = '#0187fc'
 						} else if (item.parameterId == 10) {
-							item.icon = ' iconfont icon-ic_kqsd'
 							item.iconColor = '#16c8c4'
 						} else if (item.parameterId == 11) {
-							item.icon = ' iconfont icon-ic_dqy'
 							item.iconColor = '#fc9143'
 						} else if (item.parameterId == 12) {
-							item.icon = ' iconfont icon-ic_fs'
 							item.iconColor = '#ffce6b'
 						} else if (item.parameterId == 13) {
-							item.icon = ' iconfont icon-ic_fx'
 							item.iconColor = '#67c300'
 						} else if (item.parameterId == 14) {
-							item.icon = ' iconfont icon-ic_dtjyl'
 							item.iconColor = '#16c8c4'
 						} else if (item.parameterId == 15) {
-							item.icon = ' iconfont icon-ic_ssyl'
 							item.iconColor = '#fc9143'
 						} else if (item.parameterId == 16) {
-							item.icon = ' iconfont icon-ic_zryl'
 							item.iconColor = '#ffce6b'
 						} else if (item.parameterId == 17) {
-							item.icon = ' iconfont icon-ic_zyl'
 							item.iconColor = '#0187fc'
 						} else if (item.parameterId == 18) {
-							item.icon = ' iconfont icon-ic_trsf'
 							item.iconColor = '#4ad595'
 						} else {
-							item.icon = ''
-							item.iconColor = '#fff'
+							item.iconColor = 'rgb(' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ')'
 						}
 						return item
 					})
 				} else if (rtuTypeTag == 'IA_T_G' || rtuTypeTag == 'IA_T_N') {
 					list.map(item => {
 						if (item.parameterId == 18) {
-							item.icon = ' iconfont icon-ic_kqwd'
 							item.iconColor = '#0187fc'
 							this.parameterDataList.push(item)
 						} else if (item.parameterId == 32) {
-							item.icon = ' iconfont icon-ic_kqwd'
-							item.iconColor = '#0187fc'
+							item.iconColor = '#8f3ef7'
 							this.parameterDataList.push(item)
 						} else if (item.parameterId == 33) {
-							item.icon = ' iconfont icon-ic_yf'
 							item.iconColor = '#06cce4'
 							this.parameterDataList.push(item)
 						} else {
-							item.icon = ''
-							item.iconColor = '#fff'
+							item.iconColor = 'rgb(' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ')'
 						}
 						return item
 					})

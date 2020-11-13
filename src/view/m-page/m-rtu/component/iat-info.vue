@@ -1,14 +1,14 @@
 <template>
 	<div>
 		<div>
-			<!-- 气象站 -->
+			<!-- 土壤检测器 -->
 			<div style="height: 6.25rem;text-align: center;">
 				<img :src="iaRtu.rtuTypeImgUrl" style="height:100%;" />
 			</div>
 			<div style="margin: 1.25rem 0;">
 				<div style="font-size: 1rem;text-align: center;" v-for="(item,index) in parameterDataList" :key="index">
 					<p><span>
-							<Icon :color="item.iconColor" :type="item.icon" /></span>{{item.parameterName}}:<span :style="{color:item.iconColor }">{{item.value}}{{item.unit}}</span></p>
+							<Icon :color="item.iconColor" :type="' iconfont'+ ' ' +item.iconFont" /></span>{{item.parameterName}}:<span :style="{color:item.iconColor }">{{item.value}}{{item.unit}}</span></p>
 				</div>
 			</div>
 		</div>
@@ -71,21 +71,18 @@
 							const rtuData = data.rtuData
 							if (rtuData.parameterDataList != null && rtuData.parameterDataList) {
 								 rtuData.parameterDataList.map(item => {
+									 
 									if (item.parameterId == 18) {
-										item.icon = ' iconfont icon-ic_kqwd'
-										item.iconColor = '#0187fc'
+										 item.iconColor = '#0187fc'
 										this.parameterDataList.push(item)
 									} else if (item.parameterId == 32) {
-										item.icon = ' iconfont icon-ic_kqwd'
-										item.iconColor = '#0187fc'
+										item.iconColor = '#8f3ef7'
 										this.parameterDataList.push(item)
 									} else if (item.parameterId == 33) {
-										item.icon = ' iconfont icon-ic_yf'
-										item.iconColor = '#06cce4'
+										 item.iconColor = '#06cce4'
 										this.parameterDataList.push(item)
 									} else {
-										item.icon = ''
-										item.iconColor = '#fff'
+										item.iconColor =  'rgb(' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ')'
 									}
 									return item
 								})

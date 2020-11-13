@@ -8,7 +8,7 @@
 			<!-- <p>信号强度:</p> -->
 			
 				<div style="width: 50%;text-align: center;" v-for="(item,index) in parameterDataList" :key="index">
-				<p><span><Icon :color="item.iconColor" :type="item.icon" /></span>{{item.parameterName}}:<span :style="{color:item.iconColor }">{{item.value}}{{item.unit}}</span></p>
+				<p><span><Icon :color="item.iconColor" :type="' iconfont'+ ' ' +item.iconFont" /></span>{{item.parameterName}}:<span :style="{color:item.iconColor }">{{item.value}}{{item.unit}}</span></p>
 				
 			</div>
 		</div>
@@ -66,38 +66,27 @@
 							if(rtuData.parameterDataList != null && rtuData.parameterDataList){
 								this.parameterDataList = rtuData.parameterDataList.map(item=>{
 									if (item.parameterId == 9) {
-										item.icon = ' iconfont icon-ic_kqwd'
 										item.iconColor = '#0187fc'
 									} else if (item.parameterId == 10) {
-										item.icon = ' iconfont icon-ic_kqsd'
 										item.iconColor = '#16c8c4'
 									} else if (item.parameterId == 11) {
-										item.icon = ' iconfont icon-ic_dqy'
 										item.iconColor = '#fc9143'
 									} else if (item.parameterId == 12) {
-										item.icon = ' iconfont icon-ic_fs'
 										item.iconColor = '#ffce6b'
 									} else if (item.parameterId == 13) {
-										item.icon = ' iconfont icon-ic_fx'
 										item.iconColor = '#67c300'
 									} else if (item.parameterId == 14) {
-										item.icon = ' iconfont icon-ic_dtjyl'
 										item.iconColor = '#16c8c4'
 									} else if (item.parameterId == 15) {
-										item.icon = ' iconfont icon-ic_ssyl'
 										item.iconColor = '#fc9143'
 									} else if (item.parameterId == 16) {
-										item.icon = ' iconfont icon-ic_zryl'
 										item.iconColor = '#ffce6b'
 									} else if (item.parameterId == 17) {
-										item.icon = ' iconfont icon-ic_zyl'
 										item.iconColor = '#0187fc'
 									} else if (item.parameterId == 18) {
-										item.icon = ' iconfont icon-ic_trsf'
 										item.iconColor = '#4ad595'
 									}else{
-										item.icon = ''
-										item.iconColor = '#fff'
+										item.iconColor = 'rgb(' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ')'
 									}
 									return item
 								})

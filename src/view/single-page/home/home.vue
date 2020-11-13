@@ -37,7 +37,8 @@
 				<img src="../../../assets/images/map/watch.png" />
 			</div>
 			<div ref="ezuikt" class="titleImg" style="overflow: hidden;display: flex;justify-content:center;top:17%;height: 83%;">
-				<EZUIKitJs v-if="brandTag == 'YSY'" :et-wide-high="etWideHigh" :video-key="videoKey" :ia-video-list="iaVideoList" :get-video-info="getVideoInfo"></EZUIKitJs>
+				<EZUIKitJs v-if="brandTag == 'YSY'" :et-wide-high="etWideHigh" :video-key="videoKey" :ia-video-list="iaVideoList"
+				 :get-video-info="getVideoInfo"></EZUIKitJs>
 				<vi-player v-if="brandTag == 'LCY'" :et-wide-high="etWideHigh" :video-key="videoKey" :get-video-info="getVideoInfo"></vi-player>
 			</div>
 		</div>
@@ -95,7 +96,7 @@
 
 				<div v-for="(item,i) in mlList" :key="'m'+i" style="width: 50%;padding:2% 0 0 5%;overflow: hidden;float: left;height: 20%;">
 					<div style="float:left;height: 100%;width: 20%;">
-						<Icon :type="item.icon" size="20" :color="item.iconColor" />
+						<Icon :type="' iconfont'+ ' ' +item.iconFont" size="20" :color="item.iconColor" />
 					</div>
 					<div :title="item.parameterName+':'+item.value+item.unit" style="float: left;height: 100%;line-height: 1;width: 80%;">
 						<p style="font-size: 0.75rem;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">{{item.value+item.unit}}</p>
@@ -118,7 +119,7 @@
 				<div v-for="(item,i) in soilList" :key="'s'+i" style="text-align: center;line-height: 1;">
 					<div style="margin-top: 35%;" :title="item.parameterName+':'+item.value+item.unit">
 
-						<Icon :type="item.icon" size="30" :color="item.iconColor" />
+						<Icon :type="' iconfont'+ ' ' +item.iconFont" size="30" :color="item.iconColor" />
 						<p style="font-size: 0.75rem;margin-top: 0.625rem;">{{item.value+item.unit}}</p>
 						<p style="font-size:0.5rem;color: #31abe3;margin-top: 0.125rem;">{{item.parameterName}}</p>
 					</div>
@@ -136,9 +137,11 @@
 		</div>
 		<Modal title="视频列表" v-model="showIaVideoList" footer-hide width="60" :transfer="false">
 			<div style="display: flex;flex-wrap:wrap;background:#e8eaec;">
-				<div style="width: 31%;margin: 1%;text-align: center;" v-for="(item,index) in iaVideoImgList" :key="'vi'+ index" :title="item.channelName">
+				<div style="width: 31%;margin: 1%;text-align: center;" v-for="(item,index) in iaVideoImgList" :key="'vi'+ index"
+				 :title="item.channelName">
 					<!-- {{iaVideoImgList[0]}} -->
 					<Card shadow>
+						<a style="position: absolute;right: 0;top: 0;" @click="linkDownload(item)">详情</a>
 						<p style="color: #00BFFF;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;">{{item.channelName}}</p>
 						<img :src="item.picUrl" width="100%" @click="changeIaVideo(item)" />
 					</Card>
@@ -164,7 +167,9 @@
 		getFarmWeatherData,
 		getNearlyDayImportParaDataList
 	} from '@/api/plot.js'
-	import {getVideoByDeviceSerialChannelNo} from '@/api/video.js'
+	import {
+		getVideoByDeviceSerialChannelNo
+	} from '@/api/video.js'
 
 	export default {
 		components: {
@@ -183,7 +188,7 @@
 				},
 				mapBg,
 				// screenWidth:null
-				brandTag:'',
+				brandTag: '',
 				showSpin: false,
 				showSpin1: false,
 				weatherIndex: 0,
@@ -205,7 +210,32 @@
 			}
 		},
 		methods: {
-			
+			linkDownload(item) {
+				// window.open(url, '_blank') // 新窗口打开外链接
+					getVideoByDeviceSerialChannelNo(item.deviceSerial, item.channelNo).then(res => {
+					const data = res.data
+					// this.showIaVideoList = false
+					if (data.success == 1) {
+						 console.log(data)
+						 var video = data.video
+						 if(video.brandTag == 'YSY'){
+							 var videoDeviceInfo = video.videoDeviceInfo
+							 var videoBrandAccount = video.videoBrandAccount
+							 var accessToken = videoBrandAccount.accessToken
+							 var deviceSerial = videoDeviceInfo.deviceSerial
+							 var channelNo = videoDeviceInfo.channelNo
+							 window.open('https://open.ys7.com/ezopen/h5/rec?autoplay=1&audio=1&accessToken='+accessToken+'&hd=1&deviceSerial='+deviceSerial+'&channelNo='+channelNo+'', '_blank')
+						 }
+						
+					} else {
+						this.$Message.error(data.errorMessage)
+					}
+				}).catch(error => {
+					// this.showIaVideoList = false
+					alert(error)
+				})
+			},
+
 			getPlotData(item) {
 				// console.log(item)
 				this.getMassifSoilDataMethod(item.iaMassifId)
@@ -219,28 +249,28 @@
 				this.getIaMapData(this.mapData)
 			},
 			changeIaVideo(item) {
-				getVideoByDeviceSerialChannelNo(item.deviceSerial,item.channelNo).then(res=>{
+				getVideoByDeviceSerialChannelNo(item.deviceSerial, item.channelNo).then(res => {
 					const data = res.data
 					this.showIaVideoList = false
-					if(data.success == 1){
+					if (data.success == 1) {
 						// console.log(data)
 						var video = data.video
 						this.brandTag = video.brandTag
 						this.getEtWideHigh()
 						this.getVideoInfo = video
-						
-					}else{
+
+					} else {
 						this.$Message.error(data.errorMessage)
 					}
-				}).catch(error=>{
+				}).catch(error => {
 					this.showIaVideoList = false
 					alert(error)
 				})
-				
-				
+
+
 				// console.log(this.getVideoInfo)
-				
-				
+
+
 			},
 			getEtWideHigh() {
 				var w = this.$refs.ezuikt.offsetWidth
@@ -462,38 +492,28 @@
 				var list = rtuWeatherData.parameterDataList
 				for (var i = 0; i < list.length; i++) {
 					if (list[i].parameterId == 9) {
-						list[i].icon = ' iconfont icon-ic_kqwd'
 						list[i].iconColor = '#0187fc'
 					} else if (list[i].parameterId == 10) {
-						list[i].icon = ' iconfont icon-ic_kqsd'
 						list[i].iconColor = '#16c8c4'
 					} else if (list[i].parameterId == 11) {
-						list[i].icon = ' iconfont icon-ic_dqy'
 						list[i].iconColor = '#fc9143'
 					} else if (list[i].parameterId == 12) {
-						list[i].icon = ' iconfont icon-ic_fs'
 						list[i].iconColor = '#ffce6b'
 					} else if (list[i].parameterId == 13) {
-						list[i].icon = ' iconfont icon-ic_fx'
 						list[i].iconColor = '#67c300'
 					} else if (list[i].parameterId == 14) {
-						list[i].icon = ' iconfont icon-ic_dtjyl'
 						list[i].iconColor = '#16c8c4'
 					} else if (list[i].parameterId == 15) {
-						list[i].icon = ' iconfont icon-ic_ssyl'
 						list[i].iconColor = '#fc9143'
 					} else if (list[i].parameterId == 16) {
-						list[i].icon = ' iconfont icon-ic_zryl'
 						list[i].iconColor = '#ffce6b'
 					} else if (list[i].parameterId == 17) {
-						list[i].icon = ' iconfont icon-ic_zyl'
 						list[i].iconColor = '#0187fc'
 					} else if (list[i].parameterId == 18) {
-						list[i].icon = ' iconfont icon-ic_trsf'
 						list[i].iconColor = '#4ad595'
 					} else {
-						list[i].icon = ''
-						list[i].iconColor = '#fff'
+						list[i].iconColor = 'rgb(' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ',' + Math
+							.floor(Math.random() * 255) + ')'
 					}
 				}
 				this.mlList = list
@@ -504,17 +524,17 @@
 				// alert(rtuSoilData)
 				for (var i = 0; i < list.length; i++) {
 					if (list[i].parameterId == 32) {
-						list[i].icon = ' iconfont icon-ic_kqwd'
 						list[i].iconColor = '#0187fc'
 						list1.push(list[i])
 					} else if (list[i].parameterId == 18) {
-						list[i].icon = ' iconfont icon-ic_trsf'
 						list[i].iconColor = '#8f3ef7'
 						list1.push(list[i])
 					} else if (list[i].parameterId == 33) {
-						list[i].icon = ' iconfont icon-ic_yf'
 						list[i].iconColor = '#06cce4'
 						list1.push(list[i])
+					} else {
+						list[i].iconColor = 'rgb(' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ',' + Math
+							.floor(Math.random() * 255) + ')'
 					}
 				}
 				this.soilList = list1
