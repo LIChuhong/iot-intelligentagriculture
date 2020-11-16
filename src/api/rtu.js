@@ -1,4 +1,5 @@
 import axios from '@/libs/api.request'
+import qs from 'qs'
 
 //添加机器
 export const addRtu = (newRtu) => {
@@ -162,4 +163,32 @@ export const rtuTypeParameterList = (rtuNumber) => {
     method: 'get'
   })
 }
+
+
+//获取设备参数
+export const controlYsOpen = (accessToken,deviceSerial,channelNo,direction,speed) => {
+	// alert(1)
+	// axios.baseUrl = ''
+	// console.log(axios)
+	// const data = new URLSearchParams()
+	// data.append('accessToken', accessToken)
+	// data.append('deviceSerial', deviceSerial)
+	// data.append('channelNo', channelNo)
+	// data.append('direction', direction)
+	// data.append('speed', speed)
+	const data = {
+		'accessToken': accessToken,
+		'deviceSerial': deviceSerial,
+		'channelNo': channelNo,
+		'direction':direction,
+		'speed':speed
+	}
+  return  axios.request({
+    url: 'https://open.ys7.com/api/lapp/device/ptz/start',
+		data:qs.stringify(data),
+    method: 'post'
+  })
+}
+
+
 

@@ -1,11 +1,8 @@
 <template>
-	<div>
+	<!-- <div></div> -->
+	<div >
 		<div ref="ezuikt1">
 			<EZUIKitJs :et-wide-high="etWideHigh"></EZUIKitJs>
-			<!-- 默认通用 -->
-			<!-- <Icon size="30" type=" iconfont icon-llj" /> -->
-			<!-- <iframe src="https://open.ys7.com/ezopen/h5/rec?autoplay=1&audio=1&accessToken=at.c53bra70c34o68zxb9inx6x7blhmwm4y-54w6bdnl88-1y6m3k0-lb0v6jgpn&hd=1&deviceSerial=E38539884&channelNo=1" width="300" height="300"></iframe> -->
-			<!-- <a style="position: absolute;right: 0;top: 0;" @click="linkDownload">详情</a> -->
 			<div style="height: 6.25rem;text-align: center;">
 				<img :src="iaRtu.rtuTypeImgUrl" style="height:100%;" />
 			</div>
@@ -46,7 +43,7 @@
 				parameterIndex: null,
 				etWideHigh: {
 					w: 300,
-					h: 400
+					h: 200
 				},
 			}
 		},
@@ -56,7 +53,7 @@
 		methods: {
 			getEtWideHigh() {
 				var w = this.$refs.ezuikt1.offsetWidth
-				var h = 400
+				var h = 300
 				// alert(22)
 				this.etWideHigh = {
 					w: w,

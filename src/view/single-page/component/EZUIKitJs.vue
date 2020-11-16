@@ -102,6 +102,8 @@
 			// this.showPlayer('', '')
 			this.showPlayer(this.videoKey.videoBrandAccount.accessToken, this.videoKey.videoDeviceInfo.highDefinitionUrl)
 		},
-		destroyed() {}
+		destroyed() {
+			this.player.stop()
+		}
 	};
 </script>

@@ -1,7 +1,12 @@
 <template>
-	<div class="hello-ezuikit-js">
-		<div id="video-container" style="width:100%;height:100%"></div>
-	</div>
+	<!-- <div class="hello-ezuikit-js"> -->
+		<div id="video-container" style="width:100%;height:100%">
+			<!-- <video id="video-container"></video> -->
+		</div>
+		<!-- <div>
+			<video id="video-container"></video>
+		</div> -->
+	<!-- </div> -->
 </template>
 
 <script>
@@ -35,7 +40,7 @@
 				getVideoByDeviceSerialChannelNo(deviceSerial, channelNo).then(res => {
 					const data = res.data
 					if (data.success == 1) {
-						// console.log(data)
+						 console.log(data)
 						var video = data.video
 						var videoBrandAccount = video.videoBrandAccount
 						var videoDeviceInfo = video.videoDeviceInfo
@@ -66,7 +71,7 @@
 						accessToken: accessToken,
 						url: iaVideoUrl,
 						template: "security",
-						// splitBasis: 1,
+						splitBasis: 1,
 						// header: ['capturePicture', 'save', 'zoom'],
 						// footer: ['fullScreen','capturePicture', 'save', 'zoom'],
 						width: that.etWideHigh.w,
@@ -81,6 +86,8 @@
 			// this.showPlayer('', '')
 			this.showPlayer('at.c53bra70c34o68zxb9inx6x7blhmwm4y-54w6bdnl88-1y6m3k0-lb0v6jgpn','ezopen://EDSXIU@open.ys7.com/E38539884/1.hd.live')
 		},
-		destroyed() {}
+		destroyed() {
+			this.player.stop()
+		}
 	};
 </script>
