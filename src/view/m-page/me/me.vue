@@ -23,6 +23,7 @@
 				 id="btnDiv" @touchstart="touchstartView">
 				</div>
 			</div>
+
 		</div>
 	</div>
 
@@ -72,46 +73,7 @@
 							//移动当前元素
 							el.style.left = l + "px";
 							el.style.top = t + "px";
-							if (l >= 140) {
-								el.style.left = '139px'
-							}
-							if (l <= 0) {
-								el.style.left = '1px'
-							}
-							if (t >= 140) {
-								el.style.top = '139px'
-							}
-							if (t <= 0) {
-								el.style.top = '1px'
-							}
-							if (l < 46 && l > 0 && t < 46 && t > 0) {
-								console.log('左上4')
-							}
-							if (l < 46 && l > 0 && t < 92 && t > 46) {
 
-								console.log('正左2')
-							}
-							if (l < 46 && l > 0 && t < 139 && t > 92) {
-
-								console.log('左下5')
-							}
-							if (l < 92 && l > 46 && t < 46 && t > 0) {
-
-								console.log('正上0')
-							}
-							if (l < 139 && l > 92 && t < 46 && t > 0) {
-
-								console.log('右上6')
-							}
-							if (l < 139 && l > 92 && t < 92 && t > 46) {
-								console.log('正右3')
-							}
-							if (l < 139 && l > 92 && t < 139 && t > 92) {
-								console.log('右下7')
-							}
-							if (l < 92 && l > 46 && t < 139 && t > 92) {
-								console.log('正下1')
-							}
 
 						}
 
@@ -184,7 +146,7 @@
 			},
 			getEtWideHigh() {
 				var w = this.$refs.ezuikt11.offsetWidth
-				var h = 250
+				var h = 300
 				// alert(22)
 				this.etWideHigh = {
 					w: w,
@@ -194,8 +156,14 @@
 
 				// alert(JSON.stringify(this.etWideHigh))
 			},
+			setBorderColor(borderDirection, color, colorDir) {
+				document.getElementById('btnBgDiv').style.border = ''
+				document.getElementById('btnBgDiv').style[borderDirection] = color
+				document.getElementById('btnBgDiv').style.boxShadow = colorDir + ' ' + color + ' ' + 'inset'
+			},
 			touchstartView(event) {
 				// console.log(event)
+				var index = -1
 				var that = this
 				that.flags = true;
 				var touch;
@@ -235,50 +203,95 @@
 							if (t <= 0) {
 								document.getElementById('btnDiv').style.top = '1px'
 							}
-							if (l < 46 && l > 0 && t < 46 && t > 0) {
-								that.controlYsOpen(4)
-								that.controlYsDown(4)
-							}
-							if (l < 46 && l > 0 && t < 92 && t > 46) {
 
-								that.controlYsOpen(2)
-								that.controlYsDown(2)
 
-								console.log('正左2')
-							}
-							if (l < 46 && l > 0 && t < 139 && t > 92) {
-
-								that.controlYsOpen(5)
-								that.controlYsDown(5)
-
-								console.log('左下5')
-							}
-							if (l < 92 && l > 46 && t < 46 && t > 0) {
-
+							var t1 = parseFloat(document.getElementById('btnDiv').style.top)
+							var l1 = parseFloat(document.getElementById('btnDiv').style.left)
+							console.log('t:' + t1)
+							console.log('l:' + l1)
+							// console.log(document.getElementById('btnDiv').style)
+							if (t1 == 1 && l1 >= 50 && l1 <= 90) {
 								console.log('正上0')
-								that.controlYsOpen(0)
-								that.controlYsDown(0)
-							}
-							if (l < 139 && l > 92 && t < 46 && t > 0) {
+								that.setBorderColor('borderTop', '#F5871F', '0px 10px 10px 1px')
+								if (index != 0) {
+									that.controlYsDown(index)
+									that.controlYsOpen(0)
+									index = 0
+								}
 
-								console.log('右上6')
-								that.controlYsOpen(6)
-								that.controlYsDown(6)
+								// that.controlYsDown(2)
 							}
-							if (l < 139 && l > 92 && t < 92 && t > 46) {
-								console.log('正右3')
-								that.controlYsOpen(3)
-								that.controlYsDown(3)
-							}
-							if (l < 139 && l > 92 && t < 139 && t > 92) {
-								console.log('右下7')
-								that.controlYsOpen(7)
-								that.controlYsDown(7)
-							}
-							if (l < 92 && l > 46 && t < 139 && t > 92) {
+							if (t1 == 139 && l1 >= 50 && l1 <= 90) {
 								console.log('正下1')
-								that.controlYsOpen(1)
-								that.controlYsDown(1)
+								that.setBorderColor('borderBottom', '#F5871F', '0px -10px 10px 1px')
+								if (index != 1) {
+									that.controlYsDown(index)
+									that.controlYsOpen(1)
+									index = 1
+								}
+
+								// that.controlYsDown(2)
+							}
+							if (l1 == 1 && t1 >= 50 && t1 <= 90) {
+								console.log('正左2')
+								that.setBorderColor('borderLeft', '#F5871F', '10px 0px 10px 1px')
+								if (index != 2) {
+									that.controlYsDown(index)
+									that.controlYsOpen(2)
+									index = 2
+								}
+
+								// that.controlYsDown(2)
+							}
+							if (l1 == 139 && t1 >= 50 && t1 <= 90) {
+								console.log('正右3')
+								that.setBorderColor('borderRight', '#F5871F', '-10px 0px 10px 1px')
+								if (index != 3) {
+									that.controlYsDown(index)
+									that.controlYsOpen(3)
+									index = 3
+								}
+
+								// document.getElementById('btnBgDiv').style.borderRight = '0.0625rem solid #F5871F'
+								// document.getElementById('btnBgDiv').style.boxShadow = '-10px 0px 10px 1px #F5871F inset'
+
+								// that.controlYsDown(2)
+							}
+							if (t1 == 1 && l1 == 1) {
+								console.log('左上4')
+								if (index != 4) {
+									that.controlYsDown(index)
+									that.controlYsOpen(4)
+									index = 4
+								}
+
+							}
+							if (t1 == 139 && l1 == 1) {
+								console.log('左下5')
+								if (index != 5) {
+									that.controlYsDown(index)
+									that.controlYsOpen(5)
+									index = 5
+								}
+
+							}
+							if (t1 == 1 && l1 == 139) {
+								console.log('右上6')
+								if (index != 6) {
+									that.controlYsDown(index)
+									that.controlYsOpen(6)
+									index = 6
+								}
+
+							}
+							if (t1 == 139 && l1 == 139) {
+								console.log('右下7')
+								if (index != 7) {
+									that.controlYsDown(index)
+									that.controlYsOpen(7)
+									index = 7
+								}
+
 							}
 
 						}
@@ -291,8 +304,12 @@
 
 				};
 				document.ontouchend = function() {
-					// that.controlYsDown()
+					that.controlYsDown(index)
 					// that.controlYsOpen()
+					document.getElementById('btnBgDiv').style.border = ""
+					document.getElementById('btnBgDiv').style.boxShadow = ""
+					document.getElementById('btnDiv').style.left = 70 + "px";
+					document.getElementById('btnDiv').style.top = 70 + "px";
 					that.flags = false;
 
 				}

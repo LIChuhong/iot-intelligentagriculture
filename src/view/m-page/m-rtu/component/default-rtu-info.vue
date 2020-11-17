@@ -2,7 +2,7 @@
 	<!-- <div></div> -->
 	<div >
 		<div ref="ezuikt1">
-			<EZUIKitJs :et-wide-high="etWideHigh"></EZUIKitJs>
+			<!-- <EZUIKitJs :et-wide-high="etWideHigh"></EZUIKitJs> -->
 			<div style="height: 6.25rem;text-align: center;">
 				<img :src="iaRtu.rtuTypeImgUrl" style="height:100%;" />
 			</div>
