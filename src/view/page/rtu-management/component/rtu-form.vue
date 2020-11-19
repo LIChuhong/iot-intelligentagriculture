@@ -363,8 +363,8 @@
 									rtuDesc:iaRtu.rtuDesc
 									
 								}
-								if(iaRtu.videoName){
-									this.rtuForm.videoName = iaRtu.videoName
+								if(iaRtu.video != null){
+									this.rtuForm.videoName = iaRtu.video.videoName
 								}
 								this.belongOrgName = iaRtu.orgName
 								const rtuTypeList = this.rtuTypeList

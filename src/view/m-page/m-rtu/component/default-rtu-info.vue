@@ -1,23 +1,29 @@
 <template>
 	<!-- <div></div> -->
-	<div >
-		<div ref="ezuikt1">
-			<!-- <EZUIKitJs :et-wide-high="etWideHigh"></EZUIKitJs> -->
-			<div style="height: 6.25rem;text-align: center;">
-				<img :src="iaRtu.rtuTypeImgUrl" style="height:100%;" />
-			</div>
-			<div style="margin: 1.25rem 0;">
-				<div style="font-size: 1rem;text-align: center;" v-for="(item,index) in parameterDataList" :key="index">
-					<p><span>
-							<Icon :color="item.iconColor" :type="' iconfont'+ ' ' +item.iconFont" /></span>{{item.parameterName}}:<span
-						 :style="{color:item.iconColor }">{{item.value}}{{item.unit}}</span></p>
-				</div>
+	<div class="defStyle">
+
+		<!-- 默认详情页 -->
+		<div style="height: 6.25rem;text-align: center;position: relative">
+			<img :src="iaRtu.rtuTypeImgUrl" style="height:100%;" />
+			<div style="position: absolute;right:1.875rem;bottom:0">
+				<Icon @click="showVideo" :type="' iconfont' + ' ' +  videoIcon" size="40" color="red"></Icon>
 			</div>
 		</div>
+		<div style="margin: 1.25rem 0;">
+			<div style="font-size: 1rem;text-align: center;" v-for="(item,index) in parameterDataList" :key="index">
+				<p><span>
+						<Icon :color="item.iconColor" :type="' iconfont'+ ' ' +item.iconFont" /></span>{{item.parameterName}}:<span
+					 :style="{color:item.iconColor }">{{item.value}}{{item.unit}}</span></p>
+			</div>
+		</div>
+
 		<Spin fix v-show="showSpin" style="background: rgba(255,255,255,0.3);">
 			<Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
 			<div>{{tips}}</div>
 		</Spin>
+		<Modal class="ivu-modal-body" v-model="showVideoInfo" title="视频详情" footer-hide fullscreen>
+			<video-info :video-info="videoInfo" v-if="showVideoInfo"></video-info>
+		</Modal>
 	</div>
 </template>
 
@@ -25,13 +31,16 @@
 	import {
 		getRtu,
 		getRtuData,
-		setRtuData
 	} from '@/api/rtu.js'
-	import EZUIKitJs from '@/view/components/EZUIKitJs.vue'
+
+	import {
+		getVideo
+	} from '@/api/video.js'
+	import VideoInfo from '../component/video-info.vue'
 	export default {
 		props: ['rtuNumber'],
 		components: {
-			EZUIKitJs
+			VideoInfo
 		},
 		data() {
 			return {
@@ -41,27 +50,19 @@
 				parameterDataList: [],
 				showSpin: false,
 				parameterIndex: null,
-				etWideHigh: {
-					w: 300,
-					h: 200
-				},
+				videoInfo: '',
+				videoIcon: '',
+				showVideoInfo: false
 			}
 		},
 		watch: {
 
 		},
 		methods: {
-			getEtWideHigh() {
-				var w = this.$refs.ezuikt1.offsetWidth
-				var h = 300
-				// alert(22)
-				this.etWideHigh = {
-					w: w,
-					h: h
+			showVideo() {
+				if (this.videoInfo.brandTag == 'YSY') {
+					this.showVideoInfo = true
 				}
-				console.log(1+this.etWideHigh)
-
-				// alert(JSON.stringify(this.etWideHigh))
 			},
 			getRtuInfo() {
 				this.showSpin = true
@@ -72,6 +73,9 @@
 						if (data.success == 1) {
 							// console.log(data)
 							this.iaRtu = data.iaRtu
+							if (data.iaRtu.videoId > 0) {
+								this.getVideoInfo(data.iaRtu.videoId)
+							}
 							this.getRtuDataInfo()
 						} else {
 							this.$Message.error(this.rtuNumber + data.errorMessage)
@@ -82,6 +86,24 @@
 					})
 				}
 
+			},
+			getVideoInfo(id) {
+				getVideo(id).then(res => {
+					const data = res.data
+					if (data.success == 1) {
+						this.videoInfo = data.video
+						var video = data.video
+						if (video.videoType == 0) {
+							this.videoIcon = 'icon-qj0'
+						}
+						if (video.videoType == 1) {
+							this.videoIcon = 'icon-qj1'
+						}
+					}
+
+				}).catch(error => {
+					alert(error)
+				})
 			},
 			getRtuDataInfo() {
 				if (this.rtuNumber != null && this.rtuNumber != '') {
@@ -112,13 +134,7 @@
 			}
 
 		},
-		computed() {
-			// this.getEtWideHigh()
-
-		},
-		mounted() {
-			this.getEtWideHigh()
-		},
+		mounted() {},
 		created() {
 			this.getRtuInfo()
 
@@ -129,6 +145,10 @@
 <style>
 	.demo-spin-icon-load {
 		animation: ani-demo-spin 1s linear infinite;
+	}
+
+	.defStyle .ivu-modal-body {
+		padding: 0;
 	}
 
 	@keyframes ani-demo-spin {

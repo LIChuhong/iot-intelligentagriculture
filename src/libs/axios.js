@@ -72,74 +72,80 @@ class HttpRequest {
 				status
 			} = res
 			const config = res.config
-			if (data.errorCode === 'IA00000011') {
-				if (store.state.app.iotInterFace != 0) {
-					if (!isRefreshing) {
-						isRefreshing = true
-						refreshTokenMethod(store.state.user.refreshToken).then(res1 => {
-							const data = res1.data
-							if (data.success == 1) {
-								store.commit('setToken', data.newAccessToken)
-								config.baseURL = ''
-								config.headers['Token'] = data.newAccessToken
-								requests.forEach(cb => cb(data.newAccessToken))
-								requests = []
-								return this.request(config)
-							} else {
-								const userName = store.state.user.localLoginInfo.userName
-								const password = store.state.user.localLoginInfo.password
-								isRefreshing = false
-								login(userName, password, '').then(res => {
-									const data = res.data
-									if (data.success == 1) {
-										if (data.refresh_token != null && data.refresh_token != '') {
-											store.commit('setRefreshToken', data.refresh_token)
-											store.commit('setToken', data.token)
-											router.push({
-												path: '/m_farm'
-
-											})
-										}
-									} else {
-										alert(data.errorMessage)
-										store.dispatch('handleLogOut', '')
-										router.replace({
-											path: '/login'
-
-										})
-									}
-								}).catch(error => {
-									alert(error)
-								})
-							}
-						}).catch(error => {
-							alert(error)
-							store.dispatch('handleLogOut', '')
-							router.replace({
-								path: '/login'
-
-							})
-						}).finally(() => {
-							isRefreshing = false
-						})
-
-					} else {
-						//正在刷新Token，将返回一个未执行resolve的promise
-						return new Promise((resolve, reject) => {
-							requests.push((token) => {
-								config.baseURL = ''
-								config.headers['Token'] = token
-								resolve(config)
-							})
-						})
-					}
-				} else {
-					store.dispatch('handleLogOut', '')
-					router.replace({
-						path: '/login'
-
-					})
-				}
+			if (data.errorCode === 'IA00000011' || data.errorCode == 'F000000005') {
+				
+				store.dispatch('handleLogOut', '')
+				router.replace({
+					path: '/login'
+				
+				})
+// 				if (store.state.app.iotInterFace != 0) {
+// 					if (!isRefreshing) {
+// 						isRefreshing = true
+// 						refreshTokenMethod(store.state.user.refreshToken).then(res1 => {
+// 							const data = res1.data
+// 							if (data.success == 1) {
+// 								store.commit('setToken', data.newAccessToken)
+// 								config.baseURL = ''
+// 								config.headers['Token'] = data.newAccessToken
+// 								requests.forEach(cb => cb(data.newAccessToken))
+// 								requests = []
+// 								return this.request(config)
+// 							} else {
+// 								const userName = store.state.user.localLoginInfo.userName
+// 								const password = store.state.user.localLoginInfo.password
+// 								isRefreshing = false
+// 								login(userName, password, '').then(res => {
+// 									const data = res.data
+// 									if (data.success == 1) {
+// 										if (data.refresh_token != null && data.refresh_token != '') {
+// 											store.commit('setRefreshToken', data.refresh_token)
+// 											store.commit('setToken', data.token)
+// 											router.push({
+// 												path: '/m_farm'
+// 
+// 											})
+// 										}
+// 									} else {
+// 										alert(data.errorMessage)
+// 										store.dispatch('handleLogOut', '')
+// 										router.replace({
+// 											path: '/login'
+// 
+// 										})
+// 									}
+// 								}).catch(error => {
+// 									alert(error)
+// 								})
+// 							}
+// 						}).catch(error => {
+// 							alert(error)
+// 							store.dispatch('handleLogOut', '')
+// 							router.replace({
+// 								path: '/login'
+// 
+// 							})
+// 						}).finally(() => {
+// 							isRefreshing = false
+// 						})
+// 
+// 					} else {
+// 						//正在刷新Token，将返回一个未执行resolve的promise
+// 						return new Promise((resolve, reject) => {
+// 							requests.push((token) => {
+// 								config.baseURL = ''
+// 								config.headers['Token'] = token
+// 								resolve(config)
+// 							})
+// 						})
+// 					}
+// 				} else {
+// 					store.dispatch('handleLogOut', '')
+// 					router.replace({
+// 						path: '/login'
+// 
+// 					})
+// 				}
 			}
 			return {
 				data,

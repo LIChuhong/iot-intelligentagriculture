@@ -110,3 +110,39 @@ export const getVideoList = (searchKey,maxId,pageSize) => {
 		method: 'get'
 	})
 }
+
+//添加设备关联视频预置点
+export const addRtuVideoPresetPoint = (rtuNumber) => {
+	const data = new URLSearchParams()
+	data.append('rtuNumber', rtuNumber)
+  return axios.request({
+  	url: '/v1/addRtuVideoPresetPoint',
+		data,
+  	method: 'post'
+  })
+}
+
+//删除设备关联视频预置点
+export const delRtuVideoPresetPoint = (rtuNumber) => {
+	const data = new URLSearchParams()
+	data.append('rtuNumber', rtuNumber)
+  return axios.request({
+  	url: '/v1/delRtuVideoPresetPoint',
+		data,
+  	method: 'post'
+  })
+}
+
+
+//调用设备关联视频预置点
+export const moveRtuVideoPresetPoint = (rtuNumber) => {
+	const data = new URLSearchParams()
+	data.append('rtuNumber', rtuNumber)
+  return axios.request({
+  	url: '/v1/moveRtuVideoPresetPoint',
+		data,
+  	method: 'post'
+  })
+}
+
+

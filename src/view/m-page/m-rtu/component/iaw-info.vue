@@ -1,8 +1,11 @@
 <template>
-	<div>
-		<!-- 气象站 -->
-		<div style="height: 6.25rem;text-align: center;">
+	<div class="iawStyle">
+		<!-- 浇灌器 -->
+		<div style="height: 6.25rem;text-align: center;position: relative">
 			<img :src="iaRtu.rtuTypeImgUrl" style="height:100%;" />
+			<div style="position: absolute;right:1.875rem;bottom:0">
+				<Icon @click="showVideo" :type="' iconfont' + ' ' +  videoIcon" size="40" color="red"></Icon>
+			</div>
 		</div>
 		<div style="display: flex;margin: 1.25rem 0;font-size: 1rem;">
 			<p style="width: 50%;text-align: center;">状态:
@@ -11,7 +14,8 @@
 			<p>剩余时间:<span :style="{color:iat.iconColor}">{{iat.restTime}}秒</span></p>
 		</div>
 		<div class="btnStyle" style="text-align: right;padding-right: 1.25rem;">
-			<Cascader v-model="refCas" style="display: inline-block;" :transfer="true" :data="iat.timeList" @on-change="setRtu" @on-visible-change="refreshCas">
+			<Cascader v-model="refCas" style="display: inline-block;" :transfer="true" :data="iat.timeList" @on-change="setRtu"
+			 @on-visible-change="refreshCas">
 				<Button size="large" :disabled="iat.restTime > 0" style="margin-right:1.25rem ;" type="primary" shape="circle">开</Button>
 			</Cascader>
 			<Button size="large" @click="setRtu(0)" type="primary" shape="circle">关</Button>
@@ -20,6 +24,9 @@
 			<Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
 			<div>{{tips}}</div>
 		</Spin>
+		<Modal class="ivu-modal-body" v-model="showVideoInfo" title="视频详情" footer-hide fullscreen >
+			<video-info :video-info = "videoInfo" v-if="showVideoInfo"></video-info>
+		</Modal>
 	</div>
 </template>
 
@@ -35,11 +42,18 @@
 	import {
 		rtuTimeDataList
 	} from '@/view/components/js/data.js'
+	import {
+		getVideo
+	} from '@/api/video.js'
+	import VideoInfo from '../component/video-info.vue'
 	export default {
 		props: ['rtuNumber'],
+		components: {
+			VideoInfo
+		},
 		data() {
 			return {
-				refCas:[],
+				refCas: [],
 				tips: '检测中...',
 				iaRtu: {},
 				parameterDataList: [],
@@ -52,11 +66,21 @@
 					timeList: [],
 				},
 				timer: '',
+				videoInfo: '',
+				videoIcon: '',
+				showVideoInfo:false
 			}
 		},
 		methods: {
-			refreshCas(value){
-				if(!value){
+			showVideo(){
+				if(this.videoInfo.brandTag == 'YSY'){
+					this.showVideoInfo = true
+				}
+				
+			},
+			
+			refreshCas(value) {
+				if (!value) {
 					this.refCas = []
 				}
 				// console.log(this.refCas)
@@ -79,6 +103,9 @@
 						if (data.success == 1) {
 							// console.log(data)
 							this.iaRtu = data.iaRtu
+							if (data.iaRtu.videoId > 0) {
+								this.getVideoInfo(data.iaRtu.videoId)
+							}
 							this.getRuDataInfo()
 						} else {
 							this.$Message.error(this.rtuNumber + data.errorMessage)
@@ -138,6 +165,24 @@
 					alert(error)
 				})
 
+			},
+			getVideoInfo(id) {
+				getVideo(id).then(res => {
+					const data = res.data
+					if (data.success == 1) {
+						this.videoInfo = data.video
+						var video = data.video
+						if (video.videoType == 0) {
+							this.videoIcon = 'icon-qj0'
+						}
+						if (video.videoType == 1) {
+							this.videoIcon = 'icon-qj1'
+						}
+					}
+
+				}).catch(error => {
+					alert(error)
+				})
 			},
 
 			setStateValue(stateValue) {
@@ -207,9 +252,13 @@
 			text-align: right;
 			padding-right: 1.25rem;
 		}
-		.btnStyle .ivu-btn-large{
-			height:3.125rem;
+
+		.btnStyle .ivu-btn-large {
+			height: 3.125rem;
 			font-size: 1.5rem;
+		}
+		.iawStyle .ivu-modal-body{
+			padding: 0;
 		}
 	}
 
