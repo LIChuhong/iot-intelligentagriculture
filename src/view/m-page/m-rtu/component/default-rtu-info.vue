@@ -6,7 +6,8 @@
 		<div style="height: 6.25rem;text-align: center;position: relative">
 			<img :src="iaRtu.rtuTypeImgUrl" style="height:100%;" />
 			<div style="position: absolute;right:1.875rem;bottom:0">
-				<Icon @click="showVideo" :type="' iconfont' + ' ' +  videoIcon" size="40" color="red"></Icon>
+				<Icon @click="showVideo('live')" :type="' iconfont' + ' ' +  videoIcon" size="40" color="red"></Icon>
+				<span @click="showVideo('rec')">回看</span>
 			</div>
 		</div>
 		<div style="margin: 1.25rem 0;">
@@ -21,7 +22,7 @@
 			<Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
 			<div>{{tips}}</div>
 		</Spin>
-		<Modal class="ivu-modal-body" v-model="showVideoInfo" title="视频详情" footer-hide fullscreen>
+		<Modal v-model="showVideoInfo" title="视频详情" footer-hide fullscreen>
 			<video-info :video-info="videoInfo" v-if="showVideoInfo"></video-info>
 		</Modal>
 	</div>
@@ -59,8 +60,9 @@
 
 		},
 		methods: {
-			showVideo() {
-				if (this.videoInfo.brandTag == 'YSY') {
+			showVideo(suffix) {
+				if(this.videoInfo.brandTag == 'YSY'){
+					this.videoInfo.suffix = suffix
 					this.showVideoInfo = true
 				}
 			},
@@ -74,7 +76,7 @@
 							// console.log(data)
 							this.iaRtu = data.iaRtu
 							if (data.iaRtu.videoId > 0) {
-								this.getVideoInfo(data.iaRtu.videoId)
+								this.getVideoInfo(data.iaRtu.videoId,data.iaRtu.presetPoint)
 							}
 							this.getRtuDataInfo()
 						} else {
@@ -87,7 +89,7 @@
 				}
 
 			},
-			getVideoInfo(id) {
+			getVideoInfo(id,presetPoint) {
 				getVideo(id).then(res => {
 					const data = res.data
 					if (data.success == 1) {
@@ -99,6 +101,12 @@
 						if (video.videoType == 1) {
 							this.videoIcon = 'icon-qj1'
 						}
+						if(presetPoint != null){
+							this.videoInfo.presetPoint = 0
+						}else{
+							this.videoInfo.presetPoint = 1
+						}
+						this.videoInfo.rtuNumber = this.rtuNumber
 					}
 
 				}).catch(error => {

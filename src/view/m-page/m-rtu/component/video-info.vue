@@ -1,15 +1,38 @@
 <!-- 用户组件 -->
 <template>
-	<div ref="ezuikt11">
+	<div ref="ezuikt11" style="height: 100%;width: 100%;position: relative;">
 		<!-- <EZUIKitJs :et-wide-high="etWideHigh"></EZUIKitJs> -->
-		<div id="video-container" style="width:100%;height:100%">
-			<!-- <video id="video-container"></video> -->
-			
+		<div v-show="videoInfo.videoType == 1" style="font-size: 1rem;padding: 0.3125rem 0.3125rem;position: absolute;bottom:1rem;right:1rem;z-index: 2;">预置点:
+			<Icon @click="addPreset" v-show="presetPoint == 1" type="md-add-circle" size="25" />
+			<Icon @click="delPreset" v-show="presetPoint == 0" type="md-remove-circle" size="25" />
+			<Button @click="usePreset" :disabled="presetPoint == 1" type="primary" style="margin-left: 0.625rem;">调用</Button>
+
 		</div>
-		
+
+		<div v-show="videoInfo.videoType == 1" style="font-size: 1rem;padding: 0.3125rem 0.3125rem;position: absolute;bottom:1rem;left:1rem;z-index: 2;">
+			<ButtonGroup size="large">
+				<Button icon="md-expand" @click = "controlYsOpen(8)"></Button>
+				<Button icon="md-contract" @click = "controlYsOpen(9)"></Button>
+				<Button icon="md-resize" @click = "controlYsOpen(11)"></Button>
+				<Button icon="ios-locate" @click = "controlYsOpen(10)"></Button>
+			</ButtonGroup>
+			<!-- <Button @click="usePreset" type="primary" style="margin-left: 0.625rem;">调用</Button> -->
+
+		</div>
+
+		<iframe :src="videoUrl" id="ysOpenDevice" height="100%" width="100%">
+		</iframe>
+		<!-- {{videoInfo}} -->
+
+
+		<!-- 	<div id="video-container" style="width:100%;height:100%">
+		</div>
+
 		<div v-show="videoInfo.videoType == 1">
 			<div style="text-align: right;font-size: 1rem;padding: 0.3125rem 0.3125rem;">
-				<span>预置点:<Icon type="md-add-circle" size="25" /><span style="width: 2.5rem;">6</span><Icon type="md-remove-circle" size="25"/></span>
+				<span>预置点:
+					<Icon type="md-add-circle" size="25" /><span style="width: 2.5rem;">6</span>
+					<Icon type="md-remove-circle" size="25" /></span>
 				<Button type="primary" size="small" style="margin-left: 0.625rem;">调用</Button>
 			</div>
 			<div id="btnBgDiv" style="width: 210px;height: 210px;border-radius: 50%;background: #BFC7D3;position: relative;margin:0 auto;">
@@ -33,25 +56,31 @@
 				</div>
 			</div>
 
-		</div>
+		</div> -->
 	</div>
 
 </template>
 
 <script>
-	
 	import EZUIKit from "ezuikit-js"
 	import $ from 'jquery'
+	import {
+		addRtuVideoPresetPoint,
+		delRtuVideoPresetPoint,
+		moveRtuVideoPresetPoint
+	} from '@/api/video.js'
 	export default {
 		props: {
 			videoInfo: {
 				type: String,
-				default:'',
+				default: '',
 			},
 		},
 		data() {
 			return {
+				presetPoint: 1,
 				flags: false,
+				videoUrl: ''
 			}
 		},
 		directives: {
@@ -83,14 +112,64 @@
 			},
 
 		},
-		
+
 		methods: {
+			usePreset() {
+				if (this.videoInfo) {
+					var rtuNumber = this.videoInfo.rtuNumber
+					moveRtuVideoPresetPoint(rtuNumber).then(res => {
+						const data = res.data
+						if (data.success == 1) {
+							// this.$Message.success('预置点设置成功')
+							// this.videoInfo.presetPoint = '1'
+						} else {
+							this.$Message.success(data.errorMessage)
+						}
+					}).catch(error => {
+						alert(error)
+					})
+				}
+			},
+			addPreset() {
+				if (this.videoInfo) {
+					var rtuNumber = this.videoInfo.rtuNumber
+					addRtuVideoPresetPoint(rtuNumber).then(res => {
+						const data = res.data
+						if (data.success == 1) {
+							this.$Message.success('预置点设置成功')
+							this.presetPoint = 0
+						} else {
+							this.$Message.success('预置点设置失败')
+						}
+					}).catch(error => {
+						alert(error)
+					})
+				}
+
+			},
+			delPreset() {
+				// alert(1)
+				if (this.videoInfo) {
+					var rtuNumber = this.videoInfo.rtuNumber
+					delRtuVideoPresetPoint(rtuNumber).then(res => {
+						const data = res.data
+						if (data.success == 1) {
+							this.$Message.success('预置点删除成功')
+							this.presetPoint = 1
+						} else {
+							this.$Message.success('预置点删除失败')
+						}
+					}).catch(error => {
+						alert(error)
+					})
+				}
+			},
 			showPlayer(accessToken, iaVideoUrl) {
 				var that = this
 				// alert(JSON.stringify(this.etWideHigh))
 				var width = this.$refs.ezuikt11.offsetWidth
 				this.$nextTick(() => {
-					this.player = new EZUIKit.EZUIKitPlayer({
+					that.player = new EZUIKit.EZUIKitPlayer({
 						autoplay: true,
 						id: "video-container",
 						accessToken: accessToken,
@@ -102,49 +181,58 @@
 						width: width,
 						height: 300
 					});
-					// console.log(this.player)
+					console.log('1:' + that.player)
 				})
-			
+
 			},
 			controlYsOpen(direction) {
-				var accessToken = 'at.c53bra70c34o68zxb9inx6x7blhmwm4y-54w6bdnl88-1y6m3k0-lb0v6jgpn'
-				var deviceSerial = 'E38539884'
-				var channelNo = 1
+				var that = this
+				var accessToken = this.videoInfo.videoBrandAccount.accessToken
+				var deviceSerial = this.videoInfo.videoDeviceInfo.deviceSerial
+				var channelNo = this.videoInfo.videoDeviceInfo.channelNo
 				$.ajax({
 					url: "https://open.ys7.com/api/lapp/device/ptz/start",
 					type: "post",
 					data: {
 						accessToken: accessToken,
 						deviceSerial: deviceSerial,
-						channelNo: 1,
+						channelNo: channelNo,
 						direction: direction,
 						speed: 1
 					},
 					success: function(res) {
-						// alert(res.geocodes[0].formatted_address + "经纬度：" + res.geocodes[0].location);
-						console.log(res); //在console中查看数据
+						if(res.code === "10029"){
+							that.$Message.warning(res.msg)
+						}else{
+							that.controlYsDown(direction)
+						}
+						// alert(res)
 					},
 					error: function(error) {
 						console.log(error)
+						// that.$Message.warning(error)
 						// alert('failed!');
 					},
 				});
 			},
 			controlYsDown(direction) {
-				var accessToken = 'at.c53bra70c34o68zxb9inx6x7blhmwm4y-54w6bdnl88-1y6m3k0-lb0v6jgpn'
-				var deviceSerial = 'E38539884'
-				var channelNo = 1
+				var accessToken = this.videoInfo.videoBrandAccount.accessToken
+				var deviceSerial = this.videoInfo.videoDeviceInfo.deviceSerial
+				var channelNo = this.videoInfo.videoDeviceInfo.channelNo
 				$.ajax({
 					url: "https://open.ys7.com/api/lapp/device/ptz/stop",
 					type: "post",
 					data: {
 						accessToken: accessToken,
 						deviceSerial: deviceSerial,
-						channelNo: 1,
+						channelNo:channelNo,
 						direction: direction,
 						speed: 1
 					},
 					success: function(res) {
+						if(res.code === "10029"){
+							that.$Message.warning(res.msg)
+						}
 						// alert(res.geocodes[0].formatted_address + "经纬度：" + res.geocodes[0].location);
 						console.log(res); //在console中查看数据
 					},
@@ -316,11 +404,27 @@
 
 		},
 		mounted() {
-			if(this.videoInfo != ''){
+			if (this.videoInfo != '') {
+				// console.log(this.video)
+
 				var videoBrandAccount = this.videoInfo.videoBrandAccount
 				var videoDeviceInfo = this.videoInfo.videoDeviceInfo
-				this.showPlayer(videoBrandAccount.accessToken,videoDeviceInfo.highDefinitionUrl)
-				
+				var accessToken = videoBrandAccount.accessToken
+				var deviceSerial = videoDeviceInfo.deviceSerial
+				var channelNo = videoDeviceInfo.channelNo
+				var suffix = this.videoInfo.suffix
+				this.presetPoint = this.videoInfo.presetPoint
+				if (suffix) {
+					this.videoUrl = 'https://open.ys7.com/ezopen/h5/' + suffix + '?autoplay=1&audio=1&accessToken=' + accessToken +
+						'&deviceSerial=' + deviceSerial + '&channelNo=' + channelNo + ''
+				} else {
+					this.videoUrl = 'https://open.ys7.com/ezopen/h5/live?autoplay=1&audio=1&accessToken=' + accessToken +
+						'&deviceSerial=' + deviceSerial + '&channelNo=' + channelNo + ''
+				}
+
+				// this.showPlayer(videoBrandAccount.accessToken, videoDeviceInfo.fluentUrl)
+				// console.log(this.player)
+
 			}
 		},
 	}

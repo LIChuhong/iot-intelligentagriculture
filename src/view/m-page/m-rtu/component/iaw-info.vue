@@ -4,7 +4,8 @@
 		<div style="height: 6.25rem;text-align: center;position: relative">
 			<img :src="iaRtu.rtuTypeImgUrl" style="height:100%;" />
 			<div style="position: absolute;right:1.875rem;bottom:0">
-				<Icon @click="showVideo" :type="' iconfont' + ' ' +  videoIcon" size="40" color="red"></Icon>
+				<Icon @click="showVideo('live')" :type="' iconfont' + ' ' +  videoIcon" size="40" color="red"></Icon>
+				<span @click="showVideo('rec')">回看</span>
 			</div>
 		</div>
 		<div style="display: flex;margin: 1.25rem 0;font-size: 1rem;">
@@ -24,7 +25,7 @@
 			<Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
 			<div>{{tips}}</div>
 		</Spin>
-		<Modal class="ivu-modal-body" v-model="showVideoInfo" title="视频详情" footer-hide fullscreen >
+		<Modal v-model="showVideoInfo" title="视频详情" footer-hide fullscreen >
 			<video-info :video-info = "videoInfo" v-if="showVideoInfo"></video-info>
 		</Modal>
 	</div>
@@ -72,10 +73,12 @@
 			}
 		},
 		methods: {
-			showVideo(){
+			showVideo(suffix){
 				if(this.videoInfo.brandTag == 'YSY'){
+					this.videoInfo.suffix = suffix
 					this.showVideoInfo = true
 				}
+				// window.location.href = 'https://open.ys7.com/ezopen/h5/live?autoplay=1&accessToken=at.cgxifm1o2tog4z652rovgoqz2a2drac2-1la8xsi5y0-12rzmmy-5rzr1g7fa&deviceSerial=E38539884&channelNo=1'
 				
 			},
 			
@@ -104,7 +107,7 @@
 							// console.log(data)
 							this.iaRtu = data.iaRtu
 							if (data.iaRtu.videoId > 0) {
-								this.getVideoInfo(data.iaRtu.videoId)
+								this.getVideoInfo(data.iaRtu.videoId,data.iaRtu.presetPoint)
 							}
 							this.getRuDataInfo()
 						} else {
@@ -166,7 +169,7 @@
 				})
 
 			},
-			getVideoInfo(id) {
+			getVideoInfo(id,presetPoint) {
 				getVideo(id).then(res => {
 					const data = res.data
 					if (data.success == 1) {
@@ -178,6 +181,13 @@
 						if (video.videoType == 1) {
 							this.videoIcon = 'icon-qj1'
 						}
+						if(presetPoint != null){
+							this.videoInfo.presetPoint = 0
+						}else{
+							this.videoInfo.presetPoint = 1
+						}
+						
+						this.videoInfo.rtuNumber = this.rtuNumber
 					}
 
 				}).catch(error => {
@@ -233,9 +243,7 @@
 			}
 
 		},
-		computed() {
-
-		},
+		
 		created() {
 			this.getRtuInfo()
 			this.iat.timeList = rtuTimeDataList
@@ -247,7 +255,13 @@
 </script>
 
 <style>
+  .ivu-modal-body{
+		padding: 1rem;
+	}
 	@media screen and (min-width:300px) and (max-width:900px) {
+		.ivu-modal-body{
+				padding: 0px;
+			}
 		.btnStyle {
 			text-align: right;
 			padding-right: 1.25rem;
@@ -257,7 +271,8 @@
 			height: 3.125rem;
 			font-size: 1.5rem;
 		}
-		.iawStyle .ivu-modal-body{
+		
+		.test1{
 			padding: 0;
 		}
 	}

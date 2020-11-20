@@ -2,8 +2,12 @@
 	<div>
 		<div>
 			<!-- 土壤检测器 -->
-			<div style="height: 6.25rem;text-align: center;">
+			<div style="height: 6.25rem;text-align: center;position: relative">
 				<img :src="iaRtu.rtuTypeImgUrl" style="height:100%;" />
+				<div style="position: absolute;right:1.875rem;bottom:0">
+					<Icon @click="showVideo('live')" :type="' iconfont' + ' ' +  videoIcon" size="40" color="red"></Icon>
+					<span @click="showVideo('rec')">回看</span>
+				</div>
 			</div>
 			<div style="margin: 1.25rem 0;">
 				<div style="font-size: 1rem;text-align: center;" v-for="(item,index) in parameterDataList" :key="index">
@@ -16,6 +20,9 @@
 			<Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
 			<div>{{tips}}</div>
 		</Spin>
+		<Modal v-model="showVideoInfo" title="视频详情" footer-hide fullscreen>
+			<video-info :video-info="videoInfo" v-if="showVideoInfo"></video-info>
+		</Modal>
 	</div>
 </template>
 
@@ -25,8 +32,15 @@
 		getRtuData,
 		setRtuData
 	} from '@/api/rtu.js'
+	import {
+		getVideo
+	} from '@/api/video.js'
+	import VideoInfo from '../component/video-info.vue'
 	export default {
 		props: ['rtuNumber'],
+		components: {
+			VideoInfo
+		},
 		data() {
 			return {
 				tips: '检测中...',
@@ -34,13 +48,46 @@
 				iaRtu: {},
 				parameterDataList: [],
 				showSpin: false,
-				parameterIndex: null
+				parameterIndex: null,
+				videoInfo: '',
+				videoIcon: '',
+				showVideoInfo: false
 			}
 		},
 		watch: {
 			
 		},
 		methods: {
+			showVideo(suffix) {
+				if(this.videoInfo.brandTag == 'YSY'){
+					this.videoInfo.suffix = suffix
+					this.showVideoInfo = true
+				}
+			},
+			getVideoInfo(id,presetPoint){
+				getVideo(id).then(res => {
+					const data = res.data
+					if (data.success == 1) {
+						this.videoInfo = data.video
+						var video = data.video
+						if (video.videoType == 0) {
+							this.videoIcon = 'icon-qj0'
+						}
+						if (video.videoType == 1) {
+							this.videoIcon = 'icon-qj1'
+						}
+						if(presetPoint != null){
+							this.videoInfo.presetPoint = 0
+						}else{
+							this.videoInfo.presetPoint = 1
+						}
+						this.videoInfo.rtuNumber = this.rtuNumber
+					}
+			
+				}).catch(error => {
+					alert(error)
+				})
+			},
 			getRtuInfo() {
 				this.showSpin = true
 				if (this.rtuNumber != null && this.rtuNumber != '') {
@@ -50,6 +97,9 @@
 						if (data.success == 1) {
 							// console.log(data)
 							this.iaRtu = data.iaRtu
+							if (data.iaRtu.videoId > 0) {
+								this.getVideoInfo(data.iaRtu.videoId,data.iaRtu.presetPoint)
+							}
 							this.getRtuDataInfo()
 						} else {
 							this.$Message.error(this.rtuNumber + data.errorMessage)
@@ -100,9 +150,7 @@
 			}
 
 		},
-		computed() {
-
-		},
+		
 		created() {
 			this.getRtuInfo()
 			

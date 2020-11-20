@@ -1,20 +1,21 @@
 <template>
 	<div>
 		<!-- 水肥一体机 -->
-		<div style="height: 6.25rem;text-align: center;">
+		<div style="height: 6.25rem;text-align: center;position: relative">
 			<img :src="iaRtu.rtuTypeImgUrl" style="height:100%;" />
+			<div style="position: absolute;right:1.875rem;bottom:0">
+				<Icon @click="showVideo('live')" :type="' iconfont' + ' ' +  videoIcon" size="40" color="red"></Icon>
+				<span @click="showVideo('rec')">回看</span>
+			</div>
 		</div>
-		<!-- <div class="iasfStyle"> -->
-			
-			<sf-model :sf-rtu-number="rtuNumber"></sf-model>
-			
-
-		<!-- </div> -->
-
+		<sf-model :sf-rtu-number="rtuNumber"></sf-model>
 		<Spin fix v-show="showSpin" style="background: rgba(255,255,255,0.3);">
 			<Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
 			<div>检测中...</div>
 		</Spin>
+		<Modal v-model="showVideoInfo" title="视频详情" footer-hide fullscreen>
+			<video-info :video-info="videoInfo" v-if="showVideoInfo"></video-info>
+		</Modal>
 
 	</div>
 </template>
@@ -22,23 +23,37 @@
 <script>
 	import SfModel from '@/view/page/farm-management/component/sf-model.vue'
 	import {
+		getVideo
+	} from '@/api/video.js'
+	import VideoInfo from '../component/video-info.vue'
+	import {
 		getRtu,
 		getRtuData
 	} from '@/api/rtu.js'
 	export default {
 		props: ['rtuNumber'],
-		components:{
-			SfModel
+		components: {
+			SfModel,
+			VideoInfo
 		},
 		data() {
 			return {
 				iaRtu: {},
 				parameterDataList: [],
 				parameterDataList1: [],
-				showSpin: false
+				showSpin: false,
+				videoInfo: '',
+				videoIcon: '',
+				showVideoInfo: false
 			}
 		},
 		methods: {
+			showVideo(suffix) {
+				if(this.videoInfo.brandTag == 'YSY'){
+					this.videoInfo.suffix = suffix
+					this.showVideoInfo = true
+				}
+			},
 			getRtuInfo() {
 				if (this.rtuNumber != null && this.rtuNumber != '') {
 					getRtu(this.rtuNumber).then(res => {
@@ -46,6 +61,9 @@
 						if (data.success == 1) {
 							// console.log(data)
 							this.iaRtu = data.iaRtu
+							if (data.iaRtu.videoId > 0) {
+								this.getVideoInfo(data.iaRtu.videoId,data.iaRtu.presetPoint)
+							}
 							// this.getRuDataInfo()
 						} else {
 							this.$Message.error(this.rtuNumber + data.errorMessage)
@@ -55,6 +73,30 @@
 					})
 				}
 
+			},
+			getVideoInfo(id,presetPoint) {
+				getVideo(id).then(res => {
+					const data = res.data
+					if (data.success == 1) {
+						this.videoInfo = data.video
+						var video = data.video
+						if (video.videoType == 0) {
+							this.videoIcon = 'icon-qj0'
+						}
+						if (video.videoType == 1) {
+							this.videoIcon = 'icon-qj1'
+						}
+						if(presetPoint != null){
+							this.videoInfo.presetPoint = 0
+						}else{
+							this.videoInfo.presetPoint = 1
+						}
+						this.videoInfo.rtuNumber = this.rtuNumber
+					}
+
+				}).catch(error => {
+					alert(error)
+				})
 			},
 			getRuDataInfo() {
 				if (this.rtuNumber != null && this.rtuNumber != '') {
@@ -80,7 +122,8 @@
 											item.iconColor = 'red'
 										}
 										list.push(item)
-									} else if (item.parameterId == 25 || item.parameterId == 27 || item.parameterId == 37 || item.parameterId ==35) {
+									} else if (item.parameterId == 25 || item.parameterId == 27 || item.parameterId == 37 || item.parameterId ==
+										35) {
 										item.icon = ' iconfont icon-ic_kqwd'
 										if (item.value == 1) {
 											item.title = '开'
@@ -120,7 +163,7 @@
 
 		created() {
 			this.getRtuInfo()
-			
+
 		},
 	}
 </script>
