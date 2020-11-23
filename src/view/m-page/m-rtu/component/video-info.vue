@@ -2,23 +2,38 @@
 <template>
 	<div ref="ezuikt11" style="height: 100%;width: 100%;position: relative;">
 		<!-- <EZUIKitJs :et-wide-high="etWideHigh"></EZUIKitJs> -->
-		<div v-show="videoInfo.videoType == 1" style="font-size: 1rem;padding: 0.3125rem 0.3125rem;position: absolute;bottom:1rem;right:1rem;z-index: 2;">预置点:
-			<Icon @click="addPreset" v-show="presetPoint == 1" type="md-add-circle" size="25" />
-			<Icon @click="delPreset" v-show="presetPoint == 0" type="md-remove-circle" size="25" />
-			<Button @click="usePreset" :disabled="presetPoint == 1" type="primary" style="margin-left: 0.625rem;">调用</Button>
+		<div v-show="videoInfo.videoType == 1 && modelTest == '回放'" style="font-size: 1rem;padding: 0.3125rem 0.3125rem;position: absolute;bottom:1rem;right:1rem;z-index: 2;">
+			<div style="text-align: right;margin-bottom: 0.625rem;">
+				<!-- <ButtonGroup size="large">
+					<Button icon="md-expand" @click="controlYsOpen(8)"></Button>
+					<Button icon="md-contract" @click="controlYsOpen(9)"></Button>
+					<Button icon="md-resize" @click="controlYsOpen(11)"></Button>
+					<Button icon="ios-locate" @click="controlYsOpen(10)"></Button>
+				</ButtonGroup> -->
+				<Icon color="#F5871F" style="margin-right: 1rem;" type="ios-add-circle-outline" size="35"  @click="controlYsOpen(8)"/>
+				<Icon color="#F5871F" type="ios-remove-circle-outline" size="35" @click="controlYsOpen(9)"/>
+			</div>
+			<div style="text-align: right;">预置点:
+				<Icon @click="addPreset" v-show="presetPoint == 1" type="md-add-circle" size="25" />
+				<Icon @click="delPreset" v-show="presetPoint == 0" type="md-remove-circle" size="25" />
+				<Button @click="usePreset" :disabled="presetPoint == 1" type="primary" style="margin-left: 0.625rem;">调用</Button>
+			</div>
+			
 
 		</div>
 
-		<div v-show="videoInfo.videoType == 1" style="font-size: 1rem;padding: 0.3125rem 0.3125rem;position: absolute;bottom:1rem;left:1rem;z-index: 2;">
-			<ButtonGroup size="large">
+		<div style="font-size: 1rem;padding: 0.3125rem 0.3125rem;position: absolute;bottom:1rem;left:1rem;z-index: 2;">
+			<Button size="large" icon="md-expand" @click="videoModel">{{modelTest}}</Button>
+			<!-- <ButtonGroup size="large">
+				<Button icon="md-expand" @click = "controlYsOpen(8)"></Button>
 				<Button icon="md-expand" @click = "controlYsOpen(8)"></Button>
 				<Button icon="md-contract" @click = "controlYsOpen(9)"></Button>
 				<Button icon="md-resize" @click = "controlYsOpen(11)"></Button>
 				<Button icon="ios-locate" @click = "controlYsOpen(10)"></Button>
-			</ButtonGroup>
-			<!-- <Button @click="usePreset" type="primary" style="margin-left: 0.625rem;">调用</Button> -->
-
+			</ButtonGroup> -->
 		</div>
+
+
 
 		<iframe :src="videoUrl" id="ysOpenDevice" height="100%" width="100%">
 		</iframe>
@@ -78,6 +93,7 @@
 		},
 		data() {
 			return {
+				modelTest: '回放',
 				presetPoint: 1,
 				flags: false,
 				videoUrl: ''
@@ -114,6 +130,27 @@
 		},
 
 		methods: {
+			videoModel() {
+
+				var videoBrandAccount = this.videoInfo.videoBrandAccount
+				var videoDeviceInfo = this.videoInfo.videoDeviceInfo
+				var accessToken = videoBrandAccount.accessToken
+				var deviceSerial = videoDeviceInfo.deviceSerial
+				var channelNo = videoDeviceInfo.channelNo
+				var validCode = videoDeviceInfo.validCode
+				if (this.modelTest == '回放') {
+					this.videoUrl = 'https://open.ys7.com/ezopen/h5/rec?autoplay=0&accessToken=' + accessToken + '&deviceSerial=' + deviceSerial + '&channelNo=' + channelNo 
+					this.modelTest = '预览'
+				}else{
+					this.videoUrl = 'https://open.ys7.com/ezopen/h5/live?autoplay=0&audio=1&accessToken=' + accessToken + '&deviceSerial=' + deviceSerial + '&channelNo=' + channelNo
+					this.modelTest = '回放'
+				}
+				if (validCode) {
+					this.videoUrl += '&validCode=' + validCode
+				}
+
+
+			},
 			usePreset() {
 				if (this.videoInfo) {
 					var rtuNumber = this.videoInfo.rtuNumber
@@ -170,7 +207,7 @@
 				var width = this.$refs.ezuikt11.offsetWidth
 				this.$nextTick(() => {
 					that.player = new EZUIKit.EZUIKitPlayer({
-						autoplay: true,
+						autoplay: false,
 						id: "video-container",
 						accessToken: accessToken,
 						url: iaVideoUrl,
@@ -201,9 +238,9 @@
 						speed: 1
 					},
 					success: function(res) {
-						if(res.code === "10029"){
+						if (res.code === "10029") {
 							that.$Message.warning(res.msg)
-						}else{
+						} else {
 							that.controlYsDown(direction)
 						}
 						// alert(res)
@@ -225,12 +262,12 @@
 					data: {
 						accessToken: accessToken,
 						deviceSerial: deviceSerial,
-						channelNo:channelNo,
+						channelNo: channelNo,
 						direction: direction,
 						speed: 1
 					},
 					success: function(res) {
-						if(res.code === "10029"){
+						if (res.code === "10029") {
 							that.$Message.warning(res.msg)
 						}
 						// alert(res.geocodes[0].formatted_address + "经纬度：" + res.geocodes[0].location);
@@ -412,15 +449,15 @@
 				var accessToken = videoBrandAccount.accessToken
 				var deviceSerial = videoDeviceInfo.deviceSerial
 				var channelNo = videoDeviceInfo.channelNo
+				var validCode = videoDeviceInfo.validCode
 				var suffix = this.videoInfo.suffix
 				this.presetPoint = this.videoInfo.presetPoint
-				if (suffix) {
-					this.videoUrl = 'https://open.ys7.com/ezopen/h5/' + suffix + '?autoplay=1&audio=1&accessToken=' + accessToken +
-						'&deviceSerial=' + deviceSerial + '&channelNo=' + channelNo + ''
-				} else {
-					this.videoUrl = 'https://open.ys7.com/ezopen/h5/live?autoplay=1&audio=1&accessToken=' + accessToken +
-						'&deviceSerial=' + deviceSerial + '&channelNo=' + channelNo + ''
+				this.videoUrl = 'https://open.ys7.com/ezopen/h5/live?autoplay=0&accessToken=' + accessToken +
+					'&deviceSerial=' + deviceSerial + '&channelNo=' + channelNo
+				if (validCode) {
+					this.videoUrl += '&validCode=' + validCode
 				}
+				console.log(this.videoUrl)
 
 				// this.showPlayer(videoBrandAccount.accessToken, videoDeviceInfo.fluentUrl)
 				// console.log(this.player)

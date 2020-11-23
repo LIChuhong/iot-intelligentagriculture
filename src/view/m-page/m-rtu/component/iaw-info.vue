@@ -5,7 +5,7 @@
 			<img :src="iaRtu.rtuTypeImgUrl" style="height:100%;" />
 			<div style="position: absolute;right:1.875rem;bottom:0">
 				<Icon @click="showVideo('live')" :type="' iconfont' + ' ' +  videoIcon" size="40" color="red"></Icon>
-				<span @click="showVideo('rec')">回看</span>
+				<!-- <span v-show="videoIcon != ''" @click="showVideo('rec')">回看</span> -->
 			</div>
 		</div>
 		<div style="display: flex;margin: 1.25rem 0;font-size: 1rem;">
@@ -106,9 +106,29 @@
 						if (data.success == 1) {
 							// console.log(data)
 							this.iaRtu = data.iaRtu
-							if (data.iaRtu.videoId > 0) {
-								this.getVideoInfo(data.iaRtu.videoId,data.iaRtu.presetPoint)
+							var iaRtu = data.iaRtu
+							if(iaRtu.videoId > 0){
+								var video = iaRtu.video
+								if(video){
+									this.videoInfo = video
+									if (video.videoType == 1) {
+										this.videoIcon = 'icon-qj1'
+									}
+									if (video.videoType == 0) {
+										this.videoIcon = 'icon-qj0'
+									}
+									if(iaRtu.presetPoint != null){
+										this.videoInfo.presetPoint = 0
+									}else{
+										this.videoInfo.presetPoint = 1
+									}
+									this.videoInfo.rtuNumber = this.rtuNumber
+								}
 							}
+						
+							// if (data.iaRtu.videoId > 0) {
+							// 	this.getVideoInfo(data.iaRtu.videoId,data.iaRtu.presetPoint)
+							// }
 							this.getRuDataInfo()
 						} else {
 							this.$Message.error(this.rtuNumber + data.errorMessage)

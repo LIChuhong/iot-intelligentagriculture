@@ -30,6 +30,8 @@
 					<Col span="18"><Input :maxlength="100" type="text" v-model="videoForm.videoDeviceInfo.deviceName" placeholder="请输入设备名称"></Input></Col>
 					<Col span="6"><span>通道：</span></Col>
 					<Col span="18"><Input :maxlength="100" type="number" v-model="videoForm.videoDeviceInfo.channelNo" placeholder="请输入设备通道"></Input></Col>
+					<Col span="6"><span>验证码：</span></Col>
+					<Col span="18"><Input :maxlength="30" type="text" v-model="videoForm.videoDeviceInfo.validCode" placeholder="请输入设备加密验证码"></Input></Col>
 					<Col span="6"><span>流畅地址：</span></Col>
 					<Col span="18"><Input :maxlength="500" type="text" v-model="videoForm.videoDeviceInfo.fluentUrl" placeholder="请输入视频流畅地址"></Input></Col>
 					<Col span="6"><span>高清地址：</span></Col>
@@ -82,6 +84,7 @@
 						deviceSerial: '',
 						deviceName: '',
 						channelNo: '',
+						validCode:'',
 						fluentUrl: '',
 						highDefinitionUrl: ''
 					}
@@ -232,6 +235,7 @@
 								deviceSerial: '',
 								deviceName: '',
 								channelNo: '',
+								validCode:'',
 								fluentUrl: '',
 								highDefinitionUrl: ''
 							}

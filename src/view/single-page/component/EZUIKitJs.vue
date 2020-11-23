@@ -82,7 +82,7 @@
 				// alert(JSON.stringify(this.etWideHigh))
 				this.$nextTick(() => {
 					this.player = new EZUIKit.EZUIKitPlayer({
-						autoplay: true,
+						autoplay: false,
 						id: "video-container",
 						accessToken: accessToken,
 						url: iaVideoUrl,

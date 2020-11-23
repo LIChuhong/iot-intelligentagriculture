@@ -141,7 +141,7 @@
 				 :title="item.channelName">
 					<!-- {{iaVideoImgList[0]}} -->
 					<Card shadow>
-						<a style="position: absolute;right: 0;top: 0;" @click="linkDownload(item)">详情</a>
+						<!-- <a style="position: absolute;right: 0;top: 0;" @click="linkDownload(item)">详情</a> -->
 						<p style="color: #00BFFF;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;">{{item.channelName}}</p>
 						<img :src="item.picUrl" width="100%" @click="changeIaVideo(item)" />
 					</Card>
