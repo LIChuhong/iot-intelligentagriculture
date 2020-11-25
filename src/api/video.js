@@ -111,6 +111,15 @@ export const getVideoList = (searchKey,maxId,pageSize) => {
 	})
 }
 
+//获取全部视频设备信息列表
+export const getAllVideoList = () => {
+	return axios.request({
+		url: '/v1/getAllVideoList',
+	
+		method: 'get'
+	})
+}
+
 //添加设备关联视频预置点
 export const addRtuVideoPresetPoint = (rtuNumber) => {
 	const data = new URLSearchParams()

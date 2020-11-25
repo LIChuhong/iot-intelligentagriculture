@@ -3,11 +3,29 @@
 
 		<div ref="map" style="width:80%;float: left;overflow:hidden;background: #808695;height:100%;display: flex;justify-content:center;position: relative;">
 			<div v-show="showMap" id="mapBgDiv" ref="mapBgDiv" style="position: absolute;height: 100%;overflow:hidden;background: #00BFFF;width: 100%;">
-				<img id="mapBgImg" ref="mapBgImg"  :src="mapBgImgUrl" style="z-index: 1;height: 100%;width: 100%;" draggable="false" :class="{ widthActive:value }" />
+				<img id="mapBgImg" ref="mapBgImg" :src="mapBgImgUrl" style="z-index: 1;height: 100%;width: 100%;" draggable="false"
+				 :class="{ widthActive:value }" />
 				<div v-for="item in rtuImgList" :key="item.rtuNumber" v-drag class="drag" :style="{top:item.heightScale+'%',left:item.widthScale+'%'}">
 					<Poptip :title="item.rtuNumber">
+						<div slot="content">
+							<div v-show="!item.workingRtuVideo">
+								未加入视频轮播
+								<Button size="small" type="primary" @click="addShufflingRtu(item)">加入</Button>
+							</div>
+							<div v-show="item.workingRtuVideo">
+								已加入视频轮播
+								<Button size="small" type="error" @click="delShufflingRtu(item)">退出</Button>
+							</div>
+						</div>
 						<div class="rtuImgStyle">
 							<img :src="item.rtuTypeImgUrl" class="rtu" :alt="item.rtuNumber" :draggable="false" />
+						</div>
+					</Poptip>
+				</div>
+				<div v-for="item in rtuVideoList" :key="item.id" :id="item.id" v-drag class="dragVideo" :style="{top:item.heightScale+'%',left:item.widthScale+'%'}" :title="item.videoName">
+					<Poptip :title="item.videoName">
+						<div class="rtuImgStyle">
+							<Icon size="25" class="rtu" :type="' iconfont '+item.typeIcon"/>
 						</div>
 					</Poptip>
 				</div>
@@ -21,23 +39,46 @@
 				<Upload :show-upload-list="false" :on-success="handleSuccess" :format="['jpg','jpeg','png']" :max-size="500"
 				 :on-format-error="handleFormatError" :on-exceeded-size="handleMaxSize" :action="uploadAction" :headers="uploadHeaders"
 				 :on-error="handleError">
-					<Button style="margin: 5px 0;" type="success">上传地图</Button>
+					<Button type="success">上传地图</Button>
 				</Upload>
-				<Input search enter-button placeholder="请输入名称关键字..." size="small" />
+
 			</div>
-			<div style="position: absolute;top:75px;bottom: 95px;background: #c5c8ce;;padding: 5px;overflow: auto;text-align: left;width: 100%;">
-				<!-- <CheckboxGroup v-model="checkRtuData" @on-change="checkRtu">
-					<Checkbox style="display: block;" v-for="item in rtuListData" :key="item.id" :label="item">({{item.rtuNumber}}){{item.rtuTypeName}}</Checkbox>
-				</CheckboxGroup> -->
-				<Tree @on-check-change="checkRtu" :data="rtuListData" show-checkbox multiple></Tree>
-				<div v-show="showAddRtu" style="text-align: center;">
-					<a>加载更多...</a>
-				</div>
+			<div style="position: absolute;top:3.125rem;bottom:7.5rem;background: #c5c8ce;;padding: 5px;overflow: auto;text-align: left;width: 100%;">
+			
+				<Tabs type="card">
+					<TabPane label="设备">
+						<Input search enter-button placeholder="请输入名称关键字..." size="small" />
+						<Tree @on-check-change="checkRtu" :data="rtuListData" show-checkbox multiple></Tree>
+						<div v-show="showAddRtu" style="text-align: center;">
+							<a @click="getRtuList">加载更多...</a>
+						</div>
+					</TabPane>
+					<TabPane label="视频">
+						<Tree @on-check-change="checkVideo" :data="videoListData" show-checkbox multiple></Tree>
+					</TabPane>
+					<TabPane label="轮播设备">
+						<div v-for="(item,index) in shufflingRtuList" :key="index">
+							{{item.title}}
+							<Icon style="margin-left: 0.625rem;cursor:pointer" size="20" type="md-close" @click="delShufflingRtu(item)" />
+						</div>
+					</TabPane>
+				</Tabs>
+
+				<!-- <Tree @on-check-change="checkRtu" :data="rtuListData" show-checkbox multiple></Tree>
+				<div v-show="showAddRtu" style="text-align: center;" >
+					<a @click="getRtuList">加载更多...</a>
+				</div> -->
 			</div>
 
 			<div style="position:absolute;bottom: 0;text-align: center;">
+				<div style="margin-bottom: 0.625rem;">
+					刷新周期:
+					<Select v-model="refreshDataInv" size="small" style="width: 70%;">
+						<Option v-for="item in refreshDataList" :value="item.value" :key="item.value">{{ item.label }}</Option>
+					</Select>
+				</div>
 				地图名称:<Input v-model="mapName" placeholder="请输入地图名称" style="width: 70%;" size="small" />
-				<Button style="margin: 5px 0;" type="primary" @click="saveMap">保存</Button>
+				<Button style="margin: 0.625rem 0;" type="primary" @click="saveMap">保存</Button>
 			</div>
 			<div v-show="mapId != null" style="position: absolute;bottom: 0;right: 0;"><a @click="goBack">返回</a></div>
 
@@ -63,6 +104,9 @@
 	import {
 		getRtuList,
 	} from '@/api/rtu'
+	import {
+		getAllVideoList,
+	} from '@/api/video.js'
 	export default {
 		props: {
 			mapId: {
@@ -85,18 +129,24 @@
 				},
 				checkRtuData: [],
 				mapBgImgUrl: '',
+				videoListData: [],
+				refreshDataInv: null,
 				searchKey: '',
 				maxId: 0,
 				pageSize: 50,
 				keyField: 0,
 				showAddRtu: true,
 				mapName: null,
+				rtuVideoList: [],
+				shufflingRtuList: [],
+				refreshDataList: []
 
 			}
 		},
 
 		directives: {
 			drag(el, bindings) {
+				// console.log(el)
 				el.onmousedown = function(e) {
 
 					let mapHeight = document.getElementById('mapBgDiv').offsetHeight;
@@ -116,10 +166,30 @@
 
 		},
 		methods: {
+			delShufflingRtu(item) {
+				var list = this.shufflingRtuList
+				for (var i = 0; i < list.length; i++) {
+					if (item.rtuNumber == list[i].rtuNumber) {
+						this.shufflingRtuList.splice(i, 1);
+						item.workingRtuVideo = false
+					}
+				}
+			},
+			addShufflingRtu(item) {
+				this.shufflingRtuList.push(item)
+				item.workingRtuVideo = true
+			},
 			saveMap() {
+				// console.log(this.rtuImgList)
 				let rtusPostionJson = []
+				let videoPostionIson = []
+				let workingRtuVideoList = []
 				let maps = document.getElementsByClassName('drag');
-				// console.log(maps)
+				let mapsVideo = document.getElementsByClassName('dragVideo');
+				let list = this.shufflingRtuList
+				for(var i=0;i<list.length;i++){
+					workingRtuVideoList.push(list[i].rtuNumber)
+				}
 				for (var i = 0; i < maps.length; i++) {
 					rtusPostionJson.push({
 						'rtuNumber': parseInt(maps[i].getElementsByTagName("img")[0].alt),
@@ -128,6 +198,18 @@
 					})
 
 				}
+				// console.log(mapsVideo)
+				for (var i = 0; i < mapsVideo.length; i++) {
+					// console.log(mapsVideo)
+					videoPostionIson.push({
+						'videoId': parseInt(mapsVideo[i].id),
+						// 'videoType': parseInt(mapsVideo[i].title),
+						'x': parseFloat(mapsVideo[i].style.left),
+						'y': parseFloat(mapsVideo[i].style.top)
+					})
+				}
+				// console.log(videoPostionIson)
+				// console.log(rtusPostionJson)
 				let imgWidth = document.getElementById("mapBgImg").offsetWidth
 				let imgHeight = document.getElementById("mapBgImg").offsetHeight
 				let map = {
@@ -136,7 +218,10 @@
 					"rtuPostionList": rtusPostionJson,
 					"belongOrgId": this.$store.state.user.userInfo.belongOrgId,
 					"imgWidth": imgWidth,
-					"imgHeight": imgHeight
+					"imgHeight": imgHeight,
+					"videoPostionList":videoPostionIson,
+					"refreshDataInv":this.refreshDataInv,
+					"workingRtuVideoList":workingRtuVideoList
 				}
 				if (this.mapId != null && this.mapId != '') {
 					map.id = this.mapId
@@ -182,8 +267,54 @@
 				this.rtuImgList = list
 				// console.log(this.rtuListData)
 			},
-			getRtuList(list) {
-				// console.log(list)
+			checkVideo(list, item) {
+				// if (this.mapBgImgUrl == null || this.mapBgImgUrl == '') {
+				// 	this.$Message.warning('请先选择地图再选择设备')
+				// 	item.checked = false
+				// 	return
+				// }
+				this.rtuVideoList = list
+				// console.log(this.rtuVideoList)
+			},
+			getVideoList(list) {
+				getAllVideoList().then(res => {
+					const data = res.data
+					if (data.success == 1) {
+						// console.log(data)
+						this.videoListData = data.videoList.map(item => {
+							item.checked = false
+							item.title = item.videoName + '(' + item.brandTag + '|' + item.deviceSerial + ')'
+							if (item.videoType == 1) {
+								item.typeIcon = 'icon-qj1'
+							} else {
+								item.typeIcon = 'icon-qj0'
+							}
+							item.heightScale = 0
+							item.widthScale = 0
+							if(list){
+								for(var i=0;i<list.length;i++){
+									if(list[i].videoId == item.id){
+										item.checked = true
+										item.heightScale = list[i].y
+										item.widthScale = list[i].x
+										this.rtuVideoList.push(item)
+									}
+								}
+							}
+							
+							return item
+						})
+						// console.log(this.videoListData)
+
+					} else {
+						this.$Message.error(data.errorMessage)
+					}
+				}).catch(error => {
+					alert(error)
+				})
+			},
+			getRtuList(list,rvList) {
+				console.log(list)
 				getRtuList(this.keyField, this.searchKey, this.maxId, this.pageSize).then(res => {
 					const data = res.data
 					if (data.success == 1) {
@@ -193,13 +324,27 @@
 								this.maxId = item.id
 							}
 							item.title = item.rtuNumber + '(' + item.rtuName + '|' + item.rtuTypeName + ')'
+							item.workingRtuVideo = false
 							item.checked = false
+							if(rvList){
+								for(var j=0;j<rvList.length;j++){
+									if(rvList[j] == item.rtuNumber){
+										// list[i].workingRtuVideo = true
+										item.workingRtuVideo = true
+										this.shufflingRtuList.push(item)
+									}
+									console.log(this.shufflingRtuList)
+								}
+							}
 							for (var i = 0; i < list.length; i++) {
+								// list[i].workingRtuVideo = false
 								if (item.id == list[i].id) {
 									item.checked = true
 									item.heightScale = list[i].heightScale
 									item.widthScale = list[i].widthScale
+									this.rtuImgList.push(item)
 								}
+								
 							}
 							this.rtuListData.push(item)
 							if (data.iaRtuList.length == this.pageSize) {
@@ -208,6 +353,9 @@
 								this.showAddRtu = false
 							}
 						})
+						// this.rtuImgList = list
+						// console.log(rvList)
+						
 					} else {
 						this.$Message.error(data.errorMessage)
 					}
@@ -275,11 +423,16 @@
 							const map = data.map
 							const iaRtuList = data.iaRtuList
 							this.mapBgImgUrl = map.bgImgUrl
-							this.rtuImgList = iaRtuList
+							// this.rtuImgList = iaRtuList
 							this.mapName = map.mapName
+							this.refreshDataInv = map.refreshDataInv
 							// this.checkRtuData = iaRtuList
 							// console.log(this.rtuImgList)
-							this.getRtuList(iaRtuList)
+							
+							this.getRtuList(iaRtuList,map.workingRtuVideoList)
+								this.getVideoList(map.videoPostionList)
+							
+							
 						} else {
 							this.$Message.error(data.errorMessage)
 						}
@@ -288,6 +441,7 @@
 					})
 				} else {
 					this.getRtuList([])
+					this.getVideoList([])
 				}
 			}
 		},
@@ -299,15 +453,53 @@
 		created() {
 			// this.$route.meta.keepAlive = true
 			this.getMapInfo()
+			this.refreshDataList = [{
+					value: 5,
+					label: '5秒',
+				},
+				{
+					value: 10,
+					label: '10秒',
+				},
+				{
+					value: 30,
+					label: '30秒',
+				},
+				{
+					value: 60,
+					label: '1分钟',
+				},
+				{
+					value: 180,
+					label: '3分钟',
+				},
+				{
+					value: 300,
+					label: '5分钟',
+				},
+				{
+					value: 600,
+					label: '10分钟',
+				},
+				{
+					value: 1200,
+					label: '20分钟',
+				},
+				{
+					value: 1800,
+					label: '30分钟',
+				},
+			]
 		},
 
 	}
 </script>
 
 <style>
-	.widthActive{
+	.widthActive {
 		max-width: 100%;
 	}
+
 	.rtu {
 		max-width: 100%;
 		max-height: 100%;
@@ -342,6 +534,14 @@
 		/* background: #DB7093; */
 		/* overflow: hidden; */
 		/* z-index: 1; */
+
+	}
+
+	.dragVideo {
+
+		position: absolute;
+		height: 1.875rem;
+		width: 1.875rem;
 
 	}
 </style>

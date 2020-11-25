@@ -4,24 +4,28 @@
 		<div v-show="!editor" ref="maps1" style="height:100%;position: relative;overflow: hidden;background: #dcdee2;">
 			<!-- <div ref="map1" > -->
 			<div style="position: absolute;top:0;left:0;z-index: 100;width: 100%;text-align: center;color: red">画面名称:{{mapName}}</div>
-			<div :style="mapStyle" @mousewheel="mouseWheel" @mousedown="mousedownView" @touchstart="touchstartView" id="mapBgDiv1" ref="mapBgDiv1">
+			<div :style="mapStyle" @mousewheel="mouseWheel" @mousedown="mousedownView" @touchstart="touchstartView" id="mapBgDiv1"
+			 ref="mapBgDiv1">
 				<img id="mapBgImg1" ref="mapBgImg1" :src="mapBgImgUrl" style="height: 100%;" draggable="false" />
-				<div v-for="item in rtuImgList" :key="item.rtuNumber" class="drag1" :style="{top:item.heightScale+'%',left:item.widthScale+'%',cursor:'pointer'}" :title="item.rtuNumber">
-					<p style="position: absolute;color:#ffffff;font-size:0.5rem;padding: 0;background:rgba(255, 0, 0, 0.5) ;top:-1.125rem;right:-50%;white-space:nowrap;text-align: center;min-width: 3.75rem;">{{item.rtuDesc?item.rtuDesc:item.rtuTypeName}}</p>
-					<Poptip :title="item.rtuNumber" @on-popper-show="getRtuDataInfo(item)" @on-popper-hide="hidePop" >
-						<!-- <div v-if="iaSf.show && iaSf.rtuNumber == item.rtuNumber" slot="content">
-							<sf-model :sf-rtu-number="item.rtuNumber"></sf-model>
-						</div> -->
+				<div v-for="item in rtuImgList" :key="item.rtuNumber" class="drag1" :style="{top:item.heightScale+'%',left:item.widthScale+'%',cursor:'pointer'}"
+				 :title="item.rtuNumber">
+					<p class="rtuImgTitle">{{item.rtuDesc?item.rtuDesc:item.rtuTypeName}}</p>
+					<div v-show="item.videoId > 0" class="videoTitle">
+					<Icon  :type="' iconfont '+item.videoIcon" />
+					</div>
+					<Poptip :title="item.rtuNumber" @on-popper-show="getRtuDataInfo(item)" @on-popper-hide="hidePop">
 						<div slot="content">
 							<div style="font-size: 0.75rem;" v-for="(item1 , index) in parameterDataList" :key="index">
-								<Icon :color="item1.iconColor" :type="' iconfont'+ ' ' +item1.iconFont" /><span>{{item1.parameterName}}:<span :style="{color:item1.iconColor }">{{item1.value}}{{item1.unit}}</span></span></div>
+								<Icon :color="item1.iconColor" :type="' iconfont'+ ' ' +item1.iconFont" /><span>{{item1.parameterName}}:<span
+									 :style="{color:item1.iconColor }">{{item1.value}}{{item1.unit}}</span></span></div>
 							<div v-if="iat.show">
 								<p>状态:
 									<Icon :color="iat.iconColor" :type="iat.icon" />
 								</p>
 								<p>剩余时间:<span :style="{color:iat.iconColor}">{{iat.restTime}}秒</span></p>
 								<div>
-									<Cascader v-model="refCas" style="display: inline-block;" :transfer="true" :data="iat.timeList" @on-change="setRtu" @on-visible-change="refreshCas">
+									<Cascader v-model="refCas" style="display: inline-block;" :transfer="true" :data="iat.timeList" @on-change="setRtu"
+									 @on-visible-change="refreshCas">
 										<Button :disabled="iat.restTime > 0" style="margin-right:0.625rem ;" type="primary" shape="circle">开</Button>
 									</Cascader>
 									<Button @click="setRtu(0)" type="primary" shape="circle">关</Button>
@@ -30,11 +34,16 @@
 						</div>
 						<div class="rtuImgStyle">
 							<img :src="item.rtuTypeImgUrl" class="rtu1" :alt="item.rtuNumber+item.rtuTypeName" :draggable="false" />
-							
+
 						</div>
 					</Poptip>
-					
 
+
+				</div>
+				<div v-for="item in rtuVideoList" :key="item.videoId" class="dragVideo1" :style="{top:item.y+'%',left:item.x+'%',cursor:'pointer'}">
+					<div class="rtuImgStyle">
+						<Icon size="25" class="rtu" :type="' iconfont '+item.typeIcon" />
+					</div>
 				</div>
 
 			</div>
@@ -65,7 +74,7 @@
 				<map-list v-if="showMapList" @get-map-info="getMapInfo"></map-list>
 			</Modal>
 			<Modal :title="iaSf.rtuNumber" v-model="iaSf.show" footer-hide :transfer="false">
-				<sf-model v-if="iaSf.show"  :sf-rtu-number="iaSf.rtuNumber"></sf-model>
+				<sf-model v-if="iaSf.show" :sf-rtu-number="iaSf.rtuNumber"></sf-model>
 			</Modal>
 			<Spin fix v-show="showSpin" style="background: rgba(255,255,255,0.3);">
 				<Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
@@ -73,7 +82,7 @@
 			</Spin>
 
 		</div>
-		
+
 		<farm-form v-if="editor" :mapId="mapId" @go-back="goBack" style="z-index: 100;"></farm-form>
 
 	</div>
@@ -88,7 +97,9 @@
 	import SfModel from '../component/sf-model.vue'
 	import bg from '@/assets/images/map.jpg'
 	import FarmForm from '../component/farm-form.vue'
-	import { rtuTimeDataList } from '@/view/components/js/data.js'
+	import {
+		rtuTimeDataList
+	} from '@/view/components/js/data.js'
 	import {
 		getTopMap,
 		getMapList,
@@ -109,20 +120,20 @@
 		},
 		data() {
 			return {
-				refCas:[],
+				refCas: [],
 				iat: {
-					rtuNumber:null,
+					rtuNumber: null,
 					show: false,
 					iconColor: '',
 					icon: '',
 					restTime: 0,
 					timeList: [],
 				},
-				iaSf:{
-					show:false,
-					rtuNumber:null,
+				iaSf: {
+					show: false,
+					rtuNumber: null,
 				},
-				mapName:'',
+				mapName: '',
 				editor: false,
 				zoom: 100,
 				showMapList: false,
@@ -143,7 +154,8 @@
 				parameterDataList: [],
 				mapHeight: 0,
 				mapWidth: 0,
-				timer:'',
+				timer: '',
+				rtuVideoList:[]
 				// showPop:null
 
 			}
@@ -176,30 +188,30 @@
 		},
 
 		methods: {
-			hidePop(){
+			hidePop() {
 				this.iat.show = false
 				// this.iaSf.show = false
 			},
-			refreshCas(value){
-				if(!value){
+			refreshCas(value) {
+				if (!value) {
 					this.refCas = []
 				}
 				// console.log(this.refCas)
 			},
 			showRemTime() {
 				//倒计时
-			
+
 				if (this.iat.restTime <= 0) {
 					this.setStateValue(0)
 					clearInterval(this.timer);
 				} else {
 					this.iat.restTime--;
-			
+
 				}
 			},
 			setRtu(value) {
 				// alert(this.iat.setRtuTimeValue)
-				if(value != 0){
+				if (value != 0) {
 					value = Number(value[0])
 					// alert(value)
 				}
@@ -224,15 +236,15 @@
 					if (data.success == 1) {
 						var rtuData = data.rtuData
 						var paramList = rtuData.parameterDataList
-						for(var i= 0 ;i<paramList.length;i++){
-							if(paramList[i].parameterId == 25){
+						for (var i = 0; i < paramList.length; i++) {
+							if (paramList[i].parameterId == 25) {
 								this.iat.restTime = paramList[i].value
 								this.setStateValue(paramList[i].value)
 								clearInterval(this.timer);
 								this.timer = setInterval(this.showRemTime, 1000);
-								if(paramList[i].value >0){
+								if (paramList[i].value > 0) {
 									this.$Message.success('开启成功')
-								}else{
+								} else {
 									this.$Message.success('关闭成功')
 								}
 							}
@@ -244,18 +256,18 @@
 					this.showSpin = false
 					alert(error)
 				})
-			
+
 			},
 			getRtuDataInfo(item) {
 				this.parameterDataList = []
 				this.iat.show = false
 				// this.iaSf.show = false
 				this.iat.rtuNumber = null
-				if(item.rtuTypeTag == 'IA_SF_G' || item.rtuTypeTag == 'IA_SF_N'){
+				if (item.rtuTypeTag == 'IA_SF_G' || item.rtuTypeTag == 'IA_SF_N') {
 					this.iaSf.rtuNumber = item.rtuNumber
 					this.iaSf.show = true
-				}else{
-					
+				} else {
+
 					this.showSpin = true
 					getRtuData(item.rtuNumber).then(res => {
 						const data = res.data
@@ -263,7 +275,7 @@
 						if (data.success == 1) {
 							var rtuData = data.rtuData
 							if (rtuData.parameterDataList != null && rtuData.parameterDataList) {
-								if(rtuData.rtuTypeTag == 'IA_W_G' || rtuData.rtuTypeTag == 'IA_W_N'){
+								if (rtuData.rtuTypeTag == 'IA_W_G' || rtuData.rtuTypeTag == 'IA_W_N') {
 									this.iat.rtuNumber = rtuData.rtuNumber
 								}
 								this.showParamDataList(rtuData.rtuTypeTag, rtuData.parameterDataList)
@@ -276,7 +288,7 @@
 						alert(error)
 					})
 				}
-				
+
 			},
 			showParamDataList(rtuTypeTag, list) {
 				if (rtuTypeTag == 'IA_WS_G' || rtuTypeTag == 'IA_WS_N') {
@@ -302,7 +314,8 @@
 						} else if (item.parameterId == 18) {
 							item.iconColor = '#4ad595'
 						} else {
-							item.iconColor = 'rgb(' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ')'
+							item.iconColor = 'rgb(' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ',' + Math
+								.floor(Math.random() * 255) + ')'
 						}
 						return item
 					})
@@ -318,7 +331,8 @@
 							item.iconColor = '#06cce4'
 							this.parameterDataList.push(item)
 						} else {
-							item.iconColor = 'rgb(' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ')'
+							item.iconColor = 'rgb(' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ',' + Math
+								.floor(Math.random() * 255) + ')'
 						}
 						return item
 					})
@@ -421,18 +435,19 @@
 			},
 			showMap(id) {
 				this.resetParameters()
+				// var list = []
 				getMap(id).then(res => {
 					const data = res.data
 					this.showSpin = true
 					if (data.success == 1) {
 						// console.log(data)
 						this.showSpin = false
-						const map = data.map
-						const iaRtuList = data.iaRtuList
-						this.rtuImgList = iaRtuList
-						this.mapName = map.mapName
-						// console.log(this.rtuImgList)
-						this.mapBgImgUrl = map.bgImgUrl
+						// const map = data.map
+						// const iaRtuList = data.iaRtuList
+						
+						this.showVideoPostion(data.map.videoPostionList)
+						this.showRtuPostion(data.map,data.iaRtuList)
+						
 					} else {
 						this.$Message.error(data.errorMessage)
 					}
@@ -441,11 +456,46 @@
 					alert(error)
 				})
 			},
+			showRtuPostion(map,iaRtuList){
+				if(map){
+					this.mapName = map.mapName
+					this.mapBgImgUrl = map.bgImgUrl
+				}
+				if(iaRtuList){
+					var list = iaRtuList
+					for(var i=0;i<list.length;i++){
+						if(list[i].videoId > 0){
+							if(list[i].videoType == 0){
+								list[i].videoIcon = 'icon-qj0'
+							}else{
+								list[i].videoIcon = 'icon-qj1'
+							}
+							
+						}else{
+							list[i].videoIcon = ''
+						}
+					}
+					this.rtuImgList = iaRtuList
+				}
+				
+			},
+			showVideoPostion(list){
+				if(list){
+					for(var i =0;i<list.length;i++){
+						list[i].typeIcon = 'icon-qj0'
+						if (list[i].videoType == 1) {
+							list[i].typeIcon = 'icon-qj1'
+						}
+					}
+					this.rtuVideoList = list
+				}
+			},
 			getRtusMapList() {
 				this.showMapList = true
 
 			},
 			resetParameters() {
+				this.rtuVideoList = []
 				this.orgTreeOffsetLeft = 0
 				this.orgTreeOffsetLeft = 0
 				this.zoom = 100
@@ -471,17 +521,12 @@
 					const data = res.data
 					if (data.success == 1) {
 						if (data.map != null && data.iaRtuList != null) {
-							const map = data.map
-							const iaRtuList = data.iaRtuList
-							this.mapName = map.mapName
 							this.$nextTick(function() {
 								this.$refs.mapBgDiv1.style.height = this.$refs.maps1.clientHeight + 'px'
 								this.mapHeight = this.$refs.maps1.clientHeight
-								// this.mapWidth = 
 							})
-							this.rtuImgList = iaRtuList
-							// console.log(this.rtuImgList)
-							this.mapBgImgUrl = map.bgImgUrl
+							this.showVideoPostion(data.map.videoPostionList)
+							this.showRtuPostion(data.map,data.iaRtuList)
 						}
 					} else {
 						this.$Message.error(data.errorMessage)
@@ -559,7 +604,7 @@
 		mounted() {
 			this.getTopMapInfo()
 			this.iat.timeList = rtuTimeDataList
-			}
+		}
 
 	}
 </script>
@@ -573,6 +618,32 @@
 
 	.trans(@duration) {
 		transition:~"all @{duration} ease-in";
+	}
+
+	.rtuImgTitle {
+		position: absolute;
+		color: #ffffff;
+		font-size: 0.5rem;
+		padding: 0;
+		background: rgba(255, 0, 0, 0.5);
+		top: -1.125rem;
+		right: -50%;
+		white-space: nowrap;
+		text-align: center;
+		min-width: 3.75rem;
+	}
+
+	.videoTitle {
+		position: absolute;
+		color: #ffffff;
+		font-size: 0.5rem;
+		padding: 0;
+		background: rgba(255, 0, 0, 0.5);
+		top: 1rem;
+		right: -1rem;
+		white-space: nowrap;
+		text-align: center;
+		// min-width: 3.75rem;
 	}
 
 	.zoom-button {
@@ -633,13 +704,12 @@
 		justify-content: center;
 		align-items: center;
 		position: relative
-		
 	}
 
 
 	.drag1 {
 		// overflow: hidden;
-		
+
 		position: absolute;
 		// width:  2%;
 		// line-height:1.875rem;
@@ -650,7 +720,23 @@
 		-o-transform: none;
 		-ms-transform: none;
 		transform: none;
-		
+
+	}
+
+	.dragVideo1 {
+		// overflow: hidden;
+
+		position: absolute;
+		// width:  2%;
+		// line-height:1.875rem;
+		height: 1.875rem;
+		width: 1.875rem;
+		-moz-transform: none;
+		-webkit-transform: none;
+		-o-transform: none;
+		-ms-transform: none;
+		transform: none;
+
 	}
 
 	#mapBgDiv1 {

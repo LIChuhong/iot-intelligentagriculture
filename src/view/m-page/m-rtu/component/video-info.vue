@@ -2,7 +2,7 @@
 <template>
 	<div ref="ezuikt11" style="height: 100%;width: 100%;position: relative;">
 		<!-- <EZUIKitJs :et-wide-high="etWideHigh"></EZUIKitJs> -->
-		<div v-show="videoInfo.videoType == 1 && modelTest == '回放'" style="font-size: 1rem;padding: 0.3125rem 0.3125rem;position: absolute;bottom:1rem;right:1rem;z-index: 2;">
+		<div v-show="videoInfo.videoType == 1 && modelTest == 0" style="font-size: 1rem;padding: 0.3125rem 0.3125rem;position: absolute;bottom:1rem;right:1rem;z-index: 2;">
 			<div style="text-align: right;margin-bottom: 0.625rem;">
 				<!-- <ButtonGroup size="large">
 					<Button icon="md-expand" @click="controlYsOpen(8)"></Button>
@@ -10,7 +10,7 @@
 					<Button icon="md-resize" @click="controlYsOpen(11)"></Button>
 					<Button icon="ios-locate" @click="controlYsOpen(10)"></Button>
 				</ButtonGroup> -->
-				<Icon color="#F5871F" style="margin-right: 1rem;" type="ios-add-circle-outline" size="35"  @click="controlYsOpen(8)"/>
+				<Icon class="controlYs" color="#F5871F" style="margin-right: 1rem;" type="ios-add-circle-outline" size="35"  @click="controlYsOpen(8)"/>
 				<Icon color="#F5871F" type="ios-remove-circle-outline" size="35" @click="controlYsOpen(9)"/>
 			</div>
 			<div style="text-align: right;">预置点:
@@ -23,19 +23,14 @@
 		</div>
 
 		<div style="font-size: 1rem;padding: 0.3125rem 0.3125rem;position: absolute;bottom:1rem;left:1rem;z-index: 2;">
-			<Button size="large" icon="md-expand" @click="videoModel">{{modelTest}}</Button>
-			<!-- <ButtonGroup size="large">
-				<Button icon="md-expand" @click = "controlYsOpen(8)"></Button>
-				<Button icon="md-expand" @click = "controlYsOpen(8)"></Button>
-				<Button icon="md-contract" @click = "controlYsOpen(9)"></Button>
-				<Button icon="md-resize" @click = "controlYsOpen(11)"></Button>
-				<Button icon="ios-locate" @click = "controlYsOpen(10)"></Button>
-			</ButtonGroup> -->
+			<!-- <Button size="large" icon=" iconfont icon-hf1" @click="videoModel">{{modelTest}}</Button> -->
+			<Icon @click="videoModel(modelTest)" :type="modelTest==0?' iconfont icon-hf1':' iconfont icon-yl'" size="35" color="#2d8cf0"/>
+			<!-- <Icon type="ios-arrow-dropright" @click="videoModel(modelTest)" size="35" color="#2d8cf0"/> -->
 		</div>
 
 
 
-		<iframe :src="videoUrl" id="ysOpenDevice" height="100%" width="100%">
+		<iframe :src="videoUrl" id="ysOpenDevice" height="100%" width="100%" frameborder="0" border="0" >
 		</iframe>
 		<!-- {{videoInfo}} -->
 
@@ -87,13 +82,15 @@
 	export default {
 		props: {
 			videoInfo: {
-				type: String,
-				default: '',
+				type: Object,
+				default: funcution => {
+					return {}
+				},
 			},
 		},
 		data() {
 			return {
-				modelTest: '回放',
+				modelTest: 0,
 				presetPoint: 1,
 				flags: false,
 				videoUrl: ''
@@ -131,19 +128,18 @@
 
 		methods: {
 			videoModel() {
-
 				var videoBrandAccount = this.videoInfo.videoBrandAccount
 				var videoDeviceInfo = this.videoInfo.videoDeviceInfo
 				var accessToken = videoBrandAccount.accessToken
 				var deviceSerial = videoDeviceInfo.deviceSerial
 				var channelNo = videoDeviceInfo.channelNo
 				var validCode = videoDeviceInfo.validCode
-				if (this.modelTest == '回放') {
+				if (this.modelTest == 0) {
 					this.videoUrl = 'https://open.ys7.com/ezopen/h5/rec?autoplay=0&accessToken=' + accessToken + '&deviceSerial=' + deviceSerial + '&channelNo=' + channelNo 
-					this.modelTest = '预览'
+					this.modelTest = 1
 				}else{
 					this.videoUrl = 'https://open.ys7.com/ezopen/h5/live?autoplay=0&audio=1&accessToken=' + accessToken + '&deviceSerial=' + deviceSerial + '&channelNo=' + channelNo
-					this.modelTest = '回放'
+					this.modelTest = 0
 				}
 				if (validCode) {
 					this.videoUrl += '&validCode=' + validCode
@@ -457,7 +453,7 @@
 				if (validCode) {
 					this.videoUrl += '&validCode=' + validCode
 				}
-				console.log(this.videoUrl)
+				// console.log(this.videoUrl)
 
 				// this.showPlayer(videoBrandAccount.accessToken, videoDeviceInfo.fluentUrl)
 				// console.log(this.player)
@@ -468,4 +464,7 @@
 </script>
 
 <style>
+	.controlYs:active{
+		color: #000000;
+	}
 </style>

@@ -210,31 +210,31 @@
 			}
 		},
 		methods: {
-			linkDownload(item) {
-				// window.open(url, '_blank') // 新窗口打开外链接
-					getVideoByDeviceSerialChannelNo(item.deviceSerial, item.channelNo).then(res => {
-					const data = res.data
-					// this.showIaVideoList = false
-					if (data.success == 1) {
-						 console.log(data)
-						 var video = data.video
-						 if(video.brandTag == 'YSY'){
-							 var videoDeviceInfo = video.videoDeviceInfo
-							 var videoBrandAccount = video.videoBrandAccount
-							 var accessToken = videoBrandAccount.accessToken
-							 var deviceSerial = videoDeviceInfo.deviceSerial
-							 var channelNo = videoDeviceInfo.channelNo
-							 window.open('https://open.ys7.com/ezopen/h5/rec?autoplay=1&audio=1&accessToken='+accessToken+'&hd=1&deviceSerial='+deviceSerial+'&channelNo='+channelNo+'', '_blank')
-						 }
-						
-					} else {
-						this.$Message.error(data.errorMessage)
-					}
-				}).catch(error => {
-					// this.showIaVideoList = false
-					alert(error)
-				})
-			},
+			// linkDownload(item) {
+			// 	// window.open(url, '_blank') // 新窗口打开外链接
+			// 		getVideoByDeviceSerialChannelNo(item.deviceSerial, item.channelNo).then(res => {
+			// 		const data = res.data
+			// 		// this.showIaVideoList = false
+			// 		if (data.success == 1) {
+			// 			 console.log(data)
+			// 			 var video = data.video
+			// 			 if(video.brandTag == 'YSY'){
+			// 				 var videoDeviceInfo = video.videoDeviceInfo
+			// 				 var videoBrandAccount = video.videoBrandAccount
+			// 				 var accessToken = videoBrandAccount.accessToken
+			// 				 var deviceSerial = videoDeviceInfo.deviceSerial
+			// 				 var channelNo = videoDeviceInfo.channelNo
+			// 				 window.open('https://open.ys7.com/ezopen/h5/rec?autoplay=1&audio=1&accessToken='+accessToken+'&hd=1&deviceSerial='+deviceSerial+'&channelNo='+channelNo+'', '_blank')
+			// 			 }
+			// 			
+			// 		} else {
+			// 			this.$Message.error(data.errorMessage)
+			// 		}
+			// 	}).catch(error => {
+			// 		// this.showIaVideoList = false
+			// 		alert(error)
+			// 	})
+			// },
 
 			getPlotData(item) {
 				// console.log(item)

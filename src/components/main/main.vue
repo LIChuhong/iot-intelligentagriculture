@@ -70,7 +70,7 @@
 				<!-- <Footer class="foot-style"> -->
 				<div class="foot-style">
 					<Menu mode="horizontal" :active-name="activeName" ref="activeName" @on-select="turnToPage">
-						<MenuItem v-if="replenishment" v-for="item in mMenuList" :key="item" :name="item.name" :to="item.to" class="foot-menu-style" :style="{width:100/ mMenuList.length +'%'}">
+						<MenuItem v-if="replenishment" v-for="(item,index) in mMenuList" :key="index" :name="item.name" :to="item.to" class="foot-menu-style" :style="{width:100/ mMenuList.length +'%'}">
 						<div>
 							<Icon size="20" :type="item.iconType" />
 						</div>
