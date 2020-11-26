@@ -10,7 +10,7 @@
 				<div v-for="item in rtuImgList" :key="item.rtuNumber" class="drag1" :style="{top:item.heightScale+'%',left:item.widthScale+'%',cursor:'pointer'}"
 				 :title="item.rtuNumber">
 					<p class="rtuImgTitle">{{item.rtuDesc?item.rtuDesc:item.rtuTypeName}}</p>
-					<div v-show="item.videoId > 0" class="videoTitle">
+					<div @click="showVideo(item)" v-show="item.videoId > 0" class="videoTitle">
 					<Icon  :type="' iconfont '+item.videoIcon" />
 					</div>
 					<Poptip :title="item.rtuNumber" @on-popper-show="getRtuDataInfo(item)" @on-popper-hide="hidePop">
@@ -41,7 +41,7 @@
 
 				</div>
 				<div v-for="item in rtuVideoList" :key="item.videoId" class="dragVideo1" :style="{top:item.y+'%',left:item.x+'%',cursor:'pointer'}">
-					<div class="rtuImgStyle">
+					<div @click="showVideo(item)" class="rtuImgStyle">
 						<Icon size="25" class="rtu" :type="' iconfont '+item.typeIcon" />
 					</div>
 				</div>
@@ -76,6 +76,10 @@
 			<Modal :title="iaSf.rtuNumber" v-model="iaSf.show" footer-hide :transfer="false">
 				<sf-model v-if="iaSf.show" :sf-rtu-number="iaSf.rtuNumber"></sf-model>
 			</Modal>
+			<Modal :styles="{left:0,top:0,margin:0}" title="视频" v-model="dragModal" :draggable="true" footer-hide :transfer="false">
+				<EZUIKitJs v-if="dragModal && brandTag == 'YSY'" :et-wide-high="etWideHigh" :video-key="videoKey"></EZUIKitJs>
+				 <vi-player v-if="dragModal && brandTag == 'LCY'" :et-wide-high="etWideHigh" :video-key="videoKey"></vi-player>
+			</Modal>
 			<Spin fix v-show="showSpin" style="background: rgba(255,255,255,0.3);">
 				<Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
 				<div>加载中...</div>
@@ -97,18 +101,24 @@
 	import SfModel from '../component/sf-model.vue'
 	import bg from '@/assets/images/map.jpg'
 	import FarmForm from '../component/farm-form.vue'
+	import EZUIKitJs from '@/view/single-page/component/EZUIKitJs.vue'
+	import ViPlayer from '@/view/single-page/component/vi-player.vue'
 	import {
 		rtuTimeDataList
 	} from '@/view/components/js/data.js'
 	import {
 		getTopMap,
 		getMapList,
-		getMap
+		getMap,
+		getMapData
 	} from '@/api/farm.js'
 	import {
 		getRtuData,
 		setRtuData
 	} from '@/api/rtu.js'
+	import {
+		getVideo
+	} from '@/api/video.js'
 	import ZoomController from '../component/zoom-controller.vue'
 	export default {
 		name: 'farm_list',
@@ -116,10 +126,19 @@
 			MapList,
 			ZoomController,
 			FarmForm,
-			SfModel
+			SfModel,
+			EZUIKitJs,
+			ViPlayer
 		},
 		data() {
 			return {
+				etWideHigh: {
+					w: 480,
+					h: 300
+				},
+				videoKey:'',
+				brandTag:'',
+				dragModal:false,
 				refCas: [],
 				iat: {
 					rtuNumber: null,
@@ -188,6 +207,39 @@
 		},
 
 		methods: {
+			getMapDataMethod(){
+				getMapData(this.checkId).then(res=>{
+					const data = res.data
+					if(data.success == 1){
+						
+					}else{
+						
+					}
+				}).catch(error=>{
+					alert(error)
+				})
+			},
+			showVideo(item){
+				getVideo(item.videoId).then(res => {
+					const data = res.data
+					this.showIaVideoList = false
+					if (data.success == 1) {
+						console.log(data)
+						var video = data.video
+						this.brandTag = video.brandTag
+						// this.getEtWideHigh()
+						this.videoKey = video
+						this.dragModal = true
+				
+					} else {
+						this.$Message.error(data.errorMessage)
+					}
+				}).catch(error => {
+					this.showIaVideoList = false
+					alert(error)
+				})
+				
+			},
 			hidePop() {
 				this.iat.show = false
 				// this.iaSf.show = false
@@ -520,11 +572,14 @@
 					this.showSpin = false
 					const data = res.data
 					if (data.success == 1) {
+						// console.log(data)
 						if (data.map != null && data.iaRtuList != null) {
+							this.checkId = data.map.id
 							this.$nextTick(function() {
 								this.$refs.mapBgDiv1.style.height = this.$refs.maps1.clientHeight + 'px'
 								this.mapHeight = this.$refs.maps1.clientHeight
 							})
+							// this.getMapDataMethod()
 							this.showVideoPostion(data.map.videoPostionList)
 							this.showRtuPostion(data.map,data.iaRtuList)
 						}

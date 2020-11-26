@@ -68,3 +68,15 @@ export const getTopMap = (orgId) => {
     method: 'get'
   })
 }
+
+//获取农场数据
+export const getMapData = (mapId) => {
+	// console.log(newRtu)
+  return axios.request({
+    url: '/v1/getMapData',
+	params:{
+		'mapId': mapId
+	},
+    method: 'get'
+  })
+}
