@@ -5,38 +5,41 @@
 			<!-- <div ref="map1" > -->
 			<div :style="mapStyle" @touchstart="touchstartView" id="mapBgDiv1" ref="mapBgDiv1">
 				<img id="mapBgImg1" ref="mapBgImg1" :src="mapBgImgUrl" style="height: 100%;" draggable="false" />
-				<div v-for="item in rtuImgList" :key="item.rtuNumber" class="drag1" :style="{top:item.heightScale+'%',left:item.widthScale+'%',cursor:'pointer'}" :title="item.rtuNumber">
-					<p style="position: absolute;color:#ffffff;font-size:0.5rem;padding: 0;background:rgba(255, 0, 0, 0.5) ;top:-1.125rem;right:-50%;white-space:nowrap;text-align: center;min-width: 3.75rem;">{{item.rtuDesc?item.rtuDesc:item.rtuTypeName}}</p>
+				<div v-for="item in rtuImgList" :key="item.rtuNumber" class="drag1" :style="{top:item.heightScale+'%',left:item.widthScale+'%',cursor:'pointer'}"
+				 :title="item.rtuNumber">
+					<p class="rtuImgStyle1">{{item.rtuDesc?item.rtuDesc:item.rtuTypeName}}</p>
+					<div @click="showVideo(item)" v-show="item.videoId > 0" class="videoTitle1">
+						<Icon :type="' iconfont '+item.videoIcon" />
+					</div>
 					<Poptip :title="item.rtuNumber" @on-popper-show="getRtuDataInfo(item)">
-						<!-- <div v-if="iaSf.show && iaSf.rtuNumber == item.rtuNumber" slot="content">
-							<sf-model :sf-rtu-number="item.rtuNumber"></sf-model>
-						</div> -->
 						<div slot="content">
 							<div style="font-size: 0.75rem;" v-for="(item1 , index) in parameterDataList" :key="index">
-								<Icon :color="item1.iconColor" :type="' iconfont'+ ' ' +item1.iconFont" /><span>{{item1.parameterName}}:<span :style="{color:item1.iconColor }">{{item1.value}}{{item1.unit}}</span></span></div>
+								<Icon :color="item1.iconColor" :type="' iconfont'+ ' ' +item1.iconFont" /><span>{{item1.parameterName}}:<span
+									 :style="{color:item1.iconColor }">{{item1.value}}{{item1.unit}}</span></span></div>
 							<div v-if="iat.show">
 								<p>状态:
 									<Icon :color="iat.iconColor" :type="iat.icon" />
 								</p>
 								<p>剩余时间:<span :style="{color:iat.iconColor}">{{iat.restTime}}秒</span></p>
 								<div>
-									<Cascader v-model="refCas" style="display: inline-block;" :transfer="true" :data="iat.timeList" @on-change="setRtu" @on-visible-change="refreshCas">
+									<Cascader v-model="refCas" style="display: inline-block;" :transfer="true" :data="iat.timeList" @on-change="setRtu"
+									 @on-visible-change="refreshCas">
 										<Button :disabled="iat.restTime > 0" style="margin-right:0.625rem ;" type="primary" shape="circle">开</Button>
 									</Cascader>
 									<Button @click="setRtu(0)" type="primary" shape="circle">关</Button>
 								</div>
 							</div>
-							<!-- <div v-if="iaSf.show">
-								<sf-model></sf-model>
-							</div> -->
 						</div>
 						<div class="rtuImgStyle">
 							<img :src="item.rtuTypeImgUrl" class="rtu1" :alt="item.rtuNumber+item.rtuTypeName" :draggable="false" />
 						</div>
 					</Poptip>
-
 				</div>
-
+				<div v-for="item in rtuVideoList" :key="item.videoId" class="dragVideo1" :style="{top:item.y+'%',left:item.x+'%',cursor:'pointer'}">
+					<div @click="showVideo(item)" class="rtuImgStyle">
+						<Icon size="25" class="rtu" :type="' iconfont '+item.typeIcon" />
+					</div>
+				</div>
 			</div>
 		</div>
 		<div style="position: absolute;right:5%;text-align: center;top:1.25rem;z-index: 100;">
@@ -61,7 +64,10 @@
 			<map-list v-if="showMapList" @get-map-info="getMapInfo"></map-list>
 		</Modal>
 		<Modal :title="iaSf.rtuNumber" v-model="iaSf.show" footer-hide fullscreen @on-cancel="cancel">
-			<sf-model v-if="iaSf.show"  :sf-rtu-number="iaSf.rtuNumber"></sf-model>
+			<sf-model v-if="iaSf.show" :sf-rtu-number="iaSf.rtuNumber"></sf-model>
+		</Modal>
+		<Modal v-model="showVideoInfo" title="视频详情" footer-hide fullscreen>
+			<video-info :video-info="videoInfo" v-if="showVideoInfo"></video-info>
 		</Modal>
 		<Spin fix v-show="showSpin" style="background: rgba(255,255,255,0.3);">
 			<Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
@@ -85,6 +91,9 @@
 		getMap
 	} from '@/api/farm.js'
 	import {
+		getVideo
+	} from '@/api/video.js'
+	import {
 		getRtuData,
 		setRtuData
 	} from '@/api/rtu.js'
@@ -92,19 +101,22 @@
 	import {
 		rtuTimeDataList
 	} from '@/view/components/js/data.js'
+	import VideoInfo from '@/view/m-page/m-rtu/component/video-info.vue'
 	export default {
 		name: 'm_farm',
 		components: {
 			MapList,
 			ZoomController,
-			SfModel
+			SfModel,
+			VideoInfo
 		},
 		data() {
 			return {
-				refCas:[],
+				showVideoInfo: false,
+				refCas: [],
 				iaSf: {
 					show: false,
-					rtuNumber:null,
+					rtuNumber: null,
 				},
 				iat: {
 					rtuNumber: null,
@@ -133,6 +145,8 @@
 				parameterDataList: [],
 				mapHeight: 0,
 				mapWidth: 0,
+				rtuVideoList: [],
+				videoInfo: ''
 			}
 		},
 		watch: {
@@ -160,11 +174,69 @@
 		},
 
 		methods: {
-			cancel(){
+			showVideo(item) {
+				// console.log(item)
+				getVideo(item.videoId).then(res => {
+					const data = res.data
+					// this.showIaVideoList = false
+					if (data.success == 1) {
+						 // console.log(data)
+						var video = data.video
+						if(video.brandTag == 'YSY'){
+							this.videoInfo = data.video
+							this.videoInfo.presetPoint = -1
+							this.showVideoInfo = true
+						}else{
+							this.$Message.warning('该视频暂时无法播放')
+						}
+						
+
+					} else {
+						this.$Message.error(data.errorMessage)
+					}
+				}).catch(error => {
+					// this.showIaVideoList = false
+					alert(error)
+				})
+
+			},
+			showRtuPostion(map, iaRtuList) {
+				if (map) {
+					this.mapName = map.mapName
+					this.mapBgImgUrl = map.bgImgUrl
+				}
+				if (iaRtuList) {
+					var list = iaRtuList
+					for (var i = 0; i < list.length; i++) {
+						if (list[i].videoId > 0) {
+							if (list[i].videoType == 0) {
+								list[i].videoIcon = 'icon-qj0'
+							} else {
+								list[i].videoIcon = 'icon-qj1'
+							}
+						} else {
+							list[i].videoIcon = ''
+						}
+					}
+					this.rtuImgList = iaRtuList
+				}
+			},
+			showVideoPostion(list) {
+				if (list) {
+					for (var i = 0; i < list.length; i++) {
+						list[i].typeIcon = 'icon-qj0'
+						if (list[i].videoType == 1) {
+							list[i].typeIcon = 'icon-qj1'
+						}
+					}
+					this.rtuVideoList = list
+				}
+			},
+			cancel() {
 				console.log(this.iaSf.show)
 			},
-			refreshCas(value){
-				if(!value){
+			refreshCas(value) {
+				if (!value) {
 					this.refCas = []
 				}
 				// console.log(this.refCas)
@@ -288,7 +360,8 @@
 						} else if (item.parameterId == 18) {
 							item.iconColor = '#4ad595'
 						} else {
-							item.iconColor = 'rgb(' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ')'
+							item.iconColor = 'rgb(' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ',' + Math
+								.floor(Math.random() * 255) + ')'
 						}
 						return item
 					})
@@ -329,7 +402,8 @@
 							item.iconColor = '#06cce4'
 							this.parameterDataList.push(item)
 						} else {
-							item.iconColor = 'rgb(' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ')'
+							item.iconColor = 'rgb(' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ',' + Math
+								.floor(Math.random() * 255) + ')'
 						}
 						return item
 					})
@@ -434,13 +508,8 @@
 					const data = res.data
 					this.showSpin = false
 					if (data.success == 1) {
-						// console.log(data)
-						const map = data.map
-						const iaRtuList = data.iaRtuList
-						this.rtuImgList = iaRtuList
-						this.mapName = map.mapName
-						// console.log(this.rtuImgList)
-						this.mapBgImgUrl = map.bgImgUrl
+						this.showVideoPostion(data.map.videoPostionList)
+						this.showRtuPostion(data.map, data.iaRtuList)
 					} else {
 						this.$Message.error(data.errorMessage)
 					}
@@ -482,17 +551,12 @@
 					const data = res.data
 					if (data.success == 1) {
 						if (data.map != null && data.iaRtuList != null) {
-							const map = data.map
-							const iaRtuList = data.iaRtuList
-							this.mapName = map.mapName
 							this.$nextTick(function() {
 								this.$refs.mapBgDiv1.style.height = this.$refs.maps1.clientHeight + 'px'
 								this.mapHeight = this.$refs.maps1.clientHeight
-								// this.mapWidth = 
 							})
-							this.rtuImgList = iaRtuList
-							// console.log(this.rtuImgList)
-							this.mapBgImgUrl = map.bgImgUrl
+							this.showRtuPostion(data.map, data.iaRtuList)
+							this.showVideoPostion(data.map.videoPostionList)
 						}
 					} else {
 						this.$Message.error(data.errorMessage)
@@ -529,6 +593,19 @@
 		transition:~"all @{duration} ease-in";
 	}
 
+	.rtuImgStyle1 {
+		position: absolute;
+		color: #ffffff;
+		font-size: 0.5rem;
+		padding: 0;
+		background: rgba(255, 0, 0, 0.5);
+		top: -1.125rem;
+		right: -50%;
+		white-space: nowrap;
+		text-align: center;
+		min-width: 3.75rem;
+	}
+
 	.zoom-button {
 		width: 30px;
 		height: 30px;
@@ -559,16 +636,23 @@
 
 	}
 
+	.videoTitle1 {
+		position: absolute;
+		color: #ffffff;
+		font-size: 0.5rem;
+		padding: 0;
+		background: rgba(255, 0, 0, 0.5);
+		top: 1rem;
+		right: -1rem;
+		white-space: nowrap;
+		text-align: center;
+		// min-width: 3.75rem;
+	}
+
 	.rtu1 {
 		max-width: 100%;
 		max-height: 100%;
 		z-index: 2;
-		// display: inline
-		// -moz-transform: none;
-		// -webkit-transform: none;
-		// -o-transform: none;
-		// -ms-transform: none;
-		// transform: none;
 
 	}
 
@@ -603,10 +687,37 @@
 		transform: none;
 	}
 
+	.dragVideo1 {
+		// overflow: hidden;
+
+		position: absolute;
+		// width:  2%;
+		// line-height:1.875rem;
+		height: 1.875rem;
+		width: 1.875rem;
+		-moz-transform: none;
+		-webkit-transform: none;
+		-o-transform: none;
+		-ms-transform: none;
+		transform: none;
+
+	}
+
 	#mapBgDiv1 {
 		position: absolute;
 		// top: 50%;
 		// left: 50%;
+
+	}
+
+	.ivu-modal-body {
+		padding: 1rem;
+	}
+
+	@media screen and (min-width:300px) and (max-width:900px) {
+		.ivu-modal-body {
+			padding: 0px;
+		}
 
 	}
 </style>

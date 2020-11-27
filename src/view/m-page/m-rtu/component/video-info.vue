@@ -13,7 +13,7 @@
 				<Icon class="controlYs" color="#F5871F" style="margin-right: 1rem;" type="ios-add-circle-outline" size="35"  @click="controlYsOpen(8)"/>
 				<Icon color="#F5871F" type="ios-remove-circle-outline" size="35" @click="controlYsOpen(9)"/>
 			</div>
-			<div style="text-align: right;">预置点:
+			<div v-show="presetPoint != -1" style="text-align: right;">预置点:
 				<Icon @click="addPreset" v-show="presetPoint == 1" type="md-add-circle" size="25" />
 				<Icon @click="delPreset" v-show="presetPoint == 0" type="md-remove-circle" size="25" />
 				<Button @click="usePreset" :disabled="presetPoint == 1" type="primary" style="margin-left: 0.625rem;">调用</Button>
