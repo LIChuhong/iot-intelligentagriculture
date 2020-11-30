@@ -117,6 +117,7 @@
 
 			},
 			getStrategyList() {
+				// alert(1)
 				this.tableLoading = true
 				getSwitchsStrategyList(this.orgId, this.searchKey, this.maxId, this.pageSize).then(res => {
 					const data = res.data

@@ -231,6 +231,7 @@
 							break;
 						}
 					}
+					
 					this.sf.stirTime = data.stirTime / 60
 
 				} else {

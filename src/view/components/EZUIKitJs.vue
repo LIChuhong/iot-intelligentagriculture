@@ -86,7 +86,7 @@
 						id: "video-container",
 						accessToken: accessToken,
 						url: iaVideoUrl,
-						template: "standard",
+						template: that.videoKey.type,
 						// splitBasis: 1,
 						// header: ['capturePicture', 'save', 'zoom'],
 						// footer: ['fullScreen','capturePicture', 'save', 'zoom'],

@@ -6,13 +6,14 @@
 			<div style="position: absolute;top:0;left:0;z-index: 100;width: 100%;text-align: center;color: red">画面名称:{{mapName}}</div>
 			<div :style="mapStyle" @mousewheel="mouseWheel" @mousedown="mousedownView" @touchstart="touchstartView" id="mapBgDiv1" ref="mapBgDiv1">
 				<img id="mapBgImg1" ref="mapBgImg1" :src="mapBgImgUrl" style="height: 100%;" draggable="false" />
-				<div v-for="item in rtuImgList" :key="item.rtuNumber" class="drag1" :style="{top:item.heightScale+'%',left:item.widthScale+'%',cursor:'pointer'}"
-				 :title="item.rtuNumber">
+				<div v-for="item in rtuImgList" :key="item.rtuNumber" class="drag1" :style="{top:item.heightScale+'%',left:item.widthScale+'%',cursor:'pointer'}"  :title="item.rtuNumber">
 					<p class="rtuImgTitle">{{item.rtuDesc?item.rtuDesc:item.rtuTypeName}}</p>
 					<div @click="showVideo(item)" v-show="item.videoId > 0" class="videoTitle">
 					<Icon  :type="' iconfont '+item.videoIcon" />
 					</div>
 					<div class="rtuImgTitle2" v-if="workVideoRtuNumber == item.rtuNumber">
+						<EZUIKitJs v-if="workVideoRtuNumber == item.rtuNumber && brandTag1 == 'YSY'" :et-wide-high="etWideHigh1" :video-key="videoKey1"></EZUIKitJs>
+						 <vi-player v-if="workVideoRtuNumber == item.rtuNumber && brandTag1 == 'LCY'" :et-wide-high="etWideHigh1" :video-key="videoKey1"></vi-player>
 					</div>
 					<Poptip :title="item.rtuNumber" @on-popper-show="getRtuDataInfo(item)" @on-popper-hide="hidePop">
 						<div slot="content">
@@ -33,7 +34,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="rtuImgStyle">
+						<div  class="rtuImgStyle">
 							<img :src="item.rtuTypeImgUrl" class="rtu1" :alt="item.rtuNumber+item.rtuTypeName" :draggable="false" />
 
 						</div>
@@ -43,7 +44,7 @@
 				</div>
 				<div v-for="item in rtuVideoList" :key="item.videoId" class="dragVideo1" :style="{top:item.y+'%',left:item.x+'%',cursor:'pointer'}">
 					<div @click="showVideo(item)" class="rtuImgStyle">
-						<Icon size="25" class="rtu" :type="' iconfont '+item.typeIcon" />
+						<Icon size="25" class="rtu1" :type="' iconfont '+item.typeIcon" />
 					</div>
 				</div>
 
@@ -70,12 +71,12 @@
 			<div class="zoom-box" style="position: absolute;bottom: 3.125rem;right:5%;">
 
 				<zoom-controller v-model="zoom" :min="20" :max="300"></zoom-controller>
-				<div style="text-align: center;margin-top:0.625rem">{{refreshDataInv}}s</div>
+				<div style="text-align: center;margin-top:0.625rem;color: red">{{refreshDataInv}}s</div>
 			</div>
 			<Modal title="农场列表" v-model="showMapList" footer-hide :transfer="false">
 				<map-list v-if="showMapList" @get-map-info="getMapInfo"></map-list>
 			</Modal>
-			<Modal :title="iaSf.rtuNumber" v-model="iaSf.show" footer-hide :transfer="false">
+			<Modal :title="'水肥一体机'+iaSf.rtuNumber" v-model="iaSf.show" footer-hide :transfer="false">
 				<sf-model v-if="iaSf.show" :sf-rtu-number="iaSf.rtuNumber"></sf-model>
 			</Modal>
 			<Modal :styles="{left:0,top:0,margin:0}" title="视频" v-model="dragModal" :draggable="true" footer-hide :transfer="false">
@@ -138,8 +139,14 @@
 					w: 480,
 					h: 300
 				},
+				etWideHigh1:{
+					w: 250,
+					h:120
+				},
+				videoKey1:'',
 				videoKey:'',
 				brandTag:'',
+				brandTag1:'',
 				dragModal:false,
 				refCas: [],
 				iat: {
@@ -152,7 +159,7 @@
 				},
 				iaSf: {
 					show: false,
-					rtuNumber: null,
+					rtuNumber: '',
 				},
 				mapName: '',
 				editor: false,
@@ -216,8 +223,9 @@
 			showRemTime1() {
 				//倒计时
 				if (this.refreshDataInv <= 0) {
-					this.getMapDataMethod(0)
-					clearInterval(this.timer1);
+					// clearInterval(this.timer1);
+					this.getMapDataMethod()
+					
 				} else {
 					this.refreshDataInv--;
 			
@@ -225,20 +233,39 @@
 			},
 			getMapDataMethod(){
 				clearInterval(this.timer1);
-				this.refreshDataInv = this.refreshDataTime
-				this.timer1 = setInterval(this.showRemTime1, 1000);
-				// getMapData(this.checkId).then(res=>{
-				// 	const data = res.data
-				// 	if(data.success == 1){
-				// 		this.refreshDataInv = this.refreshDataTime
-				// 		this.timer1 = setInterval(this.showRemTime1, 1000);
-				// 		
-				// 	}else{
-				// 		
-				// 	}
-				// }).catch(error=>{
-				// 	alert(error)
-				// })
+				// this.refreshDataInv = this.refreshDataTime
+				// this.timer1 = setInterval(this.showRemTime1, 1000);
+				getMapData(this.checkId).then(res=>{
+					const data = res.data
+					if(data.success == 1){
+						const info = data.data
+						// if(data.workVideoRtuNumber>0){
+							if(this.workVideoRtuNumber != info.workVideoRtuNumber && !this.dragModal){
+								if(info.workVideo){
+									this.videoKey1 = info.workVideo
+									this.videoKey1.type = 'simple'
+									this.brandTag1 = info.workVideo.brandTag
+								}
+								
+								this.workVideoRtuNumber = info.workVideoRtuNumber
+							}
+							
+							// console.log(info.workVideoRtuNumber)
+							
+							this.refreshDataInv = this.refreshDataTime
+							this.timer1 = setInterval(this.showRemTime1, 1000);
+							
+							
+						// }
+						// this.workVideoRtuNumber = 10000
+						
+						
+					}else{
+						
+					}
+				}).catch(error=>{
+					alert(error)
+				})
 			},
 			showVideo(item){
 				getVideo(item.videoId).then(res => {
@@ -246,10 +273,12 @@
 					this.showIaVideoList = false
 					if (data.success == 1) {
 						// console.log(data)
+						this.workVideoRtuNumber = 0
 						var video = data.video
 						this.brandTag = video.brandTag
 						// this.getEtWideHigh()
 						this.videoKey = video
+						this.videoKey.type = 'standard'
 						this.dragModal = true
 				
 					} else {
@@ -534,7 +563,9 @@
 					this.mapBgImgUrl = map.bgImgUrl
 					this.refreshDataInv = map.refreshDataInv
 					this.refreshDataTime = map.refreshDataInv
-					this.timer1 = setInterval(this.showRemTime1, 1000);
+					this.getMapDataMethod()
+					// clearInterval(this.timer1)
+					// this.timer1 = setInterval(this.showRemTime1, 1000);
 				}
 				if(iaRtuList){
 					var list = iaRtuList
@@ -569,6 +600,7 @@
 			},
 			resetParameters() {
 				this.rtuVideoList = []
+				this.rtuImgList = []
 				this.orgTreeOffsetLeft = 0
 				this.orgTreeOffsetLeft = 0
 				this.zoom = 100
@@ -716,12 +748,17 @@
 		font-size: 0.5rem;
 		padding: 0;
 		background: rgba(255, 0, 0, 0.5);
-		top: -6rem;
-		right: -4.06rem;
+		top: -8.5rem;
+		right: -6.8rem;
 		white-space: nowrap;
 		text-align: center;
-		width: 10rem;
-		height: 5rem
+		width: 15.625rem;
+		height: 7.5rem;
+		z-index: 2
+		
+	}
+	.active1{
+		background: rgba(0, 0, 0, 0.5);
 	}
 
 	.videoTitle {
@@ -738,12 +775,12 @@
 	}
 
 	.zoom-button {
-		width: 30px;
-		height: 30px;
-		line-height: 10px;
+		width: 1.875rem;
+		height:1.875rem;
+		line-height:0.625rem;
 		border-radius: 50%;
 		background: rgb(124, 180, 41);
-		box-shadow: 0px 2px 8px 0px rgba(218, 220, 223, 0.7);
+		box-shadow: 0px 0.125rem 8px 0px rgba(218, 220, 223, 0.7);
 		border: none;
 		cursor: pointer;
 		outline: none;
@@ -770,7 +807,7 @@
 	.rtu1 {
 		max-width: 100%;
 		max-height: 100%;
-		z-index: 2;
+		// z-index: 2;
 		// display: inline
 		// -moz-transform: none;
 		// -webkit-transform: none;
