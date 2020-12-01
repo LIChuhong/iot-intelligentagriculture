@@ -21,12 +21,15 @@
 									<Icon :color="iat.iconColor" :type="iat.icon" />
 								</p>
 								<p>剩余时间:<span :style="{color:iat.iconColor}">{{iat.restTime}}秒</span></p>
+								<div style="font-size: 0.75rem;" v-for="(item2 , index) in iat.parameterDataList" :key="'i'+index">
+									<Icon :color="item2.iconColor" :type="' iconfont'+ ' ' +item2.iconFont" /><span>{{item2.parameterName}}:<span
+										 :style="{color:item2.iconColor }">{{item2.value}}{{item2.unit}}</span></span></div>
 								<div>
 									<Cascader v-model="refCas" style="display: inline-block;" :transfer="true" :data="iat.timeList" @on-change="setRtu"
 									 @on-visible-change="refreshCas">
 										<Button :disabled="iat.restTime > 0" style="margin-right:0.625rem ;" type="primary" shape="circle">开</Button>
 									</Cascader>
-									<Button @click="setRtu(0)" type="primary" shape="circle">关</Button>
+									<Button @click="setRtu1(0,false,true)" type="primary" shape="circle">关</Button>
 								</div>
 							</div>
 						</div>
@@ -125,6 +128,7 @@
 					icon: '',
 					restTime: 0,
 					timeList: [],
+					parameterDataList: []
 				},
 				mapName: '',
 				timer: '',
@@ -180,16 +184,16 @@
 					const data = res.data
 					// this.showIaVideoList = false
 					if (data.success == 1) {
-						 // console.log(data)
+						// console.log(data)
 						var video = data.video
-						if(video.brandTag == 'YSY'){
+						if (video.brandTag == 'YSY') {
 							this.videoInfo = data.video
 							this.videoInfo.presetPoint = -1
 							this.showVideoInfo = true
-						}else{
+						} else {
 							this.$Message.warning('该视频暂时无法播放')
 						}
-						
+
 
 					} else {
 						this.$Message.error(data.errorMessage)
@@ -208,6 +212,7 @@
 				if (iaRtuList) {
 					var list = iaRtuList
 					for (var i = 0; i < list.length; i++) {
+						// list[i].visible = false
 						if (list[i].videoId > 0) {
 							if (list[i].videoType == 0) {
 								list[i].videoIcon = 'icon-qj0'
@@ -219,6 +224,7 @@
 						}
 					}
 					this.rtuImgList = iaRtuList
+					// console.log(this.rtuImgList)
 				}
 			},
 			showVideoPostion(list) {
@@ -253,11 +259,14 @@
 				}
 			},
 			setRtu(value) {
-				// alert(this.iat.setRtuTimeValue)
+				// console.log()
 				if (value != 0) {
 					value = Number(value[0])
-					// alert(value)
 				}
+				this.setRtu1(value, false, false)
+			},
+			setRtu1(value, forceOpen, jumpLinkage) {
+				
 				var rtuData = {
 					rtuNumber: this.iat.rtuNumber,
 					orderType: 2,
@@ -269,13 +278,29 @@
 							parameterIndex: 3,
 							value: value
 						},
-					]
+					],
+					forceOpen: forceOpen,
+					jumpLinkage: jumpLinkage
 				}
 				// console.log(rtuData)
 				this.showSpin = true
 				setRtuData(rtuData).then(res => {
 					const data = res.data
 					this.showSpin = false
+					if (data.linkageResult) {
+						var linkageResult = data.linkageResult
+						this.iat.parameterDataList = linkageResult.parameterDataList.map(item => {
+							if (!item.warned) {
+								item.iconColor = 'red'
+							} else {
+								item.iconColor = 'green'
+							}
+							return item
+						})
+					}
+
+					// this.rtuImgList = list
+					// console.log(this.rtuImgList)
 					if (data.success == 1) {
 						var rtuData = data.rtuData
 						var paramList = rtuData.parameterDataList
@@ -292,8 +317,30 @@
 								}
 							}
 						}
+
 					} else {
-						this.$Message.error(data.errorMessage)
+						if (data.linkageResult) {
+							if (!data.linkageResult.pass) {
+								this.$Modal.confirm({
+									title: data.linkageResult.tips,
+									// content: '<p>'+data.linkageResult.tips+'</p>',
+									okText: '强制执行',
+									cancelText: '取消',
+									onOk: () => {
+										this.setRtu1(value, true, false)
+									},
+									onCancel: () => {
+									},
+									
+								});
+							} else {
+								this.$Message.error(data.errorMessage)
+							}
+							
+						} else {
+							this.$Message.error(data.errorMessage)
+						}
+
 					}
 				}).catch(error => {
 					this.showSpin = false
@@ -581,24 +628,25 @@
 </script>
 
 <style lang="less">
-	
 	.ivu-modal-body {
 		padding: 1rem;
 	}
+
 	@media screen and (min-width:300px) and (max-width:900px) {
 		.ivu-modal-body {
 			padding: 0px;
 		}
+
 		html,
 		body {
 			padding: 0;
 			margin: 0
 		}
-		
+
 		.trans(@duration) {
 			transition:~"all @{duration} ease-in";
 		}
-		
+
 		.rtuImgStyle1 {
 			position: absolute;
 			color: #ffffff;
@@ -611,7 +659,7 @@
 			text-align: center;
 			min-width: 3.75rem;
 		}
-		
+
 		.zoom-button {
 			width: 1.875rem;
 			height: 1.875rem;
@@ -622,26 +670,26 @@
 			border: none;
 			cursor: pointer;
 			outline: none;
-		
+
 			&:active {
 				box-shadow: 0px 0px 0.125rem 0.125rem rgba(218, 220, 223, 0.2) inset;
 			}
-		
+
 			.trans(0.1s);
-		
+
 			&:hover {
 				background: #1890ff;
 				.trans(0.1s);
 			}
 		}
-		
-		
+
+
 		.demo-spin-icon-load {
 			animation: ani-demo-spin 1s linear infinite;
-		
-		
+
+
 		}
-		
+
 		.videoTitle1 {
 			position: absolute;
 			color: #ffffff;
@@ -654,14 +702,14 @@
 			text-align: center;
 			// min-width: 3.75rem;
 		}
-		
+
 		.rtu1 {
 			max-width: 100%;
 			max-height: 100%;
 			z-index: 2;
-		
+
 		}
-		
+
 		.rtuImgStyle {
 			width: 1.875rem;
 			height: 1.875rem;
@@ -678,8 +726,8 @@
 			justify-content: center;
 			align-items: center
 		}
-		
-		
+
+
 		.drag1 {
 			// overflow: hidden;
 			position: absolute;
@@ -692,10 +740,10 @@
 			-ms-transform: none;
 			transform: none;
 		}
-		
+
 		.dragVideo1 {
 			// overflow: hidden;
-		
+
 			position: absolute;
 			// width:  2%;
 			// line-height:1.875rem;
@@ -706,16 +754,16 @@
 			-o-transform: none;
 			-ms-transform: none;
 			transform: none;
-		
+
 		}
-		
+
 		#mapBgDiv1 {
 			position: absolute;
 			// top: 50%;
 			// left: 50%;
-		
+
 		}
-		
+
 
 	}
 </style>

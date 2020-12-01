@@ -19,14 +19,20 @@
 			 @on-visible-change="refreshCas">
 				<Button size="large" :disabled="iat.restTime > 0" style="margin-right:1.25rem ;" type="primary" shape="circle">开</Button>
 			</Cascader>
-			<Button size="large" @click="setRtu(0)" type="primary" shape="circle">关</Button>
+			<Button size="large" @click="setRtu1(0,false,true)" type="primary" shape="circle">关</Button>
+		</div>
+		<div style="margin: 1.25rem 0;">
+			<div style="font-size: 1rem;text-align: center;" v-for="(item,index) in parameterDataList" :key="index">
+				<p><span>
+						<Icon :color="item.iconColor" :type="' iconfont'+ ' ' +item.iconFont" /></span>{{item.parameterName}}:<span :style="{color:item.iconColor }">{{item.value}}{{item.unit}}</span></p>
+			</div>
 		</div>
 		<Spin fix v-show="showSpin" style="background: rgba(255,255,255,0.3);">
 			<Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
 			<div>{{tips}}</div>
 		</Spin>
-		<Modal v-model="showVideoInfo" title="视频详情" footer-hide fullscreen >
-			<video-info :video-info = "videoInfo" v-if="showVideoInfo"></video-info>
+		<Modal v-model="showVideoInfo" title="视频详情" footer-hide fullscreen>
+			<video-info :video-info="videoInfo" v-if="showVideoInfo"></video-info>
 		</Modal>
 	</div>
 </template>
@@ -69,19 +75,19 @@
 				timer: '',
 				videoInfo: '',
 				videoIcon: '',
-				showVideoInfo:false
+				showVideoInfo: false
 			}
 		},
 		methods: {
-			showVideo(suffix){
-				if(this.videoInfo.brandTag == 'YSY'){
+			showVideo(suffix) {
+				if (this.videoInfo.brandTag == 'YSY') {
 					this.videoInfo.suffix = suffix
 					this.showVideoInfo = true
 				}
 				// window.location.href = 'https://open.ys7.com/ezopen/h5/live?autoplay=1&accessToken=at.cgxifm1o2tog4z652rovgoqz2a2drac2-1la8xsi5y0-12rzmmy-5rzr1g7fa&deviceSerial=E38539884&channelNo=1'
-				
+
 			},
-			
+
 			refreshCas(value) {
 				if (!value) {
 					this.refCas = []
@@ -107,9 +113,9 @@
 							// console.log(data)
 							this.iaRtu = data.iaRtu
 							var iaRtu = data.iaRtu
-							if(iaRtu.videoId > 0){
+							if (iaRtu.videoId > 0) {
 								var video = iaRtu.video
-								if(video){
+								if (video) {
 									this.videoInfo = video
 									if (video.videoType == 1) {
 										this.videoIcon = 'icon-qj1'
@@ -117,15 +123,15 @@
 									if (video.videoType == 0) {
 										this.videoIcon = 'icon-qj0'
 									}
-									if(iaRtu.presetPoint != null){
+									if (iaRtu.presetPoint != null) {
 										this.videoInfo.presetPoint = 0
-									}else{
+									} else {
 										this.videoInfo.presetPoint = 1
 									}
 									this.videoInfo.rtuNumber = this.rtuNumber
 								}
 							}
-						
+
 							// if (data.iaRtu.videoId > 0) {
 							// 	this.getVideoInfo(data.iaRtu.videoId,data.iaRtu.presetPoint)
 							// }
@@ -140,11 +146,12 @@
 
 			},
 			setRtu(value) {
-				// alert(this.iat.setRtuTimeValue)
 				if (value != 0) {
 					value = Number(value[0])
-					// alert(value)
 				}
+				this.setRtu1(value, false, false)
+			},
+			setRtu1(value, forceOpen, jumpLinkage) {
 				var rtuData = {
 					rtuNumber: this.rtuNumber,
 					orderType: 2,
@@ -156,9 +163,10 @@
 							parameterIndex: 3,
 							value: value
 						},
-					]
+					],
+					forceOpen: forceOpen,
+					jumpLinkage: jumpLinkage
 				}
-				// console.log(rtuData)
 				this.showSpin = true
 				this.tips = '操作中...'
 				setRtuData(rtuData).then(res => {
@@ -180,8 +188,48 @@
 								}
 							}
 						}
+						if(data.linkageResult){
+							var linkageResult = data.linkageResult
+							this.parameterDataList = linkageResult.parameterDataList.map(item=>{
+								if(!item.warned){
+									item.iconColor = 'red'
+								}else{
+									item.iconColor = 'green'
+								}
+								return item
+							})
+						}
 					} else {
-						this.$Message.error(data.errorMessage)
+						// console.log(data.linkageResult)
+						if (data.linkageResult) {
+							var linkageResult = data.linkageResult
+							this.parameterDataList = linkageResult.parameterDataList.map(item=>{
+								if(!item.warned){
+									item.iconColor = 'red'
+								}else{
+									item.iconColor = 'green'
+								}
+								return item
+							})
+						
+							if (!linkageResult.pass) {
+								this.$Modal.confirm({
+									title: linkageResult.tips,
+									// content: '<p>'+data.linkageResult.tips+'</p>',
+									okText: '强制执行',
+									cancelText: '取消',
+									onOk: () => {
+										console.log(value)
+										this.setRtu1(value,true,false)
+									}
+								});
+							} else {
+								this.$Message.error(data.errorMessage)
+							}
+						} else {
+							this.$Message.error(data.errorMessage)
+						}
+
 					}
 				}).catch(error => {
 					this.showSpin = false
@@ -189,7 +237,7 @@
 				})
 
 			},
-			getVideoInfo(id,presetPoint) {
+			getVideoInfo(id, presetPoint) {
 				getVideo(id).then(res => {
 					const data = res.data
 					if (data.success == 1) {
@@ -201,12 +249,12 @@
 						if (video.videoType == 1) {
 							this.videoIcon = 'icon-qj1'
 						}
-						if(presetPoint != null){
+						if (presetPoint != null) {
 							this.videoInfo.presetPoint = 0
-						}else{
+						} else {
 							this.videoInfo.presetPoint = 1
 						}
-						
+
 						this.videoInfo.rtuNumber = this.rtuNumber
 					}
 
@@ -263,7 +311,7 @@
 			}
 
 		},
-		
+
 		created() {
 			this.getRtuInfo()
 			this.iat.timeList = rtuTimeDataList
@@ -275,13 +323,15 @@
 </script>
 
 <style>
-  .ivu-modal-body{
+	.ivu-modal-body {
 		padding: 1rem;
 	}
+
 	@media screen and (min-width:300px) and (max-width:900px) {
-		.ivu-modal-body{
-				padding: 0px;
-			}
+		.ivu-modal-body {
+			padding: 0px;
+		}
+
 		.btnStyle {
 			text-align: right;
 			padding-right: 1.25rem;
@@ -291,8 +341,8 @@
 			height: 3.125rem;
 			font-size: 1.5rem;
 		}
-		
-		.test1{
+
+		.test1 {
 			padding: 0;
 		}
 	}

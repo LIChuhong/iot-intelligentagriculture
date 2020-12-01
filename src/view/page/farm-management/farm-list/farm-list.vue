@@ -4,20 +4,24 @@
 		<div v-show="!editor" ref="maps1" style="height:100%;position: relative;overflow: hidden;background: #dcdee2;">
 			<!-- <div ref="map1" > -->
 			<div style="position: absolute;top:0;left:0;z-index: 100;width: 100%;text-align: center;color: red">画面名称:{{mapName}}</div>
-			<div :style="mapStyle" @mousewheel="mouseWheel" @mousedown="mousedownView" @touchstart="touchstartView" id="mapBgDiv1" ref="mapBgDiv1">
+			<div :style="mapStyle" @mousewheel="mouseWheel" @mousedown="mousedownView" @touchstart="touchstartView" id="mapBgDiv1"
+			 ref="mapBgDiv1">
 				<img id="mapBgImg1" ref="mapBgImg1" :src="mapBgImgUrl" style="height: 100%;" draggable="false" />
-				<div v-for="item in rtuImgList" :key="item.rtuNumber" class="drag1" :style="{top:item.heightScale+'%',left:item.widthScale+'%',cursor:'pointer'}"  :title="item.rtuNumber">
+				<div v-for="item in rtuImgList" :key="item.rtuNumber" class="drag1" :style="{top:item.heightScale+'%',left:item.widthScale+'%',cursor:'pointer',}"
+				 :title="item.rtuNumber">
 					<p class="rtuImgTitle">{{item.rtuDesc?item.rtuDesc:item.rtuTypeName}}</p>
 					<div @click="showVideo(item)" v-show="item.videoId > 0" class="videoTitle">
-					<Icon  :type="' iconfont '+item.videoIcon" />
+						<Icon :type="' iconfont '+item.videoIcon" />
 					</div>
 					<div class="rtuImgTitle2" v-if="workVideoRtuNumber == item.rtuNumber">
-						<EZUIKitJs v-if="workVideoRtuNumber == item.rtuNumber && brandTag1 == 'YSY'" :et-wide-high="etWideHigh1" :video-key="videoKey1"></EZUIKitJs>
-						 <vi-player v-if="workVideoRtuNumber == item.rtuNumber && brandTag1 == 'LCY'" :et-wide-high="etWideHigh1" :video-key="videoKey1"></vi-player>
+						<EZUIKitJs v-if="workVideoRtuNumber == item.rtuNumber && brandTag1 == 'YSY'" :et-wide-high="etWideHigh1"
+						 :video-key="videoKey1"></EZUIKitJs>
+						<vi-player v-if="workVideoRtuNumber == item.rtuNumber && brandTag1 == 'LCY'" :et-wide-high="etWideHigh1"
+						 :video-key="videoKey1"></vi-player>
 					</div>
 					<Poptip :title="item.rtuNumber" @on-popper-show="getRtuDataInfo(item)" @on-popper-hide="hidePop">
 						<div slot="content">
-							<div style="font-size: 0.75rem;" v-for="(item1 , index) in parameterDataList" :key="index">
+							<div style="font-size: 0.75rem; ;" v-for="(item1 , index) in parameterDataList" :key="index">
 								<Icon :color="item1.iconColor" :type="' iconfont'+ ' ' +item1.iconFont" /><span>{{item1.parameterName}}:<span
 									 :style="{color:item1.iconColor }">{{item1.value}}{{item1.unit}}</span></span></div>
 							<div v-if="iat.show">
@@ -25,16 +29,20 @@
 									<Icon :color="iat.iconColor" :type="iat.icon" />
 								</p>
 								<p>剩余时间:<span :style="{color:iat.iconColor}">{{iat.restTime}}秒</span></p>
+								<div style="font-size: 0.75rem;" v-for="(item2 , index) in iat.parameterDataList" :key="'i'+index">
+										<Icon :color="item2.iconColor" :type="' iconfont'+ ' ' +item2.iconFont" /><span>{{item2.parameterName}}:<span
+											 :style="{color:item2.iconColor }">{{item2.value}}{{item2.unit}}</span></span></div>
+								</div>
 								<div>
-									<Cascader v-model="refCas" style="display: inline-block;" :transfer="true" :data="iat.timeList" @on-change="setRtu"
+									<Cascader v-model="refCas" style="display: inline-block;" :data="iat.timeList" @on-change="setRtu"
 									 @on-visible-change="refreshCas">
 										<Button :disabled="iat.restTime > 0" style="margin-right:0.625rem ;" type="primary" shape="circle">开</Button>
 									</Cascader>
-									<Button @click="setRtu(0)" type="primary" shape="circle">关</Button>
+									<Button @click="setRtu1(0,false,true)" type="primary" shape="circle">关</Button>
 								</div>
-							</div>
+								
 						</div>
-						<div  class="rtuImgStyle">
+						<div class="rtuImgStyle">
 							<img :src="item.rtuTypeImgUrl" class="rtu1" :alt="item.rtuNumber+item.rtuTypeName" :draggable="false" />
 
 						</div>
@@ -70,7 +78,7 @@
 
 			<div class="zoom-box" style="position: absolute;bottom: 3.125rem;right:5%;">
 
-				<zoom-controller v-model="zoom" :min="20" :max="300"></zoom-controller>
+				<zoom-controller v-model="zoom" :min="100" :max="300" :step="20"></zoom-controller>
 				<div style="text-align: center;margin-top:0.625rem;color: red">{{refreshDataInv}}s</div>
 			</div>
 			<Modal title="农场列表" v-model="showMapList" footer-hide :transfer="false">
@@ -81,7 +89,7 @@
 			</Modal>
 			<Modal :styles="{left:0,top:0,margin:0}" title="视频" v-model="dragModal" :draggable="true" footer-hide :transfer="false">
 				<EZUIKitJs v-if="dragModal && brandTag == 'YSY'" :et-wide-high="etWideHigh" :video-key="videoKey"></EZUIKitJs>
-				 <vi-player v-if="dragModal && brandTag == 'LCY'" :et-wide-high="etWideHigh" :video-key="videoKey"></vi-player>
+				<vi-player v-if="dragModal && brandTag == 'LCY'" :et-wide-high="etWideHigh" :video-key="videoKey"></vi-player>
 			</Modal>
 			<Spin fix v-show="showSpin" style="background: rgba(255,255,255,0.3);">
 				<Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
@@ -139,15 +147,15 @@
 					w: 480,
 					h: 300
 				},
-				etWideHigh1:{
+				etWideHigh1: {
 					w: 250,
-					h:120
+					h: 120
 				},
-				videoKey1:'',
-				videoKey:'',
-				brandTag:'',
-				brandTag1:'',
-				dragModal:false,
+				videoKey1: '',
+				videoKey: '',
+				brandTag: '',
+				brandTag1: '',
+				dragModal: false,
 				refCas: [],
 				iat: {
 					rtuNumber: null,
@@ -156,6 +164,7 @@
 					icon: '',
 					restTime: 0,
 					timeList: [],
+					parameterDataList: []
 				},
 				iaSf: {
 					show: false,
@@ -183,10 +192,10 @@
 				mapHeight: 0,
 				mapWidth: 0,
 				timer: '',
-				rtuVideoList:[],
-				workVideoRtuNumber:0,
-				refreshDataInv:0,
-				refreshDataTime:0,
+				rtuVideoList: [],
+				workVideoRtuNumber: 0,
+				refreshDataInv: 0,
+				refreshDataTime: 0,
 				timer1: '',
 				// showPop:null
 
@@ -223,51 +232,52 @@
 			showRemTime1() {
 				//倒计时
 				if (this.refreshDataInv <= 0) {
-					// clearInterval(this.timer1);
+					clearInterval(this.timer1);
 					this.getMapDataMethod()
-					
+					// clearInterval(this.timer1);
 				} else {
 					this.refreshDataInv--;
-			
+
 				}
 			},
-			getMapDataMethod(){
-				clearInterval(this.timer1);
+			getMapDataMethod() {
+				// clearInterval(this.timer1);
 				// this.refreshDataInv = this.refreshDataTime
 				// this.timer1 = setInterval(this.showRemTime1, 1000);
-				getMapData(this.checkId).then(res=>{
+				getMapData(this.checkId).then(res => {
 					const data = res.data
-					if(data.success == 1){
+					if (data.success == 1) {
 						const info = data.data
 						// if(data.workVideoRtuNumber>0){
-							if(this.workVideoRtuNumber != info.workVideoRtuNumber && !this.dragModal){
-								if(info.workVideo){
-									this.videoKey1 = info.workVideo
-									this.videoKey1.type = 'simple'
-									this.brandTag1 = info.workVideo.brandTag
-								}
-								
-								this.workVideoRtuNumber = info.workVideoRtuNumber
+						if (this.workVideoRtuNumber != info.workVideoRtuNumber && !this.dragModal) {
+							if (info.workVideo) {
+								this.videoKey1 = info.workVideo
+								this.videoKey1.type = 'simple'
+								this.brandTag1 = info.workVideo.brandTag
 							}
-							
-							// console.log(info.workVideoRtuNumber)
-							
-							this.refreshDataInv = this.refreshDataTime
-							this.timer1 = setInterval(this.showRemTime1, 1000);
-							
-							
+
+							this.workVideoRtuNumber = info.workVideoRtuNumber
+						}
+
+						// console.log(info.workVideoRtuNumber)
+
+						this.refreshDataInv = this.refreshDataTime
+						clearInterval(this.timer1);
+						this.timer1 = setInterval(this.showRemTime1, 1000);
+
+
 						// }
 						// this.workVideoRtuNumber = 10000
-						
-						
-					}else{
-						
+
+
+					} else {
+
 					}
-				}).catch(error=>{
+				}).catch(error => {
 					alert(error)
 				})
 			},
-			showVideo(item){
+			showVideo(item) {
 				getVideo(item.videoId).then(res => {
 					const data = res.data
 					this.showIaVideoList = false
@@ -280,7 +290,7 @@
 						this.videoKey = video
 						this.videoKey.type = 'standard'
 						this.dragModal = true
-				
+
 					} else {
 						this.$Message.error(data.errorMessage)
 					}
@@ -288,7 +298,7 @@
 					this.showIaVideoList = false
 					alert(error)
 				})
-				
+
 			},
 			hidePop() {
 				this.iat.show = false
@@ -311,11 +321,14 @@
 				}
 			},
 			setRtu(value) {
-				// alert(this.iat.setRtuTimeValue)
+				// console.log()
 				if (value != 0) {
 					value = Number(value[0])
-					// alert(value)
 				}
+				this.setRtu1(value, false, false)
+			},
+			setRtu1(value, forceOpen, jumpLinkage) {
+
 				var rtuData = {
 					rtuNumber: this.iat.rtuNumber,
 					orderType: 2,
@@ -327,13 +340,26 @@
 							parameterIndex: 3,
 							value: value
 						},
-					]
+					],
+					forceOpen: forceOpen,
+					jumpLinkage: jumpLinkage
 				}
 				// console.log(rtuData)
 				this.showSpin = true
 				setRtuData(rtuData).then(res => {
 					const data = res.data
 					this.showSpin = false
+					if (data.linkageResult) {
+						var linkageResult = data.linkageResult
+						this.iat.parameterDataList = linkageResult.parameterDataList.map(item => {
+							if (!item.warned) {
+								item.iconColor = 'red'
+							} else {
+								item.iconColor = 'green'
+							}
+							return item
+						})
+					}
 					if (data.success == 1) {
 						var rtuData = data.rtuData
 						var paramList = rtuData.parameterDataList
@@ -351,7 +377,27 @@
 							}
 						}
 					} else {
-						this.$Message.error(data.errorMessage)
+						if (data.linkageResult) {
+							if (!data.linkageResult.pass) {
+								this.$Modal.confirm({
+									title: data.linkageResult.tips,
+									// content: '<p>'+data.linkageResult.tips+'</p>',
+									transfer:false,
+									okText: '强制执行',
+									cancelText: '取消',
+									onOk: () => {
+										this.setRtu1(value, true, false)
+									},
+									onCancel: () => {},
+
+								});
+							} else {
+								this.$Message.error(data.errorMessage)
+							}
+
+						} else {
+							this.$Message.error(data.errorMessage)
+						}
 					}
 				}).catch(error => {
 					this.showSpin = false
@@ -496,16 +542,19 @@
 				// console.log(event)
 				if (event.deltaY < 0) {
 					if (this.zoom > 100) {
-						this.mapHeight = this.mapHeight * (this.zoom - 20) / this.zoom
-						this.mapWidth = this.mapWidth * (this.zoom - 20) / this.zoom
+
+						// this.mapHeight = this.mapHeight * (this.zoom - 20) / this.zoom
+						// this.mapWidth = this.mapWidth * (this.zoom - 20) / this.zoom
 						this.zoom -= 20
+
 					}
 
 				} else {
 					if (this.zoom < 300) {
-						this.mapHeight = this.mapHeight * (this.zoom + 20) / this.zoom
-						this.mapWidth = this.mapWidth * (this.zoom + 20) / this.zoom
+						// this.mapHeight = this.mapHeight * (this.zoom + 20) / this.zoom
+						// this.mapWidth = this.mapWidth * (this.zoom + 20) / this.zoom
 						this.zoom += 20
+
 					}
 				}
 
@@ -545,10 +594,10 @@
 						this.showSpin = false
 						// const map = data.map
 						// const iaRtuList = data.iaRtuList
-						
+
 						this.showVideoPostion(data.map.videoPostionList)
-						this.showRtuPostion(data.map,data.iaRtuList)
-						
+						this.showRtuPostion(data.map, data.iaRtuList)
+
 					} else {
 						this.$Message.error(data.errorMessage)
 					}
@@ -557,8 +606,8 @@
 					alert(error)
 				})
 			},
-			showRtuPostion(map,iaRtuList){
-				if(map){
+			showRtuPostion(map, iaRtuList) {
+				if (map) {
 					this.mapName = map.mapName
 					this.mapBgImgUrl = map.bgImgUrl
 					this.refreshDataInv = map.refreshDataInv
@@ -567,25 +616,25 @@
 					// clearInterval(this.timer1)
 					// this.timer1 = setInterval(this.showRemTime1, 1000);
 				}
-				if(iaRtuList){
+				if (iaRtuList) {
 					var list = iaRtuList
-					for(var i=0;i<list.length;i++){
-						if(list[i].videoId > 0){
-							if(list[i].videoType == 0){
+					for (var i = 0; i < list.length; i++) {
+						if (list[i].videoId > 0) {
+							if (list[i].videoType == 0) {
 								list[i].videoIcon = 'icon-qj0'
-							}else{
+							} else {
 								list[i].videoIcon = 'icon-qj1'
 							}
-						}else{
+						} else {
 							list[i].videoIcon = ''
 						}
 					}
 					this.rtuImgList = iaRtuList
 				}
 			},
-			showVideoPostion(list){
-				if(list){
-					for(var i =0;i<list.length;i++){
+			showVideoPostion(list) {
+				if (list) {
+					for (var i = 0; i < list.length; i++) {
 						list[i].typeIcon = 'icon-qj0'
 						if (list[i].videoType == 1) {
 							list[i].typeIcon = 'icon-qj1'
@@ -633,9 +682,9 @@
 								this.mapHeight = this.$refs.maps1.clientHeight
 							})
 							// this.getMapDataMethod()
-							
+
 							this.showVideoPostion(data.map.videoPostionList)
-							this.showRtuPostion(data.map,data.iaRtuList)
+							this.showRtuPostion(data.map, data.iaRtuList)
 						}
 					} else {
 						this.$Message.error(data.errorMessage)
@@ -713,6 +762,10 @@
 		mounted() {
 			this.getTopMapInfo()
 			this.iat.timeList = rtuTimeDataList
+		},
+		beforeDestroy() {
+			clearInterval(this.timer);
+			clearInterval(this.timer1);
 		}
 
 	}
@@ -741,7 +794,7 @@
 		text-align: center;
 		min-width: 3.75rem;
 	}
-	
+
 	.rtuImgTitle2 {
 		position: absolute;
 		color: #ffffff;
@@ -755,9 +808,9 @@
 		width: 15.625rem;
 		height: 7.5rem;
 		z-index: 2
-		
 	}
-	.active1{
+
+	.active1 {
 		background: rgba(0, 0, 0, 0.5);
 	}
 
@@ -776,8 +829,8 @@
 
 	.zoom-button {
 		width: 1.875rem;
-		height:1.875rem;
-		line-height:0.625rem;
+		height: 1.875rem;
+		line-height: 0.625rem;
 		border-radius: 50%;
 		background: rgb(124, 180, 41);
 		box-shadow: 0px 0.125rem 8px 0px rgba(218, 220, 223, 0.7);
