@@ -712,3 +712,31 @@ export const video1Columns = [{ //视频列表
 
 	},
 ]
+
+//浇水记录
+export const waterRecordColumns =[
+	{ 
+			title: '时间',
+			key: 'time',
+			align: 'center',
+			width: 70
+		},
+		{
+			title: '操作模式',
+			slot: 'operationType',
+			align: 'center',
+		},
+		{
+			title: '执行时长',
+			key: 'exeTime',
+			align: 'center',
+			// width: 100
+		},
+		{
+			title: '操作用户',
+			key: 'userName',
+			align: 'center',
+			// width: 100
+		},
+	
+]

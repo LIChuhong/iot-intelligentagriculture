@@ -164,6 +164,21 @@ export const rtuTypeParameterList = (rtuNumber) => {
   })
 }
 
+//获取浇灌器浇水记录
+export const getWaterRecordList = (rtuNumber,year,st,et) => {
+  return axios.request({
+    url: '/v1/getWaterRecordList',
+		params:{
+			'rtuNumber': rtuNumber,
+			'year': year,
+			'st': st,
+			'et': et,
+		},
+    method: 'get'
+  })
+}
+
+
 
 //获取设备参数
 export const controlYsOpen = (accessToken,deviceSerial,channelNo,direction,speed) => {

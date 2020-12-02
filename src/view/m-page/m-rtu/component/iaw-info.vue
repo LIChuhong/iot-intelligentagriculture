@@ -14,9 +14,9 @@
 			</p>
 			<p>剩余时间:<span :style="{color:iat.iconColor}">{{iat.restTime}}秒</span></p>
 		</div>
-		<div class="btnStyle" style="text-align: right;padding-right: 1.25rem;">
-			<Cascader v-model="refCas" style="display: inline-block;" :transfer="true" :data="iat.timeList" @on-change="setRtu"
-			 @on-visible-change="refreshCas">
+		<div class="btnStyle" style="text-align: right;padding:0 1.25rem;overflow: hidden;">
+			<Button  style="float: left;margin-top: 0.5625rem;" type="primary" @click="waterRecordMethod">浇水记录</Button>
+			<Cascader v-model="refCas" style="display: inline-block;" :transfer="true" :data="iat.timeList" @on-change="setRtu" @on-visible-change="refreshCas">
 				<Button size="large" :disabled="iat.restTime > 0" style="margin-right:1.25rem ;" type="primary" shape="circle">开</Button>
 			</Cascader>
 			<Button size="large" @click="setRtu1(0,false,true)" type="primary" shape="circle">关</Button>
@@ -33,6 +33,10 @@
 		</Spin>
 		<Modal v-model="showVideoInfo" title="视频详情" footer-hide fullscreen>
 			<video-info :video-info="videoInfo" v-if="showVideoInfo"></video-info>
+		</Modal>
+		<Modal v-model="showWaterRecord" :title="rtuNumber+'-浇水记录'" footer-hide fullscreen>
+			<!-- <video-info :video-info="videoInfo" v-if="showVideoInfo"></video-info> -->
+			<water-record v-show="showWaterRecord" :rtu-number="rtuNumber"></water-record>
 		</Modal>
 	</div>
 </template>
@@ -53,13 +57,16 @@
 		getVideo
 	} from '@/api/video.js'
 	import VideoInfo from '../component/video-info.vue'
+	import WaterRecord from '../component/water-record.vue'
 	export default {
 		props: ['rtuNumber'],
 		components: {
-			VideoInfo
+			VideoInfo,
+			WaterRecord
 		},
 		data() {
 			return {
+				showWaterRecord:false,
 				refCas: [],
 				tips: '检测中...',
 				iaRtu: {},
@@ -79,6 +86,9 @@
 			}
 		},
 		methods: {
+			waterRecordMethod(){
+				this.showWaterRecord = true
+			},
 			showVideo(suffix) {
 				if (this.videoInfo.brandTag == 'YSY') {
 					this.videoInfo.suffix = suffix
