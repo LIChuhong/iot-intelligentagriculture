@@ -14,7 +14,7 @@
 					</div>
 				</div>
 			</template>
-			<ListItem v-for="item in meMenuList" :key="item">
+			<ListItem v-for="(item,index) in meMenuList" :key="index">
 				<ListItemMeta :title="item.name">
 					<template slot="avatar">
 						<Avatar :icon="item.icon" />
@@ -30,12 +30,13 @@
 		</List>
 
 		<Modal title='修改密码' v-model="showPwd" footer-hide>
+			<reset-pwd :user-id="vmUserId"></reset-pwd>
 		</Modal>
 	</div>
 </template>
 
 <script>
-	// import ResetPwd from '@/view/mVending-machine/m-user-management/components/reset-pwd.vue'
+	import ResetPwd from '@/view/page/user-management/components/reset-pwd.vue'
 	import {
 		refreshTokenMethod
 	} from '@/api/user'
@@ -47,7 +48,7 @@
 	// } from '@/libs/util'
 	export default {
 		components: {
-			// ResetPwd
+			 ResetPwd
 		},
 		data() {
 			return {
