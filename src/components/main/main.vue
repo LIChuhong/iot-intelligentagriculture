@@ -140,7 +140,7 @@
 		},
 		data() {
 			return {
-				//unreadCount:this.$store.state.user.unreadCount,
+				unreadCount:this.$store.state.user.userInfo.news,
 				replenishment: true,
 				collapsed: false,
 				minLogo,
@@ -213,9 +213,9 @@
 			hasReadErrorPage() {
 				return this.$store.state.app.hasReadErrorPage
 			},
-			unreadCount() {
-				return this.$store.state.user.userInfo.news
-			}
+			// unreadCount() {
+			// 	return this.$store.state.user.userInfo.news
+			// }
 			
 		},
 		methods: {
