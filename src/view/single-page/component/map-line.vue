@@ -115,7 +115,7 @@
 					tooltip: {
 						confine: true,
 						trigger: 'axis',
-						position: [10, 10],
+						// position: [10, 10],
 						axisPointer: {
 							type: 'cross',
 							label: {
