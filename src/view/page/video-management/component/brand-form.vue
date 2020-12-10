@@ -104,6 +104,11 @@
 			}
 		},
 		methods: {
+			handleReset(name) {
+				this.$refs[name].resetFields()
+				this.belongOrgName = ''
+				this.dataForm.defalutVideoName = ''
+			},
 			getBrandInfo(){
 				if(this.brandId != null && this.brandId != ''){
 					this.showSpin = true

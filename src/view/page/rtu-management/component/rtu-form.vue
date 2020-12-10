@@ -332,6 +332,8 @@
 			},
 			handleReset(name) {
 				this.$refs[name].resetFields()
+				this.belongOrgName = ''
+				this.rtuForm.videoName = ''
 			},
 			getRtuInfo() {
 				if (this.rtuNumber != null && this.rtuNumber != '') {

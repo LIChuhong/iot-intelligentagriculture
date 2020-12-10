@@ -96,6 +96,9 @@
 					}
 				}
 			},
+			handleReset(name) {
+				this.$refs[name].resetFields()
+			},
 			handleSubmit(name) { //提交表单
 				this.$refs[name].validate((valid) => {
 					if (valid) {

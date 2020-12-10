@@ -27,11 +27,11 @@
 					</div>
 					<div style="overflow: hidden;margin: 0.3125rem 0;">
 						<p style="width:4.375rem;float: left;">工作时长：</p>
-						<TimePicker v-model="item.workTime" format="HH:mm:ss" placeholder="选择工作时长" style="width:60%"></TimePicker>
+						<TimePicker :editable="false" v-model="item.workTime" format="HH:mm:ss" placeholder="选择工作时长" style="width:60%"></TimePicker>
 					</div>
 					<div style="overflow: hidden;">
 						<p style="width:4.375rem;float: left;">下组延迟：</p>
-						<TimePicker v-model="item.delayTime" format="HH:mm:ss" placeholder="选择执行下组策略的延迟时间" style="width: 60%"></TimePicker>
+						<TimePicker :editable="false" v-model="item.delayTime" format="HH:mm:ss" placeholder="选择执行下组策略的延迟时间" style="width: 60%"></TimePicker>
 					</div>
 					<div style="overflow: hidden; margin: 0.3125rem 0 0;">
 						<p style="width:4.375rem;float: left;">操控设备：</p>
@@ -138,6 +138,17 @@
 			}
 		},
 		methods: {
+			handleReset(name) {
+				this.$refs[name].resetFields();
+				this.belongOrgName = ''
+				this.strategyForm.switchsGroupStrategyList = [{
+						sortIndex: '',
+						delayTime: '',
+						workTime: '',
+						rtuNumberList: []
+					}]
+
+			},
 			handleRemove(index) {
 				this.strategyForm.switchsGroupStrategyList.splice(index, 1)
 			},
@@ -212,7 +223,7 @@
 								belongOrgId: switchsStrategy.belongOrgId,
 								isMustAllPass: switchsStrategy.mustAllPass,
 								switchsGroupStrategyList: switchsGroupStrategyList,
-								exeMode:switchsStrategy.exeMode
+								exeMode: switchsStrategy.exeMode
 
 							}
 							this.belongOrgName = switchsStrategy.orgName
@@ -255,7 +266,7 @@
 							belongOrgId: this.strategyForm.belongOrgId,
 							mustAllPass: this.strategyForm.isMustAllPass,
 							switchsGroupStrategyList: switchsGroupStrategyList,
-							exeMode:this.strategyForm.exeMode
+							exeMode: this.strategyForm.exeMode
 						}
 						this.showSpin = true
 						if (this.strategyId != null && this.strategyId != '') {

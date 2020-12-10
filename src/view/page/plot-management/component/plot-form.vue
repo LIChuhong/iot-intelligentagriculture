@@ -125,6 +125,10 @@
 			}
 		},
 		methods: {
+			handleReset(name) {
+				this.$refs[name].resetFields()
+				this.belongOrgName = ''
+			},
 			getPlotInfo() {
 
 				if (this.plotId != null && this.plotId != '') {

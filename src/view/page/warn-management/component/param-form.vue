@@ -75,6 +75,16 @@
 			}
 		},
 		methods: {
+			handleReset(name) {
+				this.$refs[name].resetFields()
+				this.paramAssForm.warnParamList = [{
+						warnParam: '',
+						warnName: '',
+						warnId: null,
+						warnMaxValue: null,
+						warnMinValue: null,
+					}]
+			},
 			getRtuWarnInfo(){
 				if(this.rtuNumber != null && this.rtuNumber != ''){
 					this.showSpin = true

@@ -30,7 +30,7 @@
 				<Input maxlength="500" v-model="orgForm.orgDesc" type="textarea" :rows="5" placeholder="如果写上组织简介,将更多了解你的组织喔..."></Input>
 			</FormItem>
 			<FormItem style="text-align: center;">
-				<Button @click="handleReset('vmRtu')" style="margin-right: 8px">重置</Button>
+				<Button @click="handleReset('orgForm')" style="margin-right: 8px">重置</Button>
 				<Button type="primary" @click="handleSubmit('orgForm')">
 					<slot></slot>
 				</Button>
@@ -75,13 +75,6 @@
 					callback();
 				}
 			};
-			const validateParentOrgId = (rule, value, callback) => {
-				if (value == null) {
-					return callback(new Error('该列不能为空'));
-				} else {
-					callback();
-				}
-			};
 			return {
 				showSpin: false,
 				belongOrgTitle: '',
@@ -115,7 +108,7 @@
 					}],
 					parentOrgId: [{
 						required: true,
-						validator: validateParentOrgId,
+						message: '请选择用户所属组织',
 						trigger: 'change'
 					}],
 				},
@@ -123,6 +116,11 @@
 			}
 		},
 		methods: {
+			handleReset(name) {
+				this.$refs[name].resetFields();
+				this.belongOrgName = ''
+				
+			},
 			showBelongOrgList() { //显示所属组织列表
 				this.belongOrgTitle = this.belongOrgName
 				this.showBelongOrg = true

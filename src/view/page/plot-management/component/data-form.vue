@@ -201,6 +201,11 @@
 			}
 		},
 		methods: {
+			handleReset(name) {
+				this.$refs[name].resetFields()
+				this.belongOrgName = ''
+				this.dataForm.defalutVideoName = ''
+			},
 			getVideoInfo(row){
 				// console.log(row)
 				this.dataForm.defalutVideoId = row.id

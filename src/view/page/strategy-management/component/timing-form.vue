@@ -186,6 +186,12 @@
 					})
 				}
 			},
+			handleReset (name) {
+			    this.$refs[name].resetFields();
+				this.switchsStrategyName = ''
+				this.belongOrgName = ''
+				
+			},
 			handleSubmit(name) {
 				// console.log(getNowFormatDate(new Date(),'-'))
 				this.$refs[name].validate((valid) => {

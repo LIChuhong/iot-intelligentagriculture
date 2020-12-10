@@ -121,6 +121,10 @@
 			}
 		},
 		methods: {
+			handleReset(name) {
+				this.$refs[name].resetFields()
+				
+			},
 			getVideoInfo(){
 				if(this.videoId != null && this.videoId != ''){
 					getVideo(this.videoId).then(res=>{

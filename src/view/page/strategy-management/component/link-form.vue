@@ -216,6 +216,10 @@
 				})
 
 			},
+			handleReset (name) {
+                this.$refs[name].resetFields();
+				this.linkForm.linkageParameterName = ''
+            },
 			getLinkInfo() {
 				if (this.linkId != '' && this.linkId != null) {
 					this.showSpin = true
