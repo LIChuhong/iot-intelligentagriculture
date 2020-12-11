@@ -24,7 +24,7 @@
 
 			<FormItem label="关联设备" prop="rtuNumberList" style="overflow: hidden;position: relative;">
 				<div style="float: left;width:100%;border: 0.0625rem solid #dcdee2;margin-top: 0.3125rem;">
-					<span v-for="(i,index) in plotForm.rtuNumberList" :key="i" style="background: #c5c8ce;padding: 0.3125rem;border-radius:5%;margin-left: 0.3125rem;">{{i.rtuNumber}}
+					<span v-for="(i,index) in plotForm.rtuNumberList" :key="index" style="background: #c5c8ce;padding: 0.3125rem;border-radius:5%;margin-left: 0.3125rem;">{{i.rtuNumber}}
 						<Icon type="md-close" style="margin-left: 0.3125rem;cursor:pointer;" @click="delRtu(index)" /></span>
 
 				</div>

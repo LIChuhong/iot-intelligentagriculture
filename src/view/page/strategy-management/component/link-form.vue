@@ -19,7 +19,8 @@
 					<Option v-for="item in parameterList" :value="item.id" :key="item.id">{{ item.parameterName }}</Option>
 				</Select> -->
 				<span>{{linkForm.linkageParameterName}}</span>
-				<Cascader style="display:inline-block;margin-left: 1.25rem;" :data="rtuTypeList" :load-data="getRtuTypeParamList" @on-change="handleChange">
+				<Cascader style="display:inline-block;margin-left: 1.25rem;" :data="rtuTypeList" :load-data="getRtuTypeParamList"
+				 @on-change="handleChange">
 					<a href="javascript:void(0)">选择</a>
 				</Cascader>
 				<!-- {{linkForm.linkageParameterId}} -->
@@ -60,7 +61,8 @@
 		</Form>
 		<Modal title="设置联动设备参数" v-model="linkRtuShow" footer-hide>
 			<!-- <sf-model v-if="iaSf.show"  :sf-rtu-number="iaSf.rtuNumber"></sf-model> -->
-			<link-rtu-form v-if="linkRtuShow" :rtu-number="linkForm.linkageRtuNumber" :param-data-list="linkForm.rtuData?linkForm.rtuData.parameterDataList:''" @save-parameter-data="saveParameterData"></link-rtu-form>
+			<link-rtu-form v-if="linkRtuShow" :rtu-number="linkForm.linkageRtuNumber" :param-data-list="linkForm.rtuData?linkForm.rtuData.parameterDataList:''"
+			 @save-parameter-data="saveParameterData"></link-rtu-form>
 		</Modal>
 
 		<Spin fix v-show="showSpin">
@@ -99,15 +101,15 @@
 					linkageType: 0,
 					linkageRtuNumber: '',
 					linkageParameterId: '',
-					linkageParameterName:'',
+					linkageParameterName: '',
 					delay: '0',
 					parameterMaxValue: '',
 					parameterMinValue: '',
 					tips: '',
 					linkageParameterIndex: '',
 					rtuData: null,
-					totalCount:0,
-					
+					totalCount: 0,
+
 				},
 				parameterList: [],
 				linkRule: {
@@ -159,7 +161,7 @@
 			}
 		},
 		methods: {
-			handleChange(value,selectedData) {
+			handleChange(value, selectedData) {
 				this.linkForm.linkageParameterId = selectedData[1].value
 				this.linkForm.linkageParameterName = selectedData[1].label
 				this.linkForm.linkageParameterIndex = selectedData[1].index
@@ -202,7 +204,7 @@
 							item.children.push({
 								value: list[i].id,
 								label: list[i].parameterName,
-								index:i
+								index: i
 							})
 						}
 					} else {
@@ -216,10 +218,10 @@
 				})
 
 			},
-			handleReset (name) {
-                this.$refs[name].resetFields();
+			handleReset(name) {
+				this.$refs[name].resetFields();
 				this.linkForm.linkageParameterName = ''
-            },
+			},
 			getLinkInfo() {
 				if (this.linkId != '' && this.linkId != null) {
 					this.showSpin = true
@@ -239,25 +241,29 @@
 								parameterMaxValue: rtuLinkage.parameterMaxValue.toString(),
 								delay: rtuLinkage.delay.toString(),
 								tips: rtuLinkage.tips,
-								totalCount:rtuLinkage.totalCount
-								
+								totalCount: rtuLinkage.totalCount
+
 							}
-							if(rtuLinkage.linkageType == 2 || rtuLinkage.linkageType == 3 && rtuLinkage.rtuData){
-								var list = rtuLinkage.rtuData.parameterDataList
-								var parameterDataList = []
-								for(var i = 0;i<list.length;i++){
-									parameterDataList.push({
-										parameterIndex:list[i].parameterIndex,
-										value:list[i].value
-									})
-									
+							if (rtuLinkage.linkageType == 2 || rtuLinkage.linkageType == 3) {
+								if (rtuLinkage.rtuData != null) {
+									var list = rtuLinkage.rtuData.parameterDataList
+									var parameterDataList = []
+									for (var i = 0; i < list.length; i++) {
+										parameterDataList.push({
+											parameterIndex: list[i].parameterIndex,
+											value: list[i].value
+										})
+
+									}
+									this.linkForm.rtuData = {
+										rtuNumber: rtuLinkage.linkageRtuNumber,
+										orderType: rtuLinkage.linkageType,
+										parameterDataList: parameterDataList
+									}
+								}else{
+									this.linkForm.rtuData = null
 								}
-								this.linkForm.rtuData = {
-									rtuNumber: rtuLinkage.linkageRtuNumber,
-									orderType: rtuLinkage.linkageType,
-									parameterDataList: parameterDataList
-								}
-							}else{
+							} else {
 								this.linkForm.rtuData = null
 							}
 
@@ -273,7 +279,7 @@
 			handleSubmit(name) {
 				this.$refs[name].validate((valid) => {
 					if (valid) {
-						this.linkForm.totalCount = this.linkForm.totalCount?parseInt(this.linkForm.totalCount):0
+						this.linkForm.totalCount = this.linkForm.totalCount ? parseInt(this.linkForm.totalCount) : 0
 						var rtuLinkage = {
 							linkageName: this.linkForm.linkageName,
 							linkageType: this.linkForm.linkageType,
@@ -285,7 +291,7 @@
 							parameterMaxValue: Number(this.linkForm.parameterMaxValue),
 							tips: this.linkForm.tips,
 							rtuData: this.linkForm.rtuData,
-							totalCount:this.linkForm.totalCount
+							totalCount: this.linkForm.totalCount
 							// linkageParameterIconCode:"icon_p",
 						}
 						// console.log(rtuLinkage)

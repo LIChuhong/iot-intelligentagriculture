@@ -23,7 +23,7 @@
 
 			</FormItem>
 			<FormItem label="所属组织" prop="parentOrgId">
-				<Input :disabled="disParentOrgId" readonly v-model="belongOrgName" search enter-button="选择" placeholder="请选择所属组织"
+				<Input readonly v-model="belongOrgName" search enter-button="选择" placeholder="请选择所属组织"
 				 @on-search="showBelongOrgList"></Input>
 			</FormItem>
 			<FormItem label="组织简介" prop="orgDesc">
@@ -211,7 +211,7 @@
 				if (this.orgId != null && this.orgId != '') {
 					this.showSpin = true
 					getOrg(this.orgId).then(res => {
-						console.log(res)
+						// console.log(res)
 						this.showSpin = false
 						const data = res.data
 						if (data.success == 1) {

@@ -23,13 +23,15 @@
 						<div slot="content">
 							<div style="font-size: 0.75rem; ;" v-for="(item1 , index) in parameterDataList" :key="index">
 								<Icon :color="item1.iconColor" :type="' iconfont'+ ' ' +item1.iconFont" /><span>{{item1.parameterName}}:<span
-									 :style="{color:item1.iconColor }">{{item1.value}}{{item1.unit}}</span></span></div>
+									 :style="{color:item1.iconColor }">{{item1.value}}{{item1.unit}}</span></span>
+							</div>
 							<div v-if="iat.show">
-								<p>状态:
-									<Icon :color="iat.iconColor" :type="iat.icon" />
-								</p>
-								<p>剩余时间:<span :style="{color:iat.iconColor}">{{iat.restTime}}秒</span></p>
-								<div style="font-size: 0.75rem;" v-for="(item2 , index) in iat.parameterDataList" :key="'i'+index">
+								<div>
+									<p>状态:
+										<Icon :color="iat.iconColor" :type="iat.icon" />
+									</p>
+									<p>剩余时间:<span :style="{color:iat.iconColor}">{{iat.restTime}}秒</span></p>
+									<div style="font-size: 0.75rem;" v-for="(item2 , index) in iat.parameterDataList" :key="'i'+index">
 										<Icon :color="item2.iconColor" :type="' iconfont'+ ' ' +item2.iconFont" /><span>{{item2.parameterName}}:<span
 											 :style="{color:item2.iconColor }">{{item2.value}}{{item2.unit}}</span></span></div>
 								</div>
@@ -40,7 +42,7 @@
 									</Cascader>
 									<Button @click="setRtu1(0,false,true)" type="primary" shape="circle">关</Button>
 								</div>
-								
+							</div>
 						</div>
 						<div class="rtuImgStyle">
 							<img :src="item.rtuTypeImgUrl" class="rtu1" :alt="item.rtuNumber+item.rtuTypeName" :draggable="false" />
@@ -382,7 +384,7 @@
 								this.$Modal.confirm({
 									title: data.linkageResult.tips,
 									// content: '<p>'+data.linkageResult.tips+'</p>',
-									transfer:false,
+									transfer: false,
 									okText: '强制执行',
 									cancelText: '取消',
 									onOk: () => {

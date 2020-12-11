@@ -163,6 +163,12 @@
 						to: '/m_farm',
 						iconType: ' iconfont icon-ic_zhnc'
 					},
+					{
+						menuText: '策略',
+						name: 'm_strategy',
+						to: '/m_strategy',
+						iconType: ' iconfont icon-ic_clgl'
+					},
 				
 					{
 						menuText: '我',

@@ -11,8 +11,7 @@
 				<Button v-if="$store.state.app.iotInterFace == 0" icon="ios-create-outline" type="primary" size="small" style="margin-right: 15px" @click="show_org_info(row,index)">编辑</Button>
 				<Button v-else icon="ios-create-outline" type="primary" size="small" @click="show_org_info(row,index)"></Button>
 				<!-- <Button icon="ios-create-outline" :type="row.isEnableColor" size="small" style="margin-right: 10px" @click="setIsEnbleOrg(row,index)">{{row.isEnableTip}}</Button> -->
-				<i-switch v-if="$store.state.app.iotInterFace == 0" :loading="row.switchLoading" :disabled="row.buttonDis" size="large" v-model="row.isEnable" @on-change="setIsEnbleOrg(row)"><span
-					 slot="open">ON</span><span slot="close">OFF</span></i-switch>
+				<i-switch v-if="$store.state.app.iotInterFace == 0" :loading="row.switchLoading" :disabled="row.buttonDis" v-model="row.isEnable" @on-change="setIsEnbleOrg(row)"></i-switch>
 
 			</template>
 		</Table>

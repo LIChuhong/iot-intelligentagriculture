@@ -158,7 +158,7 @@
 		}
 
 		.strListStyle .ivu-modal-body {
-			padding: 0;
+			/* padding: 0; */
 		}
 
 		.strListStyle .ivu-table-cell {

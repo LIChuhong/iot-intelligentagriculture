@@ -495,6 +495,16 @@ export default [{
 				//component: () => import('@/view/intelligentgarden/setting/addMenu/addMenu.vue')
 			},
 			{
+				path: '/m_strategy',
+				name: 'm_strategy',
+				meta: {
+					icon: ' iconfont icon-add',
+					title: '策略'
+				},
+				component: resolve => require(['@/view/m-page/m-strategy/m-strategy.vue'], resolve)
+				//component: () => import('@/view/intelligentgarden/setting/addMenu/addMenu.vue')
+			},
+			{
 				path: '/me',
 				name: 'me',
 				meta: {

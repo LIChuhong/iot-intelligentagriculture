@@ -42,7 +42,7 @@
 			</FormItem>
 		</Form>
 		<Modal title="农场地理位置" v-model="showMap" fullscreen>
-			<baidu-map class="bm-map" map-type="BMAP_NORMAL_MAP" scroll-wheel-zoom="true" :center="center" :zoom="zoom" @ready="handler"
+			<baidu-map class="bm-map" map-type="BMAP_NORMAL_MAP" scroll-wheel-zoom :center="center" :zoom="zoom" @ready="handler"
 			 @click="getPoint">
 				<bm-control>
 					<Input v-model="keyword" @on-search="findArea" placeholder="请输入查找地址" style="width:100%" icon="ios-search"></Input>

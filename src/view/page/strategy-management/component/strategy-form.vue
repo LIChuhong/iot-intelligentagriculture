@@ -37,7 +37,7 @@
 						<p style="width:4.375rem;float: left;">操控设备：</p>
 						<Button size="small" type="primary" ghost @click="addrtuList(index)" icon="md-add">添加设备</Button>
 						<div style="float: left;width:100%;border: 0.0625rem solid #dcdee2;margin-top: 0.3125rem;">
-							<span v-for="(i,index1) in item.rtuNumberList" :key="i" style="background: #c5c8ce;padding: 0.3125rem;border-radius:5%;margin-left: 0.3125rem;">{{i.rtuNumber}}
+							<span v-for="(i,index1) in item.rtuNumberList" :key="index1" style="background: #c5c8ce;padding: 0.3125rem;border-radius:5%;margin-left: 0.3125rem;">{{i.rtuNumber}}
 								<Icon type="md-close" style="margin-left: 0.3125rem;cursor:pointer;" @click="delRtu(index,index1)" /></span>
 
 						</div>
@@ -91,7 +91,11 @@
 		updateSwitchsStrategy
 	} from '@/api/strategy.js'
 	export default {
-		props: ['strategyId'],
+		props: {
+			strategyId: {
+				type: Number
+			}
+		},
 		components: {
 			OrgTree,
 			RtuForm
@@ -142,11 +146,11 @@
 				this.$refs[name].resetFields();
 				this.belongOrgName = ''
 				this.strategyForm.switchsGroupStrategyList = [{
-						sortIndex: '',
-						delayTime: '',
-						workTime: '',
-						rtuNumberList: []
-					}]
+					sortIndex: '',
+					delayTime: '',
+					workTime: '',
+					rtuNumberList: []
+				}]
 
 			},
 			handleRemove(index) {

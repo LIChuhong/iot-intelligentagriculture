@@ -41,8 +41,10 @@
 	export default {
 		 props: {
 			 warnInfo:{
-				 type:String,
-				 default:null
+				 type:Object,
+				default: funcution=>{
+					return {}
+				}
 			 }
 		 },
 		

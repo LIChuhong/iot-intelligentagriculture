@@ -1,6 +1,6 @@
 <template>
 	<div style="width: 100%;height: 100%;">
-		<baidu-map class="bm-view" map-type="BMAP_SATELLITE_MAP" scroll-wheel-zoom="true" :center="center" :zoom="zoom" @ready="handler" :double-click-zoom="false" @rightclick="showInfoWindow">
+		<baidu-map class="bm-view" map-type="BMAP_SATELLITE_MAP" scroll-wheel-zoom :center="center" :zoom="zoom" @ready="handler" :double-click-zoom="false" @rightclick="showInfoWindow">
 			<bm-polygon v-for="(path , i) in polygonPath.paths" :key="i" :path="path" :stroke-color="polygonPath.colors[i].color"
 			 :fill-color="polygonPath.colors[i].color" :fill-opacity="0.5" :stroke-opacity="1" :stroke-weight="2" @click="changePlotList"
 			 :editing="true" @lineupdate="updatePolygonPath($event,i)">

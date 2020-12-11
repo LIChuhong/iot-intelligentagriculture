@@ -93,6 +93,7 @@
 				belongOrgTitle: '',
 				belongOrgName: '', //所属组织名称
 				belongOrgInfo: '', //所属组织信息
+				userRolesList:[],
 				userForm: {
 					userName: '',
 					userRolesId: '',
