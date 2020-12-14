@@ -19,7 +19,7 @@
 				<Poptip :transfer="true" confirm title="你确定删除该定时吗?" @on-ok="del(row,index)">
 					<Button icon="md-trash" type="error" size="small" style="margin-right: 8px">删除</Button>
 				</Poptip>
-				<i-switch :loading="row.switchLoading" size="samll" v-model="row.enable" @on-change="setIsEnbleTiming(row)"></i-switch>
+				<i-switch :loading="row.switchLoading" v-model="row.enable" @on-change="setIsEnbleTiming(row)"></i-switch>
 
 			</template>
 

@@ -5,6 +5,7 @@
 			<FormItem label="设备编号" prop="rtuNumber">
 				<Input type="number" v-model="paramAssForm.rtuNumber" placeholder="请输入设备编号"></Input>
 			</FormItem>
+			<div style="height:18.75rem;overflow: auto;">
 			<FormItem v-for="(item, index) in paramAssForm.warnParamList" :key="index" :label="'告警参数'+(index+1)" :prop="'warnParamList.' + index">
 				<div>
 					<Select v-model="item.warnParam" @on-open-change="changeWarnParam" placeholder="请选择告警参数">
@@ -25,6 +26,7 @@
 					</Row>
 				</div>
 			</FormItem>
+			</div>
 			<FormItem style="text-align: center;">
 				<Button @click="handleReset('paramAssForm')" style="margin-right: 8px">重置</Button>
 				<Button type="primary" @click="handleSubmit('paramAssForm')">

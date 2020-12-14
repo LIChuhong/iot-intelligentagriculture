@@ -1,7 +1,7 @@
 <template>
 	<div ref="divHeight" style="width: 100%;height: 100%;">
 		<!-- {{rtuNumber}} -->
-		<div style="padding:0.625rem;">
+		<div style="padding:0 0.625rem 0.625rem">
 			<Row style="margin-bottom:0.625rem;">
 				<Col span="12" style="text-align:left">
 				起始:

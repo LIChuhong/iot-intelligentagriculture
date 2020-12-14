@@ -16,7 +16,7 @@
 				</div>
 				<div v-else>
 					<Button icon="ios-create-outline" type="primary" size="small" style="margin-right:0.5rem" @click="editor(row)"></Button>
-					<Poptip :transfer="true" confirm title="你确定删除该策略吗?" @on-ok="del(row,index)">
+					<Poptip :transfer="true" placement="right" confirm title="你确定删除该策略吗?" @on-ok="del(row,index)">
 						<Button icon="ios-trash" type="error" size="small" ></Button>
 					</Poptip>
 				</div>

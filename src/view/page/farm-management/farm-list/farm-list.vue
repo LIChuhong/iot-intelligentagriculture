@@ -243,7 +243,7 @@
 				}
 			},
 			getMapDataMethod() {
-				// clearInterval(this.timer1);
+				clearInterval(this.timer1);
 				// this.refreshDataInv = this.refreshDataTime
 				// this.timer1 = setInterval(this.showRemTime1, 1000);
 				getMapData(this.checkId).then(res => {

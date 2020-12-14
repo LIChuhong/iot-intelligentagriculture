@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<Form :label-width="100" ref="strategyForm" :model="strategyForm" :rules="strategyRule" label-position="left">
+		<Form :label-width="80" ref="strategyForm" :model="strategyForm" :rules="strategyRule" label-position="left">
 
 			<FormItem label="策略名称" prop="strategyName">
 				<Input type="text" :maxlength="100" v-model="strategyForm.strategyName" placeholder="请输入策略名称"></Input>
@@ -17,8 +17,8 @@
 					<Radio :label="1"><span>自动</span></Radio>
 				</RadioGroup>
 			</FormItem>
-			<FormItem v-for="(item, index) in strategyForm.switchsGroupStrategyList" :key="index" :label="'策略小组'+(index+1)"
-			 :prop="'switchsGroupStrategyList.' + index + '.sortIndex'">
+			<div style="height:12.5rem;overflow: auto;">
+			<FormItem v-for="(item, index) in strategyForm.switchsGroupStrategyList" :key="index" :label="'策略小组'+(index+1)" :prop="'switchsGroupStrategyList.' + index + '.sortIndex'">
 				<Row>
 					<Col span="22">
 					<div style="overflow: hidden;">
@@ -53,6 +53,7 @@
 					</Col>
 				</Row>
 			</FormItem>
+			</div>
 			<FormItem style="text-align: center;">
 				<Button @click="handleReset('strategyForm')" style="margin-right: 8px">重置</Button>
 				<Button type="primary" @click="handleSubmit('strategyForm')">

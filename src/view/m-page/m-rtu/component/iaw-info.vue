@@ -333,12 +333,9 @@
 </script>
 
 <style>
-	.ivu-modal-body {
-		padding: 1rem;
-	}
-
+	
 	@media screen and (min-width:300px) and (max-width:900px) {
-		.ivu-modal-body {
+		.iawStyle .ivu-modal-body {
 			padding: 0px;
 		}
 
