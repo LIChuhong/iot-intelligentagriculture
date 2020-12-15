@@ -18,41 +18,40 @@
 				</RadioGroup>
 			</FormItem>
 			<div style="height:12.5rem;overflow: auto;">
-			<FormItem v-for="(item, index) in strategyForm.switchsGroupStrategyList" :key="index" :label="'策略小组'+(index+1)" :prop="'switchsGroupStrategyList.' + index + '.sortIndex'">
-				<Row>
-					<Col span="22">
-					<div style="overflow: hidden;">
-						<p style="width:4.375rem;float: left;">排序：</p><Input style="width:60%;" type="number" v-model="item.sortIndex"
-						 placeholder="请输入排序"></Input>
-					</div>
-					<div style="overflow: hidden;margin: 0.3125rem 0;">
-						<p style="width:4.375rem;float: left;">工作时长：</p>
-						<TimePicker :editable="false" v-model="item.workTime" format="HH:mm:ss" placeholder="选择工作时长" style="width:60%"></TimePicker>
-					</div>
-					<div style="overflow: hidden;">
-						<p style="width:4.375rem;float: left;">下组延迟：</p>
-						<TimePicker :editable="false" v-model="item.delayTime" format="HH:mm:ss" placeholder="选择执行下组策略的延迟时间" style="width: 60%"></TimePicker>
-					</div>
-					<div style="overflow: hidden; margin: 0.3125rem 0 0;">
-						<p style="width:4.375rem;float: left;">操控设备：</p>
+				<FormItem v-for="(item, index) in strategyForm.switchsGroupStrategyList" :key="index" :label="'策略小组'+(index+1)"
+				 :prop="'switchsGroupStrategyList.' + index">
+					<Row>
+						<Col span="20">
+						<FormItem :prop="'switchsGroupStrategyList.' + index +'.sortIndex'" :rules="{required: true, message: ' ',type:'number', trigger: 'blur'}">
+							<span>排序：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+							<InputNumber style="width:50%;" :min="0" v-model="item.sortIndex" placeholder="请输入排序"></InputNumber>
+						</FormItem>
+						<FormItem :prop="'switchsGroupStrategyList.' + index +'.workTime'" :rules="{required: true, message: ' ', trigger: 'change'}">
+							<span>工作时长：</span>
+							<TimePicker :editable="false" v-model="item.workTime" format="HH:mm:ss" placeholder="选择工作时长" style="width:50%"></TimePicker>
+						</FormItem>
+						<FormItem :prop="'switchsGroupStrategyList.' + index +'.delayTime'" :rules="{required: true, message: ' ', trigger: 'change'}">
+							<span>下组延迟：</span>
+							<TimePicker :editable="false" v-model="item.delayTime" format="HH:mm:ss" placeholder="选择执行下组策略的延迟时间" style="width: 50%"></TimePicker>
+						</FormItem>
+						</Col>
+						<Col span="4">
+						<Button size="small" v-show="index == strategyForm.switchsGroupStrategyList.length-1" type="primary" ghost @click="handleAddSgsList(item.sortIndex)"
+						 icon="ios-add"></Button>
+						<Button size="small" v-show="index != 0" style="display:block;" type="error" @click="handleRemove(index)" icon="ios-trash"></Button>
+						</Col>
+					</Row>
+					<FormItem :prop="'switchsGroupStrategyList.' + index +'.rtuNumberList'" :rules="{required: true,type:'array', message: '请选择操控设备', trigger: 'change'}">
+						<span>操控设备：</span>
 						<Button size="small" type="primary" ghost @click="addrtuList(index)" icon="md-add">添加设备</Button>
-						<div style="float: left;width:100%;border: 0.0625rem solid #dcdee2;margin-top: 0.3125rem;">
+						<div>
 							<span v-for="(i,index1) in item.rtuNumberList" :key="index1" style="background: #c5c8ce;padding: 0.3125rem;border-radius:5%;margin-left: 0.3125rem;">{{i.rtuNumber}}
 								<Icon type="md-close" style="margin-left: 0.3125rem;cursor:pointer;" @click="delRtu(index,index1)" /></span>
 
 						</div>
 
-					</div>
-					</Col>
-					<Col span="2">
-
-					<Button size="small" v-show="index == strategyForm.switchsGroupStrategyList.length-1" type="primary" ghost @click="handleAddSgsList"
-					 icon="ios-add"></Button>
-					<Button size="small" v-show="index != 0" style="margin-top: 0.3125rem;" type="error" @click="handleRemove(index)"
-					 icon="ios-trash"></Button>
-					</Col>
-				</Row>
-			</FormItem>
+					</FormItem>
+				</FormItem>
 			</div>
 			<FormItem style="text-align: center;">
 				<Button @click="handleReset('strategyForm')" style="margin-right: 8px">重置</Button>
@@ -102,6 +101,13 @@
 			RtuForm
 		},
 		data() {
+			const validateStrategyName = (rule, value, callback) => {
+				if (!value || value.replace(/\s*/g, "") == "") {
+					return callback(new Error('策略名称不能为空'));
+				} else {
+					callback();
+				}
+			};
 			return {
 				showSpin: false,
 				showRtuModal: false,
@@ -116,7 +122,7 @@
 					isMustAllPass: true,
 					exeMode: 0,
 					switchsGroupStrategyList: [{
-						sortIndex: '',
+						sortIndex: 0,
 						delayTime: '',
 						workTime: '',
 						rtuNumberList: []
@@ -128,8 +134,8 @@
 				strategyRule: {
 					strategyName: [{
 						required: true,
-						message: '策略名称不能为空',
-						// validator: validateUserName,
+						// message: '策略名称不能为空',
+						validator: validateStrategyName,
 						trigger: 'blur'
 					}],
 					belongOrgId: [{
@@ -147,7 +153,7 @@
 				this.$refs[name].resetFields();
 				this.belongOrgName = ''
 				this.strategyForm.switchsGroupStrategyList = [{
-					sortIndex: '',
+					sortIndex: 0,
 					delayTime: '',
 					workTime: '',
 					rtuNumberList: []
@@ -171,9 +177,9 @@
 				this.list = this.strategyForm.switchsGroupStrategyList[index].rtuNumberList
 				this.showRtuModal = true
 			},
-			handleAddSgsList() {
+			handleAddSgsList(index) {
 				this.strategyForm.switchsGroupStrategyList.push({
-					sortIndex: '',
+					sortIndex: index+1,
 					delayTime: '',
 					workTime: '',
 					rtuNumberList: []
@@ -305,6 +311,8 @@
 
 
 
+					}else{
+						this.$Message.error('信息未完善')
 					}
 
 				})

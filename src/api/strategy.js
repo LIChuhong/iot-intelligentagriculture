@@ -129,10 +129,10 @@ export const enableSwitchsStrategyTimer = (id,enable) => {
 }
 
 //删除控制策略定时
-export const delSwitchsStrategyTimer = (id) => {
+export const delSwitchsStrategyTimer = (key) => {
 	//console.log(vmOrg)
 	const data = new URLSearchParams()
-	data.append('id', id)
+	data.append('key', key)
   return axios.request({
   	url: '/v1/delSwitchsStrategyTimer',
 		data,
@@ -141,11 +141,11 @@ export const delSwitchsStrategyTimer = (id) => {
 }
 
 //11.获取控制策略定时详情
-export const getSwitchsStrategyTimer = (id) => {
+export const getSwitchsStrategyTimer = (key) => {
   return axios.request({
     url: '/v1/getSwitchsStrategyTimer',
 		params:{
-			'id': id
+			'key': key
 		},
     method: 'get'
   })

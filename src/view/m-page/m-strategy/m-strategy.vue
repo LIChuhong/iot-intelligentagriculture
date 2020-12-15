@@ -2,7 +2,9 @@
 	<div ref="tabH" class="demo-tabs-style1" style="height: 100%;">
 		<Tabs type="card" v-model="tabsName">
 			<div slot="extra" style="padding:0.3rem 0.5rem 0;">
-				<Button @click="refresh" icon="md-refresh" style="margin-right: 0.625rem;"></Button>
+				<span class="demo-tabs-style2">
+				<Button  @click="refresh" icon="md-refresh" style="margin-right: 0.625rem;"></Button>
+				</span>
 				<Button v-show="tabsName == '添加定时'" @click="addTiming" type="primary" icon="md-add">{{tabsName}}</Button>
 				<Button v-show="tabsName == '添加策略'" @click="addStrategy" type="primary" icon="md-add">{{tabsName}}</Button>
 			</div>
@@ -27,9 +29,7 @@
 							<template slot="description">
 								<div style="overflow: hidden;padding: 0 1rem;">
 									<span>创建人:{{item.userName}}</span>
-
 								</div>
-
 							</template>
 						</ListItemMeta>
 						<template slot="action">
@@ -49,7 +49,7 @@
 
 			</TabPane>
 			<TabPane label="列表" name="添加策略" :style="{height:tabHeight,overflow:'auto'}">
-				<strategy-list></strategy-list>
+				<strategy-list v-show="tabsName == '添加策略'"></strategy-list>
 				<!-- <strategy-list></strategy-list>
 				<strategy-list></strategy-list> -->
 			</TabPane>
@@ -121,12 +121,12 @@
 				})
 			},
 			editorTiming(row) {
-				this.timingId = row.id
+				this.timingId = row.key
 				this.timingText = '编辑'
 				this.showTimingInfo = true
 			},
 			delTiming(row, index) {
-				delSwitchsStrategyTimer(row.id).then(res => {
+				delSwitchsStrategyTimer(row.key).then(res => {
 					const data = res.data
 					if (data.success == 1) {
 						this.timingDataList.splice(index, 1);
@@ -193,7 +193,7 @@
 		padding: 1rem;
 	}
 	@media screen and (min-width:300px) and (max-width:900px) {
-		.demo-tabs-style1 .ivu-btn{
+		.demo-tabs-style2 .ivu-btn{
 			padding: 0;
 		}
 		.demo-tabs-style1 .ivu-modal-body {

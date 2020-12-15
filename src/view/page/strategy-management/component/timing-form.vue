@@ -73,6 +73,13 @@
 		},
 		props: ['timingId'],
 		data() {
+			const validateTimerName = (rule, value, callback) => {
+				if (!value || value.replace(/\s*/g, "") == "") {
+					return callback(new Error('定时名称不能为空'));
+				} else {
+					callback();
+				}
+			};
 			return {
 				showSpin: false,
 				timerInterval1: [],
@@ -95,7 +102,8 @@
 				timerRule: {
 					timerName: [{
 						required: true,
-						message: '定时名称不能为空',
+						// message: '定时名称不能为空',
+						validator: validateTimerName,
 						trigger: 'blur'
 					}],
 					timerType: [{
@@ -159,6 +167,7 @@
 							var switchsStrategyTimer = data.switchsStrategyTimer
 							var time = switchsStrategyTimer.startTimer.split(" ")
 							this.timerForm = {
+								id:switchsStrategyTimer.id,
 								timerName:switchsStrategyTimer.timerName,
 								timerType:switchsStrategyTimer.timerType,
 								timerInterval:switchsStrategyTimer.timerInterval,
@@ -166,15 +175,18 @@
 								switchsStrategyId:switchsStrategyTimer.switchsStrategyId,
 								startTimer:time[1]
 							}
-							var timerInterval = switchsStrategyTimer.timerInterval.split(",").map(item=>{
-								return parseInt(item)
-							})
-							if(switchsStrategyTimer.timerType == 1){
-								this.timerInterval1 = timerInterval
+							if(switchsStrategyTimer.timerInterval){
+								var timerInterval = switchsStrategyTimer.timerInterval.split(",").map(item=>{
+									return parseInt(item)
+								})
+								if(switchsStrategyTimer.timerType == 1){
+									this.timerInterval1 = timerInterval
+								}
+								if(switchsStrategyTimer.timerType == 2){
+									this.timerInterval2 = timerInterval
+								}
 							}
-							if(switchsStrategyTimer.timerType == 2){
-								this.timerInterval2 = timerInterval
-							}
+							
 							this.switchsStrategyName = switchsStrategyTimer.switchsStrategyName
 							this.belongOrgName = switchsStrategyTimer.orgName
 						} else {
@@ -199,8 +211,16 @@
 
 						if (this.timerForm.timerType == 1) {
 							this.timerForm.timerInterval = this.timerInterval1.toString()
+							if(this.timerForm.timerInterval == ''){
+								alert('请选择定时周期')
+								return
+							}
 						} else if (this.timerForm.timerType == 2) {
 							this.timerForm.timerInterval = this.timerInterval2.toString()
+							if(this.timerForm.timerInterval == ''){
+								alert('请选择定时周期')
+								return
+							}
 						} else {
 							this.timerForm.timerInterval = ''
 						}
@@ -217,7 +237,8 @@
 
 						this.showSpin = true
 						if(this.timingId != null && this.timingId != '') {
-							switchsStrategyTimer.id = this.timingId
+							switchsStrategyTimer.id = this.timerForm.id
+							switchsStrategyTimer.key = this.timingId
 							updateSwitchsStrategyTimer(switchsStrategyTimer).then(res => {
 								const data = res.data
 								this.showSpin = false

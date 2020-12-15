@@ -67,12 +67,12 @@
 		},
 		methods: {
 			editor(row) {
-				this.timingId = row.id
+				this.timingId = row.key
 				this.showTimingInfo = true
 			},
 			del(row, index) {
 				this.tableLoading = true
-				delSwitchsStrategyTimer(row.id).then(res => {
+				delSwitchsStrategyTimer(row.key).then(res => {
 					const data = res.data
 					this.tableLoading = false
 					if (data.success == 1) {

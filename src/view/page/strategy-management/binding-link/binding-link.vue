@@ -3,7 +3,8 @@
 		<div style="text-align: center;margin-bottom: 1.25rem;">
 
 			<span>设备编号：</span>
-			<Input :disabled="dis" type="number" v-model="rtuNumber" placeholder="请输入设备编号" style="width: 18.75rem;"></Input>
+			<!-- <Input :disabled="dis" type="number" v-model="rtuNumber" placeholder="请输入设备编号" style="width: 18.75rem;"></Input> -->
+			<InputNumber :disabled="dis" style="width: 18.75rem;" :min="0" v-model="rtuNumber" placeholder="请输入设备编号"></InputNumber>
 			<Button type="primary" icon="md-add" @click="showBindingLink = true" ghost style="margin: 0 1.25rem;">添加绑定</Button>
 			<Button type="primary" @click="handleSubmit">提交</Button>
 
@@ -73,8 +74,9 @@
 						const data = res.data
 						this.showSpin = false
 						if(data.success == 1){
-							console.log(data)
-							this.bindingLinkData = data.rtuLinkageList
+							if(data.rtuLinkageList){
+								this.bindingLinkData = data.rtuLinkageList
+							}
 						}else{
 							this.$Message.error(data.errorMessage)
 						}

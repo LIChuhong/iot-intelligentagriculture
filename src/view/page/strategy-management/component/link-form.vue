@@ -15,9 +15,6 @@
 			</FormItem>
 
 			<FormItem label="联动参数" prop="linkageParameterId">
-				<!-- <Select v-model="linkForm.linkageParameterId" placeholder="请输入联动参数" @on-open-change="getLinkageParamList">
-					<Option v-for="item in parameterList" :value="item.id" :key="item.id">{{ item.parameterName }}</Option>
-				</Select> -->
 				<span>{{linkForm.linkageParameterName}}</span>
 				<Cascader style="display:inline-block;margin-left: 1.25rem;" :data="rtuTypeList" :load-data="getRtuTypeParamList"
 				 @on-change="handleChange">
@@ -26,8 +23,7 @@
 				<!-- {{linkForm.linkageParameterId}} -->
 			</FormItem>
 			<FormItem label="延迟秒数" prop="delay">
-				<Input style="width: 100px" type="number" v-model="linkForm.delay" placeholder="请输入联动延迟秒数">
-				<span slot="append">秒</span></Input>
+				<InputNumber :min="0"  v-model="linkForm.delay" :formatter="value => `${value}秒`" :parser="value => value.replace('秒', '')"></InputNumber>
 			</FormItem>
 			<FormItem label="最大值" prop="parameterMaxValue">
 				<Input type="number" v-model="linkForm.parameterMaxValue" placeholder="请输入联动参数无法通过检测的最大值">
@@ -91,6 +87,13 @@
 			LinkRtuForm
 		},
 		data() {
+			const validateLinkageName = (rule, value, callback) => {
+				if (!value || value.replace(/\s*/g, "") == "") {
+					return callback(new Error('联动名称不能为空'));
+				} else {
+					callback();
+				}
+			};
 			return {
 				linkRtuShow: false,
 				rtuTypeList: [],
@@ -102,7 +105,7 @@
 					linkageRtuNumber: '',
 					linkageParameterId: '',
 					linkageParameterName: '',
-					delay: '0',
+					delay: 0,
 					parameterMaxValue: '',
 					parameterMinValue: '',
 					tips: '',
@@ -115,8 +118,8 @@
 				linkRule: {
 					linkageName: [{
 						required: true,
-						message: '联动名称不能为空',
-						// validator: validateUserName,
+						// message: '联动名称不能为空',
+						validator: validateLinkageName,
 						trigger: 'blur'
 					}],
 					linkageType: [{
@@ -151,7 +154,7 @@
 					}],
 					delay: [{
 						required: true,
-						// type: 'number',
+						 type: 'number',
 						message: '该项不能为空',
 						trigger: 'blur'
 					}],
@@ -239,7 +242,7 @@
 								linkageParameterName: rtuLinkage.parameterName,
 								parameterMinValue: rtuLinkage.parameterMinValue.toString(),
 								parameterMaxValue: rtuLinkage.parameterMaxValue.toString(),
-								delay: rtuLinkage.delay.toString(),
+								delay: rtuLinkage.delay,
 								tips: rtuLinkage.tips,
 								totalCount: rtuLinkage.totalCount
 

@@ -7,8 +7,10 @@
 		<Table size="small" border :columns="strategyColumns" :data="strategyData" :loading="tableLoading">
 
 			<template slot-scope="{ row, index }" slot="action">
+				<!-- <Button type="primary" size="small" style="margin-right:0.5rem" @click="editor(row)">取消</Button> -->
 
 				<div v-if="$store.state.app.iotInterFace == 0">
+					
 					<Button icon="ios-create-outline" type="primary" size="small" style="margin-right: 8px" @click="editor(row)">编辑</Button>
 					<Poptip :transfer="true" confirm title="你确定删除该策略吗?" @on-ok="del(row,index)">
 						<Button icon="md-trash" type="error" size="small" style="margin-right: 8px">删除</Button>
@@ -20,6 +22,7 @@
 						<Button icon="ios-trash" type="error" size="small" ></Button>
 					</Poptip>
 				</div>
+				<!-- <Button type="primary" size="small" style="margin-right:0.5rem" @click="editor(row)">手动</Button> -->
 			</template>
 			
 		</Table>
