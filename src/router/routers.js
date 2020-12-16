@@ -464,6 +464,38 @@ export default [{
 			},
 		]
 	},
+	{
+		path: '/my_application',
+		name: 'my_application',
+		meta: {
+			icon: ' iconfont icon-setVting',
+			title: '我的应用'
+		},
+		//component: Main,
+		component: resolve => require(['@/components/main'], resolve),
+		children: [
+			{
+				path: 'app_info',
+				name: 'app_info',
+				meta: {
+					icon: ' iconfont icon-add',
+					title: '应用信息'
+				},
+				component: resolve => require(['@/view/page/my-application/app-info/app-info.vue'], resolve)
+				//component: () => import('@/view/intelligentgarden/setting/menuManagement/menuManagement.vue')
+			},
+			{
+				path: 'app_list',
+				name: 'app_list',
+				meta: {
+					icon: ' iconfont icon-menum',
+					title: '应用列表'
+				},
+				component: resolve => require(['@/view/page/my-application/app-list/app-list.vue'], resolve)
+				//component: () => import('@/view/intelligentgarden/setting/menuManagement/menuManagement.vue')
+			},
+		]
+	},
 	
 	{
 		path: '/mobile_terminal',

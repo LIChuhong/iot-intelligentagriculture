@@ -116,10 +116,10 @@ export const getSwitchsStrategyTimerList = (searchKey,maxId,pageSize) => {
 }
 
 //启动禁用控制策略定时
-export const enableSwitchsStrategyTimer = (id,enable) => {
+export const enableSwitchsStrategyTimer = (key,enable) => {
 	//console.log(vmOrg)
 	const data = new URLSearchParams()
-	data.append('id', id)
+	data.append('key', key)
 	data.append('enable', enable)
   return axios.request({
   	url: '/v1/enableSwitchsStrategyTimer',
@@ -251,6 +251,31 @@ export const getBindingRtuLinkage = (rtuNumber) => {
     method: 'get'
   })
 }
+
+//手动取消策略
+export const cancelSwitchsStrategy = (id) => {
+	//console.log(vmOrg)
+	const data = new URLSearchParams()
+	data.append('id', id)
+  return axios.request({
+  	url: '/v1/cancelSwitchsStrategy',
+		data:data,
+  	method: 'post'
+  })
+}
+
+//6.手动启用策略
+export const setControlStrategy = (rtuDataStrategy) => {
+	//console.log(vmOrg)
+  return axios.request({
+  	url: '/v1/setControlStrategy',
+		data:rtuDataStrategy,
+  	method: 'post'
+  })
+}
+
+
+
 
 
 

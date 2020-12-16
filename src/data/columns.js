@@ -248,6 +248,7 @@ export const strategyColumns = [{ //策略列表
 		title: '策略名称',
 		key: 'strategyName',
 		align: 'center',
+		// width: 100
 	},
 	{
 		title: '所属组织',
@@ -259,7 +260,7 @@ export const strategyColumns = [{ //策略列表
 		title: '创建人',
 		key: 'userName',
 		align: 'center',
-		// width: 100
+		 // width: 100
 	},
 	{
 		title: '操作',
@@ -737,6 +738,53 @@ export const waterRecordColumns =[
 			key: 'userName',
 			align: 'center',
 			// width: 100
+		},
+	
+]
+
+//应用列表
+export const appColumns =[
+	{ 
+			title: 'ID',
+			key: 'id',
+			align: 'center',
+			width: 70
+		},
+		{
+			title: '应用名称',
+			key: 'appName',
+			align: 'center',
+		},
+		{
+			title: '创建时间',
+			key: 'createTime',
+			align: 'center',
+			// width: 100
+		},
+		{
+			title: '更新时间',
+			key: 'updateTime',
+			align: 'center',
+			// width: 100
+		},
+		
+		{
+			title: '所属用户',
+			key: 'userName',
+			align: 'center',
+			// width: 100
+		},
+		{
+			title: '组织',
+			key: 'orgName',
+			align: 'center',
+			// width: 100
+		},
+		{
+			title: '操作',
+			slot: 'action',
+			align: 'center',
+		
 		},
 	
 ]

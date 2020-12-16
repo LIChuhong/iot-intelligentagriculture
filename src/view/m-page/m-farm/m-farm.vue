@@ -1,5 +1,5 @@
 <template>
-	<div style="height: 100%;overflow:hidden;">
+	<div class="mFarmStyle" style="height: 100%;overflow:hidden;">
 		<div style="position: absolute;top:0;left:0;z-index: 100;width: 100%;text-align: center;color: red">画面名称:{{mapName}}</div>
 		<div ref="maps1" style="height:100%;position: relative;overflow:auto;background: #dcdee2;display: flex;justify-content:center">
 			<!-- <div ref="map1" > -->
@@ -628,12 +628,9 @@
 </script>
 
 <style lang="less">
-	.ivu-modal-body {
-		padding: 1rem;
-	}
-
+	
 	@media screen and (min-width:300px) and (max-width:900px) {
-		.ivu-modal-body {
+		.mFarmStyle .ivu-modal-body {
 			padding: 0px;
 		}
 

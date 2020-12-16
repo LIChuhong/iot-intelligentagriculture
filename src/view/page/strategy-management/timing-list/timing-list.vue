@@ -89,7 +89,7 @@
 			},
 			setIsEnbleTiming(row) {
 				row.switchLoading = true
-				enableSwitchsStrategyTimer(row.id, row.enable).then(res => {
+				enableSwitchsStrategyTimer(row.key, row.enable).then(res => {
 					row.switchLoading = false
 					const data = res.data
 					if (data.success == 1) {

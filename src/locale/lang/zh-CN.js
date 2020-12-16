@@ -88,6 +88,9 @@ export default {
 	brand_list:'品牌列表',
 	add_video:'添加视频',
 	video_list:'视频列表',
+	my_application:'我的应用',
+	app_info:'应用信息',
+	app_list:'应用列表'
 	
 
 }
