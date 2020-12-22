@@ -9,7 +9,7 @@
 				<img id="mapBgImg1" ref="mapBgImg1" :src="mapBgImgUrl" style="height: 100%;" draggable="false" />
 				<div v-for="item in rtuImgList" :key="item.rtuNumber" class="drag1" :style="{top:item.heightScale+'%',left:item.widthScale+'%',cursor:'pointer',}"
 				 :title="item.rtuNumber">
-					<p class="rtuImgTitle">{{item.rtuDesc?item.rtuDesc:item.rtuTypeName}}</p>
+					<p class="rtuImgTitle">{{item.rtuName?item.rtuName:item.rtuDesc}}</p>
 					<div @click="showVideo(item)" v-show="item.videoId > 0" class="videoTitle">
 						<Icon :type="' iconfont '+item.videoIcon" />
 					</div>
@@ -133,6 +133,7 @@
 		getVideo
 	} from '@/api/video.js'
 	import ZoomController from '../component/zoom-controller.vue'
+	import RtuTag  from '@/data/rtu-tag.js'
 	export default {
 		name: 'farm_list',
 		components: {
@@ -412,7 +413,7 @@
 				this.iat.show = false
 				// this.iaSf.show = false
 				this.iat.rtuNumber = null
-				if (item.rtuTypeTag == 'IA_SF_G' || item.rtuTypeTag == 'IA_SF_N') {
+				if (item.rtuTypeTag == RtuTag.rtuSFTag1 || item.rtuTypeTag == RtuTag.rtuSFTag2) {
 					this.iaSf.rtuNumber = item.rtuNumber
 					this.iaSf.show = true
 				} else {
@@ -424,7 +425,7 @@
 						if (data.success == 1) {
 							var rtuData = data.rtuData
 							if (rtuData.parameterDataList != null && rtuData.parameterDataList) {
-								if (rtuData.rtuTypeTag == 'IA_W_G' || rtuData.rtuTypeTag == 'IA_W_N') {
+								if (rtuData.rtuTypeTag == RtuTag.rtuWTag1 || rtuData.rtuTypeTag == RtuTag.rtuWTag2) {
 									this.iat.rtuNumber = rtuData.rtuNumber
 								}
 								this.showParamDataList(rtuData.rtuTypeTag, rtuData.parameterDataList)
@@ -440,7 +441,7 @@
 
 			},
 			showParamDataList(rtuTypeTag, list) {
-				if (rtuTypeTag == 'IA_WS_G' || rtuTypeTag == 'IA_WS_N') {
+				if (rtuTypeTag == RtuTag.rtuWSTag1 || rtuTypeTag == RtuTag.rtuWSTag2) {
 					this.parameterDataList = list.map(item => {
 						if (item.parameterId == 9) {
 							item.iconColor = '#0187fc'
@@ -468,7 +469,7 @@
 						}
 						return item
 					})
-				} else if (rtuTypeTag == 'IA_T_G' || rtuTypeTag == 'IA_T_N') {
+				} else if (rtuTypeTag == RtuTag.rtuTTag1 || rtuTypeTag == RtuTag.rtuTTag2) {
 					list.map(item => {
 						if (item.parameterId == 18) {
 							item.iconColor = '#0187fc'
@@ -485,7 +486,7 @@
 						}
 						return item
 					})
-				} else if (rtuTypeTag == 'IA_W_G' || rtuTypeTag == 'IA_W_N') {
+				} else if (rtuTypeTag == RtuTag.rtuWTag1 || rtuTypeTag == RtuTag.rtuWTag2) {
 					// var showRtuState = ''
 					list.map(item => {
 						if (item.parameterId == 25) {

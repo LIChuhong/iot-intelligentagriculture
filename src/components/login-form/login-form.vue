@@ -91,6 +91,8 @@
 			changeCode() {
 				//alert(this.$config. baseUrl.dev)
 				this.verCodeSrc = this.$config.baseUrl.dev + '/verifyCode?from=3&rend=' + Math.random()
+				this.form.userName = this.$store.state.user.localLoginInfo.userName
+				this.form.password = this.$store.state.user.localLoginInfo.password
 				// verifyCode().then(res=>{
 				// 	const data = res.data
 				// 	// console.log(data)

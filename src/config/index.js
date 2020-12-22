@@ -28,6 +28,8 @@ export default {
 		
 		 dev: 'https://iabe.zrwl-iot.com',
 		pro: 'https://iabe.zrwl-iot.com'
+		// dev: 'https://igbe.zrwl-iot.com',
+		// pro: 'https://igbe.zrwl-iot.com'
   },
   /**
    * @description 默认打开的首页的路由name值，默认为home
